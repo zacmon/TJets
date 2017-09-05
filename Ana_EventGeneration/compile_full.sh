@@ -1,0 +1,2 @@
+source compile_pythia.sh
+source compile_ntupler.sh
