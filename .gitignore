@@ -16,3 +16,15 @@ Ana_MiniNTupleAnalysis/.bash_profile
 *.eps
 
 *.xml
+
+*.cc#
+
+*.cc~
+
+Ana_MiniNTupleAnalysis/dataset/weights/TMVAClassification_BDT.class.C
+
+*.py~
+
+Ana_MiniNTupleAnalysis/dataset/weights/TMVAClassification_BDT.class.C
+
+Ana_MiniNTupleAnalysis/dataset/weights/TMVAClassification_BDT.class.C

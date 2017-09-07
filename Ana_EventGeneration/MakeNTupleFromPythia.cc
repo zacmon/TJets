@@ -194,7 +194,7 @@ int main(int argc, char* argv[]){
 
     //loops through the particles in the event just generated
     for (int iPart = 0; iPart < pythia.event.size(); ++iPart) {
-
+        
       //event filter for
       if(debug) cout<<"Process specific filters: "<<ProcessType<<endl;
       if(ProcessType=="dijet"){
@@ -247,7 +247,12 @@ int main(int argc, char* argv[]){
           truth_W2_eta = pythia.event[iPart].eta();
           truth_W2_phi = pythia.event[iPart].phi();
           truth_W2_m   = pythia.event[iPart].m();
-        }
+	}
+
+	//  Skip saving event if W decay to leptons.
+	if (std::abs(pythia.event[iPart].id()) == 12 || std::abs(pythia.event[iPart].id()) == 14 || std::abs(pythia.event[iPart].id()) == 16) {
+	    continue;
+	}
       }
       else if(ProcessType=="tt"){
         if(debug) cout<<"Top quark Filter"<<endl;
@@ -272,6 +277,11 @@ int main(int argc, char* argv[]){
             acceptevent=true;
           }
         }
+
+	//  Skip saving event if top decays to W that decays to leptons.
+	if (std::abs(pythia.event[iPart].id()) == 12 || std::abs(pythia.event[iPart].id()) == 14 || std::abs(pythia.event[iPart].id()) == 16) {
+            continue;
+	}
       }
       else if(ProcessType=="hh"){
         if(debug) cout<<"Higgs Filter"<<endl;

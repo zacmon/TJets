@@ -14,3 +14,7 @@ Top:qqbar2ttbar = on ! switch on the process q qbar -> t tbar.
 ! Modify the region of phase space in which events are generated
 PhaseSpace:pTHatMin = 800.0
 PhaseSpace:pTHatMax = 1000.0
+
+!specify W+- decays only to quarks
+24:onMode = off
+24:onIfAny = 1 2 3 4 5

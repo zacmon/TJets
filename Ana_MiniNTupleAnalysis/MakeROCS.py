@@ -7,11 +7,8 @@ from AtlasStyle import *
 SetAtlasStyle();
 gStyle.SetPalette(1)
 
-#sigFile="ntuple_ttbar_2000.root"
-#bkgFile="ntuple_dijet_800_1400.root"
-sigFile="ntuple_tt_test1000.root"
-bkgFile="ntuple_dijet_test1000.root"
-
+sigFile="ntuple_tt_test10000.root"
+bkgFile="ntuple_dijet_test10000.root"
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
     '''Implementation of simple signal and background comparison'''
@@ -19,35 +16,34 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     
     c = TCanvas("c","c",300,300)
 
-    dry=0.045
+    dry = 0.045
 
-    weight=""
-    weight+="("
-    weight+=alg+"_pt>"+pt1+" && "
-    weight+=alg+"_pt<"+pt2
-    if m1!="0":
-        weight+=" && "+alg+"_m>"+m1+" && "
-        weight+=alg+"_m<"+m2
-    weight+=")"
+    weight = ""
+    weight += "("
+    weight += alg + "_pt>" + pt1 + " && "
+    weight += alg + "_pt<" + pt2
+    if m1 != "0":
+        weight += " && " + alg + "_m>" + m1 + " && "
+        weight += alg + "_m<" + m2
+    weight += ")"
     
     #Get signal and background histograms
-    histname = alg+"_"+variable
+    histname = alg + "_" + variable
     print histname
-    hsig = GetHist1D(InputDir+sigFile,    "JetTree", histname, range, weight+"*("+alg+"_flavor==3)")
+    hsig = GetHist1D(InputDir+sigFile, "JetTree", histname, range, weight+"*("+alg+"_flavor==3)")
     hbkg = GetHist1D(InputDir+bkgFile, "JetTree", histname, range, weight+"*("+alg+"_flavor==0)")
 
     #Normalize them to unity
     hsig = NormalizeHist(hsig)
     hbkg = NormalizeHist(hbkg)
     
-    #==============================
     #Make all rocs
     rocL,hsigregL,hcutvalL,hsigregL25,hcutvalL25 = RocCurve_SingleSided_WithUncer(hsig, hbkg, "L")
     rocR,hsigregR,hcutvalR,hsigregR25,hcutvalR25 = RocCurve_SingleSided_WithUncer(hsig, hbkg, "R")
     rocSB,sigordered,bkgordered,h1 = RocCurve_SoverBOrdered_WithUncer(hsig, hbkg)
 
-    print alg+"_"+variable
-    f = TFile(outputdir+"ROC_"+alg+"_"+variable.replace("\\","")+"_pt"+pt1+pt2+".root","RECREATE")
+    print alg + "_" + variable
+    f = TFile(outputdir + "ROC_" + alg + "_" + variable.replace("\\", "") + "_pt" + pt1 + pt2 + ".root", "RECREATE")
     rocL.Write("ROC_L")
     rocR.Write("ROC_R")
     rocSB.Write("ROC_SoverB")
@@ -55,10 +51,8 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     
     c.cd()
     rocSB.Draw("AC*")
-    c.SaveAs(outputdir+"ROCDraw_"+alg+"_"+variable.replace("\\","")+"_pt"+pt1+pt2+".eps")
+    c.SaveAs(outputdir + "ROCDraw_" + alg + "_" + variable.replace("\\", "") + "_pt" + pt1 + pt2 + ".eps")
     
-    #################################
-
     #copy for line drawing
     #hbkg.Rebin(4)
     #sh.Rebin(4)
@@ -73,7 +67,6 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     hsigline.SetLineColor(4)
     hsigline.SetLineStyle(1)
     hsigline.SetLineWidth(3)
-
 
     # DRAW
     print variable
@@ -102,7 +95,6 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     hsig.SetFillStyle(3002)
     hsig.SetMarkerSize(0)
 
-
     maxval = GetMaxVal([hbkg, hsig])
     hbkg.SetMaximum(maxval*2.0)
     hbkg.SetMinimum(0.001)
@@ -112,16 +104,15 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     hsig.Draw("E2same")
     hsigline.Draw("samehist")
 
-    ATLASLabel(   0.20,0.85,1,0.1,0.03,"#sqrt{s}=13 TeV")
-    myText(       0.20,0.80,1,0.03, TranslateAlg(alg))
-    myText(       0.20,0.75,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
+    ATLASLabel(0.20, 0.85, 1, 0.1, 0.03, "#sqrt{s}=13 TeV")
+    myText(0.20, 0.80, 1, 0.03, TranslateAlg(alg))
+    myText(0.20, 0.75, 1, 0.03, TranslateRegion(pt1,pt2,m1,m2))
     rocbox3=myLineBoxText(0.70, 0.85, 4, 1, 1, 0, 0.1, 0.08, "Top Jets")
     rocbox4=myLineBoxText(0.70, 0.80, 2, 1, 1, 0, 0.1, 0.08, "QCD Jets")
     c.SetLogy(logy)
-    c.SaveAs(outputdir+"SignalBGCompare_"+alg+"_"+variable+"_pt"+pt1+pt2+".eps")
+    c.SaveAs(outputdir+"SignalBGCompare_" + alg + "_" + variable + "_pt" + pt1 +pt2 + ".eps")
 
 def GetMassEffs(InputDir, alg, m1, m2, outputdir):
-
     weight=""
     weight+="("
     weight+=alg+"_pt>"+pt1+" && "
@@ -130,10 +121,10 @@ def GetMassEffs(InputDir, alg, m1, m2, outputdir):
     range="100,0,200"
     
     #Get signal and background histograms
-    histname=alg+"_m"
+    histname=alg + "_m"
     print histname
-    hsig = GetHist1D(InputDir+sigFile,    "JetTree", histname, range, weight+"*("+alg+"_flavor==3)")
-    hbkg = GetHist1D(InputDir+bkgFile, "JetTree", histname, range, weight+"*("+alg+"_flavor==0)")
+    hsig = GetHist1D(InputDir + sigFile, "JetTree", histname, range, weight + "*(" + alg + "_flavor==3)")
+    hbkg = GetHist1D(InputDir + bkgFile, "JetTree", histname, range, weight+"*(" + alg + "_flavor==0)")
 
     #Normalize them to unity
     hsig = NormalizeHist(hsig)
@@ -144,25 +135,24 @@ def GetMassEffs(InputDir, alg, m1, m2, outputdir):
     bin2=hsig.FindBin(float(m2))
 
     effsig_err = Double()
-    effsig = hsig.IntegralAndError(bin1,bin2,effsig_err)
+    effsig = hsig.IntegralAndError(bin1, bin2, effsig_err)
     effbkg_err = Double()
-    effbkg = hbkg.IntegralAndError(bin1,bin2,effbkg_err)
+    effbkg = hbkg.IntegralAndError(bin1, bin2, effbkg_err)
     
     h=TH1D()
-    h.Fill("effsig",effsig)
-    h.Fill("effsig_err",effsig_err)
-    h.Fill("effbkg",effbkg)
-    h.Fill("effbkg_err",effbkg_err)
-    fout = TFile(outputdir+"MassEff_"+alg+"_pt"+pt1+pt2+".root","RECREATE")
+    h.Fill("effsig", effsig)
+    h.Fill("effsig_err", effsig_err)
+    h.Fill("effbkg", effbkg)
+    h.Fill("effbkg_err", effbkg_err)
+    fout = TFile(outputdir + "MassEff_" + alg + "_pt" + pt1 + pt2 + ".root","RECREATE")
     h.Write("masseff")
     fout.Close()
 
-    return effsig,effsig_err,effbkg,effbkg_err
+    return effsig, effsig_err, effbkg, effbkg_err
 
 def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, statErrorOnRatioThreshold, flagFilter, outputdir):
 
     print alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, statErrorOnRatioThreshold, flagFilter, outputdir
-
 
     #output label flag that labels if stats filter is applied
     flagFilterLabel="noFilter"
@@ -180,11 +170,11 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     corrsig = sig.GetCorrelationFactor()
     corrbg  = bkg.GetCorrelationFactor()
     
-    #1D Projections and cration of ROC curves for comparison at end
-    sig1DvarX = sig.ProjectionX("sig1DvarX",0,-1,"e")
-    bkg1DvarX = bkg.ProjectionX("bkg1DvarX",0,-1,"e")
-    sig1DvarY = sig.ProjectionY("sig1DvarY",0,-1,"e")
-    bkg1DvarY = bkg.ProjectionY("bkg1DvarY",0,-1,"e")
+    #1D Projections and creation of ROC curves for comparison at end
+    sig1DvarX = sig.ProjectionX("sig1DvarX", 0, -1, "e")
+    bkg1DvarX = bkg.ProjectionX("bkg1DvarX", 0, -1, "e")
+    sig1DvarY = sig.ProjectionY("sig1DvarY", 0, -1, "e")
+    bkg1DvarY = bkg.ProjectionY("bkg1DvarY", 0, -1, "e")
     
     sig1DvarX = NormalizeHist(sig1DvarX)
     bkg1DvarX = NormalizeHist(bkg1DvarX)
@@ -200,9 +190,9 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     sig1DvarX.GetYaxis().SetTitle("Normalized Units")
     sig1DvarX.Draw("hist")
     bkg1DvarX.Draw("histsame")
-    ATLASLabel(   0.70,0.90,1,0.1,0.03,"#sqrt{s}=13 TeV")
-    bx1=myLineBoxText(0.70, 0.80, 2, 1, 2, 3004, 0.1, 0.1, "Signal")
-    bx2=myLineBoxText(0.70, 0.75, 4, 1, 4, 3005, 0.1, 0.1, "Background")
+    ATLASLabel(0.70, 0.90, 1, 0.1, 0.03, "#sqrt{s}=13 TeV")
+    bx1 = myLineBoxText(0.70, 0.80, 2, 1, 2, 3004, 0.1, 0.1, "Signal")
+    bx2 = myLineBoxText(0.70, 0.75, 4, 1, 4, 3005, 0.1, 0.1, "Background")
     #c1d.SaveAs(outputdir+"Make2DROC_"+varX+"_pt"+pt1+pt2+"_"+flagFilterLabel+".eps")
 
     sig1DvarY.SetLineColor(4)
@@ -213,34 +203,34 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     sig1DvarY.GetYaxis().SetTitle("Normalized Units")
     sig1DvarY.Draw("hist")
     bkg1DvarY.Draw("histsame")
-    ATLASLabel(   0.70,0.90,1,0.1,0.03,"#sqrt{s}=13 TeV")
-    bx3=myLineBoxText(0.70, 0.80, 2, 1, 2, 3004, 0.1, 0.1, "Signal")
-    bx4=myLineBoxText(0.70, 0.75, 4, 1, 4, 3005, 0.1, 0.1, "Background")
+    ATLASLabel(0.70, 0.90, 1, 0.1, 0.03, "#sqrt{s}=13 TeV")
+    bx3 = myLineBoxText(0.70, 0.80, 2, 1, 2, 3004, 0.1, 0.1, "Signal")
+    bx4 = myLineBoxText(0.70, 0.75, 4, 1, 4, 3005, 0.1, 0.1, "Background")
     #c1d.SaveAs(outputdir+"Make2DROC_"+varY+"_pt"+pt1+pt2+"_"+flagFilterLabel+".eps")
     
     print "Single sided rocs"
-    rocvarX,hsigregX,hcutvalX,hsigregX25,hcutvalX25 = RocCurve_SingleSided_WithUncer(sig1DvarX, bkg1DvarX, varXcutdir)
+    rocvarX, hsigregX, hcutvalX, hsigregX25, hcutvalX25 = RocCurve_SingleSided_WithUncer(sig1DvarX, bkg1DvarX, varXcutdir)
     rocvarX.SetLineColor(2)
-    rocvarY,hsigregY,hcutvalY,hsigregX25,hcutvalX25 = RocCurve_SingleSided_WithUncer(sig1DvarY, bkg1DvarY, varYcutdir)
+    rocvarY, hsigregY, hcutvalY, hsigregX25, hcutvalX25 = RocCurve_SingleSided_WithUncer(sig1DvarY, bkg1DvarY, varYcutdir)
     rocvarY.SetLineColor(4)        
     
-    file1droc = TFile(outputdir+"ROC2DOutput_"+varX+"_"+varY+"_pt"+pt1+pt2+"_"+flagFilterLabel+".root","RECREATE")
-    rocvarX.Write("roc_"+varX)
-    rocvarY.Write("roc_"+varY)
+    file1droc = TFile(outputdir + "ROC2DOutput_" + varX + "_" + varY + "_pt" + pt1 + pt2 + "_" + flagFilterLabel + ".root", "RECREATE")
+    rocvarX.Write("roc_" + varX)
+    rocvarY.Write("roc_" + varY)
     file1droc.Close()
 
     #Make ratio of S/B for making likelihood ordering
-    c0 = TCanvas("c0","c0",300,300);
+    c0 = TCanvas("c0", "c0", 300, 300);
     
-    if rankMetric=="SoverSplusB":
-        metriclabel="L = S / (S+B)"
+    if rankMetric == "SoverSplusB":
+        metriclabel = "L = S / (S+B)"
         rat = sig.Clone("rat")
         rat.Sumw2()
         ratdiv = bkg.Clone("ratdiv")
         ratdiv.Add(sig)
         rat.Divide(ratdiv)        
-    elif rankMetric=="SoverB":
-        metriclabel="L = S / B"
+    elif rankMetric == "SoverB":
+        metriclabel = "L = S / B"
         rat = sig.Clone("rat")
         rat.Sumw2()
         ratdiv = bkg.Clone("ratdiv")
@@ -248,7 +238,6 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     else:
         print "The ranking metric is not correct - EXITTING ..."
         sys.exit()
-
 
     #convert hist to 1D array and store all the bin information and error information separately
     binnumX=[]
@@ -265,17 +254,16 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     szero=[]
     sbigerr=[]
 
-    for i in range(1,sig.GetNbinsX()+1):
-        for j in range(1,sig.GetNbinsY()+1):
-            #print "bin ",i,j
+    for i in range(1, sig.GetNbinsX() + 1):
+        for j in range(1, sig.GetNbinsY() + 1):
             binnumtempX = i
             binnumtempY = j
-            stemp    = sig.GetBinContent(i,j)
-            serrtemp = sig.GetBinError(i,j)
-            btemp    = bkg.GetBinContent(i,j)
-            berrtemp = bkg.GetBinError(i,j)
-            rtemp    = rat.GetBinContent(i,j)
-            rerrtemp = rat.GetBinError(i,j)
+            stemp    = sig.GetBinContent(i, j)
+            serrtemp = sig.GetBinError(i, j)
+            btemp    = bkg.GetBinContent(i, j)
+            berrtemp = bkg.GetBinError(i, j)
+            rtemp    = rat.GetBinContent(i, j)
+            rerrtemp = rat.GetBinError(i, j)
 
             binnumX.append(binnumtempX)
             binnumY.append(binnumtempY)
@@ -285,31 +273,30 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
             berr.append(berrtemp)
             r.append(rtemp)
             rerr.append(rerrtemp)
-            if rtemp==0:
+            if rtemp == 0:
                 rerrfrac.append(1.0)
             else:
-                rerrfrac.append(rerrtemp/rtemp)
+                rerrfrac.append(rerrtemp / rtemp)
             
             bzero.append(0)
             bbigerr.append(0)
-            if b[-1]==0:
-                bzero[-1]=1
-            elif berr[-1]/b[-1]>0.7:
-                bbigerr[-1]=1
+            if b[-1] == 0:
+                bzero[-1] = 1
+            elif berr[-1] / b[-1] > 0.7:
+                bbigerr[-1] = 1
         
             szero.append(0)
             sbigerr.append(0)
-            if s[-1]==0:
-                szero[-1]=1
-            elif serr[-1]/s[-1]>0.7:
-                sbigerr[-1]=1
-
+            if s[-1] == 0:
+                szero[-1] = 1
+            elif serr[-1] / s[-1] > 0.7:
+                sbigerr[-1] = 1
 
     #Initial histograms
-    cstep = TCanvas("cstep","cstep",1000,1000)   
-    cstep.Divide(1,5)
-    hab = TH1F("hab","hab",len(s),0,len(s))
-    hab.SetMaximum( 1.4*max([max(b),max(s)]) )
+    cstep = TCanvas("cstep", "cstep", 1000, 1000)   
+    cstep.Divide(1, 5)
+    hab = TH1F("hab", "hab", len(s), 0, len(s))
+    hab.SetMaximum(1.4 * max([max(b), max(s)]) )
     hab.SetLineColor(4)
     hab.GetXaxis().SetTitle("Bin Number")
     hab.GetXaxis().SetTitleSize(0.1)
@@ -320,9 +307,9 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     hab.GetYaxis().SetTitleOffset(0.5)
     hab.GetYaxis().SetTitleSize(0.1)
     hab.GetYaxis().CenterTitle()
-    has = TH1F("has","has",len(s),0,len(s)) 
+    has = TH1F("has", "has", len(s), 0, len(s)) 
     has.SetLineColor(2)
-    har = TH1F("har","har",len(s),0,len(s))
+    har = TH1F("har", "har", len(s), 0, len(s))
     har.SetLineColor(1)
     har.SetLineWidth(3)
     har.SetMaximum(2.0)
@@ -335,10 +322,10 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     har.GetYaxis().SetTitleOffset(0.5)
     har.GetYaxis().SetTitleSize(0.1)
     har.GetYaxis().CenterTitle()
-    hare = TH1F("hare","hare",len(s),0,len(s))
+    hare = TH1F("hare", "hare", len(s), 0, len(s))
     hare.SetLineColor(3)
     hare.SetMaximum(3.0)
-    haref = TH1F("haref","haref",len(s),0,len(s))
+    haref = TH1F("haref", "haref", len(s), 0, len(s))
     haref.SetLineColor(7)
     haref.SetMaximum(2.0)
     haref.GetXaxis().SetTitle("Bin Number")
@@ -350,7 +337,7 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     haref.GetYaxis().SetTitleOffset(0.5)
     haref.GetYaxis().SetTitleSize(0.1)
     haref.GetYaxis().CenterTitle()
-    hbwithzero = TH1F("hbwithzero","hbwithzero",len(s),0,len(s))
+    hbwithzero = TH1F("hbwithzero", "hbwithzero", len(s), 0, len(s))
     hbwithzero.SetLineColor(8)
     hbwithzero.SetMaximum(2.0)
     hbwithzero.GetXaxis().SetTitle("Bin Number")
@@ -362,9 +349,9 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     hbwithzero.GetYaxis().SetTitleOffset(0.5)
     hbwithzero.GetYaxis().SetTitleSize(0.1)
     hbwithzero.GetYaxis().CenterTitle()
-    hbwithone = TH1F("hbwithone","hbwithone",len(s),0,len(s))
+    hbwithone = TH1F("hbwithone", "hbwithone", len(s), 0, len(s))
     hbwithone.SetLineColor(9)
-    hswithzero = TH1F("hswithzero","hswithzero",len(s),0,len(s))
+    hswithzero = TH1F("hswithzero", "hswithzero", len(s), 0, len(s))
     hswithzero.SetLineColor(5)
     hswithzero.SetMaximum(2.0)
     hswithzero.GetXaxis().SetTitle("Bin Number")
@@ -376,13 +363,10 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     hswithzero.GetYaxis().SetTitleOffset(0.5)
     hswithzero.GetYaxis().SetTitleSize(0.1)
     hswithzero.GetYaxis().CenterTitle()
-    hswithone = TH1F("hswithone","hswithone",len(s),0,len(s))
+    hswithone = TH1F("hswithone", "hswithone", len(s), 0,len(s))
     hswithone.SetLineColor(6)
 
-
-
     for i in range(len(s)):
-        #print s[i],b[i],r[i]
         has.SetBinContent(i+1,s[i])
         has.SetBinError(i+1,serr[i])
         hab.SetBinContent(i+1,b[i])
@@ -422,10 +406,10 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
 
     #if background have large statistical error then pop them to the back
     if flagFilter:
-        i=0
-        count=0
-        while count<len(s):
-            if bzero[i]==1 or bbigerr[i]==1:
+        i = 0
+        count = 0
+        while count < len(s):
+            if bzero[i] == 1 or bbigerr[i] == 1:
                 binnumX.append(binnumX.pop(i))
                 binnumY.append(binnumY.pop(i))
 
@@ -444,25 +428,22 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
                 szero.append(szero.pop(i))
                 sbigerr.append(sbigerr.pop(i))
             else:
-                i+=1
+                i += 1
                 
-            count+=1
-
-
+            count += 1
 
     for i in range(len(s)):
-        #print s[i],b[i],r[i]
-        has.SetBinContent(i+1,s[i])
-        has.SetBinError(i+1,serr[i])
-        hab.SetBinContent(i+1,b[i])
-        hab.SetBinError(i+1,berr[i])
-        har.SetBinContent(i+1,r[i])
-        hare.SetBinContent(i+1,rerr[i])
-        haref.SetBinContent(i+1,rerrfrac[i])
-        hbwithzero.SetBinContent(i+1,bzero[i])
-        hbwithone.SetBinContent(i+1 ,bbigerr[i])
-        hswithzero.SetBinContent(i+1,szero[i])
-        hswithone.SetBinContent(i+1 ,sbigerr[i])
+        has.SetBinContent(i + 1, s[i])
+        has.SetBinError(i + 1, serr[i])
+        hab.SetBinContent(i + 1,b[i])
+        hab.SetBinError(i + 1,berr[i])
+        har.SetBinContent(i + 1,r[i])
+        hare.SetBinContent(i + 1,rerr[i])
+        haref.SetBinContent(i + 1,rerrfrac[i])
+        hbwithzero.SetBinContent(i + 1,bzero[i])
+        hbwithone.SetBinContent(i + 1 ,bbigerr[i])
+        hswithzero.SetBinContent(i + 1,szero[i])
+        hswithone.SetBinContent(i + 1 ,sbigerr[i])
     cstep.cd(1)
     hab.Draw("hist")
     has.Draw("histsame")
@@ -522,17 +503,17 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
 
     for i in range(len(s)):
         #print s[i],b[i],r[i]
-        has.SetBinContent(i+1,s[i])
-        has.SetBinError(i+1,serr[i])
-        hab.SetBinContent(i+1,b[i])
-        hab.SetBinError(i+1,berr[i])
-        har.SetBinContent(i+1,r[i])
-        hare.SetBinContent(i+1,rerr[i])
-        haref.SetBinContent(i+1,rerrfrac[i])
-        hbwithzero.SetBinContent(i+1,bzero[i])
-        hbwithone.SetBinContent(i+1 ,bbigerr[i])
-        hswithzero.SetBinContent(i+1,szero[i])
-        hswithone.SetBinContent(i+1 ,sbigerr[i])
+        has.SetBinContent(i + 1,s[i])
+        has.SetBinError(i + 1,serr[i])
+        hab.SetBinContent(i + 1,b[i])
+        hab.SetBinError(i + 1,berr[i])
+        har.SetBinContent(i + 1,r[i])
+        hare.SetBinContent(i + 1,rerr[i])
+        haref.SetBinContent(i + 1,rerrfrac[i])
+        hbwithzero.SetBinContent(i + 1,bzero[i])
+        hbwithone.SetBinContent(i + 1 ,bbigerr[i])
+        hswithzero.SetBinContent(i + 1,szero[i])
+        hswithone.SetBinContent(i + 1 ,sbigerr[i])
     cstep.cd(1)
     hab.Draw("hist")
     has.Draw("histsame")
@@ -573,17 +554,17 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
 
     for i in range(len(s)):
         #print s[i],b[i],r[i]
-        has.SetBinContent(i+1,s[i])
-        has.SetBinError(i+1,serr[i])
-        hab.SetBinContent(i+1,b[i])
-        hab.SetBinError(i+1,berr[i])
-        har.SetBinContent(i+1,r[i])
-        hare.SetBinContent(i+1,rerr[i])
-        haref.SetBinContent(i+1,rerrfrac[i])
-        hbwithzero.SetBinContent(i+1,bzero[i])
-        hbwithone.SetBinContent(i+1 ,bbigerr[i])
-        hswithzero.SetBinContent(i+1,szero[i])
-        hswithone.SetBinContent(i+1 ,sbigerr[i])
+        has.SetBinContent(i + 1,s[i])
+        has.SetBinError(i + 1,serr[i])
+        hab.SetBinContent(i + 1,b[i])
+        hab.SetBinError(i + 1,berr[i])
+        har.SetBinContent(i + 1,r[i])
+        hare.SetBinContent(i + 1,rerr[i])
+        haref.SetBinContent(i + 1,rerrfrac[i])
+        hbwithzero.SetBinContent(i + 1,bzero[i])
+        hbwithone.SetBinContent(i + 1 ,bbigerr[i])
+        hswithzero.SetBinContent(i + 1,szero[i])
+        hswithone.SetBinContent(i + 1 ,sbigerr[i])
     cstep.cd(1)
     hab.Draw("hist")
     has.Draw("histsame")
@@ -638,25 +619,25 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
 
     for i in range(len(s)):
         #print s[i],b[i],r[i]
-        has.SetBinContent(i+1,s[i])
-        has.SetBinError(i+1,serr[i])
-        hab.SetBinContent(i+1,b[i])
-        hab.SetBinError(i+1,berr[i])
-        har.SetBinContent(i+1,r[i])
-        hare.SetBinContent(i+1,rerr[i])
-        haref.SetBinContent(i+1,rerrfrac[i])
-        hbwithzero.SetBinContent(i+1,bzero[i])
-        hbwithone.SetBinContent(i+1 ,bbigerr[i])
-        hswithzero.SetBinContent(i+1,szero[i])
-        hswithone.SetBinContent(i+1 ,sbigerr[i])
+        has.SetBinContent(i + 1,s[i])
+        has.SetBinError(i + 1,serr[i])
+        hab.SetBinContent(i + 1,b[i])
+        hab.SetBinError(i + 1,berr[i])
+        har.SetBinContent(i + 1,r[i])
+        hare.SetBinContent(i + 1,rerr[i])
+        haref.SetBinContent(i + 1,rerrfrac[i])
+        hbwithzero.SetBinContent(i + 1,bzero[i])
+        hbwithone.SetBinContent(i + 1 ,bbigerr[i])
+        hswithzero.SetBinContent(i + 1,szero[i])
+        hswithone.SetBinContent(i + 1 ,sbigerr[i])
     cstep.cd(1)
     hab.Draw("hist")
     has.Draw("histsame")
-    myText(        0.70,0.85,1,0.1,varX+" & "+varY)
-    myText(        0.70,0.75,1,0.1,"Move Large BG Err.")
-    myText(        0.70,0.65,1,0.1,"Move Large Sig Err.")
-    myText(        0.70,0.55,1,0.1,"Move Large Ratio Err.")
-    myText(        0.70,0.45,1,0.1,"Reorder by Ratio")
+    myText(0.70,0.85,1,0.1,varX+" & "+varY)
+    myText(0.70,0.75,1,0.1,"Move Large BG Err.")
+    myText(0.70,0.65,1,0.1,"Move Large Sig Err.")
+    myText(0.70,0.55,1,0.1,"Move Large Ratio Err.")
+    myText(0.70,0.45,1,0.1,"Reorder by Ratio")
     myLineBoxText(0.30, 0.85, 2, 1, 0, 0, 0.1, 0.3, "Signal")
     myLineBoxText(0.50, 0.85, 4, 1, 0, 0, 0.1, 0.3, "Background")
     cstep.cd(2)
@@ -686,7 +667,6 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
         if r[i]==0:
             break
     print "Found first zero at: ",zerobin
-
 
     totalB = sum(b)
     totalS = sum(s)
@@ -1172,6 +1152,7 @@ def MakeMVAROCS(outfilename,outputdir,mvatypes):
         
         
 def OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt2,m1,m2,mvatypes,VarsAndRanges):
+    print "LOOK HERE"
     print outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt2,m1,m2,mvatypes
     
     path = outputdir1+"ROC_"+alg+"_"+var0+"_pt"+pt1+pt2+".root"
@@ -1250,46 +1231,46 @@ def OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt
 
 
 def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges):
-
+    
 
     path = outputdir1+"ROC_"+alg+"_Tau32_pt"+pt1+pt2+".root"
     f1   = TFile(path)
-    roc1 = f1.Get("ROC_L")
+    roc1 = f1.Get("ROC_SoverB")
     roc1.SetFillColor(2)
     roc1.SetLineColor(2)
     roc1.SetFillStyle(3001)
 
     path = outputdir1+"ROC_"+alg+"_T2jet_pt"+pt1+pt2+".root"
     f2   = TFile(path)
-    roc2 = f2.Get("ROC_R")
+    roc2 = f2.Get("ROC_SoverB")
     roc2.SetFillColor(4)
     roc2.SetLineColor(4)
     roc2.SetFillStyle(3001)
 
     path = outputdir1+"ROC_"+alg+"_T2jet_angle_pt"+pt1+pt2+".root"
     f3   = TFile(path)
-    roc3 = f3.Get("ROC_L")
+    roc3 = f3.Get("ROC_SoverB")
     roc3.SetFillColor(3)
     roc3.SetLineColor(3)
     roc3.SetFillStyle(3001)
 
     path = outputdir1+"ROC_"+alg+"_T3jet_pt"+pt1+pt2+".root"
     f4   = TFile(path)
-    roc4 = f4.Get("ROC_L")
+    roc4 = f4.Get("ROC_SoverB")
     roc4.SetFillColor(1)
     roc4.SetLineColor(1)
     roc4.SetFillStyle(3001)
 
     path = outputdir1+"ROC_"+alg+"_T3jet_angle_pt"+pt1+pt2+".root"
     f5   = TFile(path)
-    roc5 = f5.Get("ROC_R")
+    roc5 = f5.Get("ROC_SoverB")
     roc5.SetFillColor(6)
     roc5.SetLineColor(6)
     roc5.SetFillStyle(3001)
 
     path = outputdir1+"ROC_"+alg+"_Tau21_pt"+pt1+pt2+".root"
     f6   = TFile(path)
-    roc6 = f6.Get("ROC_R")
+    roc6 = f6.Get("ROC_SoverB")
     roc6.SetFillColor(9)
     roc6.SetLineColor(9)
     roc6.SetFillStyle(3001)
@@ -1297,7 +1278,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir3+"TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+"_ROCSBDT.root"
     f7   = TFile(path)
-    roc7 = f7.Get("ROC_L")
+    roc7 = f7.Get("ROC_SoverB")
     roc7.SetFillColor(95)
     roc7.SetLineColor(95)
     roc7.SetFillStyle(3001)
@@ -1372,15 +1353,13 @@ VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1" ,"L"]
 VarsAndRanges["T3jet_mW"]      = [0, "100,0,1", "100,0,1" ,"L"]
 VarsAndRanges["T3jet_W"]      = [0, "100,40,120", "100,40,120" ,"L"]
 VarsAndRanges["T3jet_angle"]  = [0, "100,0,0.5", "100,0,0.5" ,"R"]
-#VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
-#VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
+VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
+VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
 # VarsAndRanges["D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
 # VarsAndRanges["C2"]         = [0, "100,0,1", "100,0,1" ,"L"]
 # VarsAndRanges["TJet_Tau21"]      = [0, "100,0,1", "100,0,1" ,"L"]
 # VarsAndRanges["TJet_D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
 # VarsAndRanges["TJet_C2"]         = [0, "100,0,1", "100,0,1" ,"L"]
-
-
 
 #################################
 # Loop over algorithms
@@ -1390,7 +1369,6 @@ for alg in algs:
 
     print "\n\nGetting mass optimization"
     CutRegions=[]
-    #CutRegions.append("1")
     CutRegions.append("3")
 
     for CutRegion in CutRegions:
@@ -1401,11 +1379,10 @@ for alg in algs:
         ##################################################################
         # Get mass window efficiency
         ##################################################################
-        SignalBGCompare1D(      InputDir, alg, "m", "100,0,200", 0, pt1, pt2, "0", "200", outputdir1)        
+        SignalBGCompare1D(InputDir, alg, "m", "100,0,200", 0, pt1, pt2, "0", "200", outputdir1)        
         effsig,effsig_err,effbkg,effbkg_err = GetMassEffs(InputDir, alg, m1, m2, outputdir1)
         print "Optimal Mass Cuts Sam:   ",m1,m2,effsig,effsig_err,effbkg,effbkg_err
     
-
         ##################################################################
         # ROC curves for single variables with and without mass window cut
         ##################################################################
@@ -1450,7 +1427,9 @@ for alg in algs:
                 #tmvacommand += " \"TruthRawTrim_T2jet,TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet,TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
                 tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet,TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet,TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
                 tmvacommand += " "+mvatypes+" "
-
+                tmvacommand += " " + InputDir + sigFile + " "
+                tmvacommand += " " + InputDir + bkgFile + " "
+                
                 outfilename=outputdir3+"TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+".root"
                 print "Running TMVA: ",tmvacommand
                 os.system(tmvacommand)
@@ -1466,7 +1445,6 @@ for alg in algs:
             if flag_rocoverlay:
                 mvatypes="BDT"
                 #Overlay all ROC curves relevant here
-                #OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt2,m1,m2,mvatypes,VarsAndRanges)
                 OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges) 
             
             

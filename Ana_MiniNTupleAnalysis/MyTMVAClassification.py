@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 #example: python MyTMVAClassification.py   truth  akt10truth_trim_pt,akt10truth_trim_mass "pt>0,pt<1000,mass>0,mass<200,pass_selection==1"  "truth_tau2_WTA,truth_tau1_WTA"  KNN
 
 # Standard python import
@@ -59,14 +58,17 @@ def main():
         cuts       = allargs[2].split(",")
         vars       = allargs[3].split(",")
         methods    = allargs[4]
-    
+        s1name = allargs[5]
+        b1name = allargs[6]
+        
     print "Running with args:"
-    print "  alg        = ",alg        
-    print "  spectators = ",spectators 
-    print "  cuts       = ",cuts       
-    print "  vars       = ",vars       
-    print "  methods    = ",methods    
-    
+    print " alg        = ",alg        
+    print " spectators = ",spectators 
+    print " cuts       = ",cuts       
+    print " vars       = ",vars       
+    print " methods    = ",methods    
+    print " signal file: ", s1name
+    print " background file: ", b1name
 
     # Print methods
     mlist = methods.replace(' ',',').split(',')
@@ -80,14 +82,8 @@ def main():
     #===============================
     #Read training and test data
     #===============================
-    #InputDir = "../gen_20170529/"
-    InputDir="../Ana_EventGeneration/"
-    #InputDir="~/Downloads/"
-    print "Getting inputs from: ",InputDir
-    #s1 = TFile(InputDir+"ntuple_ttbar_2000.root");
-    #b1 = TFile(InputDir+"ntuple_dijet_800_1400.root");
-    s1 = TFile(InputDir+"ntuple_tt_test1000.root");
-    b1 = TFile(InputDir+"ntuple_dijet_test1000.root");
+    s1 = TFile(s1name);
+    b1 = TFile(b1name);
 
     # Output file
     OutFileName="testout.root"

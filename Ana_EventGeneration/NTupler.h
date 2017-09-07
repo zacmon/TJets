@@ -13,9 +13,13 @@
 #include "TChain.h"
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <cstdio>
+#include <algorithm>
+#include <iterator>
 
 #include "TelescopingJets.hh"
 
@@ -28,10 +32,6 @@
 
 #include "fastjet/contrib/Nsubjettiness.hh"
 #include "fastjet/contrib/EnergyCorrelator.hh"
-
-using namespace fastjet;
-using namespace std;
-
 
 ///////////////////////////
 //input file and tree
@@ -82,11 +82,11 @@ double truth_H_eta;
 double truth_H_phi;
 double truth_H_m;
 
-vector<int>*    fspart_id;
-vector<double>* fspart_pt;
-vector<double>* fspart_eta;
-vector<double>* fspart_phi;
-vector<double>* fspart_m;
+std::vector<int>*    fspart_id;
+std::vector<double>* fspart_pt;
+std::vector<double>* fspart_eta;
+std::vector<double>* fspart_phi;
+std::vector<double>* fspart_m;
 
 
 
@@ -95,6 +95,9 @@ vector<double>* fspart_m;
 ///////////////////////////
 TTree *treeout;
 TFile *fileout;
+
+std::ifstream data_file;
+std::ofstream Tjet_variable_file;
 
 ///////////////////////////
 //for temporary storage
@@ -110,9 +113,14 @@ TLorentzVector truth_H;
 TLorentzVector tau_axis1;
 TLorentzVector tau_axis2;
 TLorentzVector tau_axis3;
+TLorentzVector tau_axis4;
+TLorentzVector tau_axis5;
 TLorentzVector Tsubjet1;
 TLorentzVector Tsubjet2;
 TLorentzVector Tsubjet3;
+TLorentzVector Tsubjet4;
+TLorentzVector Tsubjet5;
+
 TLorentzVector particle;
 TLorentzVector truth;
 
@@ -139,12 +147,13 @@ double Tprun_volatility, Ttrim_volatility, TakTrecl_volatility, TkTrecl_volatili
 double Tsubj_angle;
 
 const double M0 = 0.1;
+const double mW = 80.4;
 const double Rfat = 1.0;
 const double zcut = 0.1, dcut0 = 0.5;
 const double Rfilt0 = 0.3, fcut0 = 0.05;
 const double jet_pt_cut_low = 800, jet_pt_cut_up = 1000;
 const double jet_eta_cut_low = -1.2, jet_eta_cut_up = 1.2;
-const double jet_mass_cut_low = 70, jet_mass_cut_up = 90;
+const double jet_mass_cut_low = 150, jet_mass_cut_up = 190;
 ///////////////////////////////////////////////////////////////
 
 
@@ -161,10 +170,20 @@ double tempJet_D2;
 double tempJet_TJet_m1;
 double tempJet_TJet_m2;
 
+double tempJet_T1jet_angle;
+double tempJet_T1jet;
 double tempJet_T2jet_angle;
 double tempJet_T2jet;
 double tempJet_T3jet_angle;
+double tempJet_T3jet_angle1;
+double tempJet_T3jet_angle2;
 double tempJet_T3jet;
+double tempJet_T3jet_W;
+double tempJet_T3jet_mW;
+double tempJet_T4jet_angle;
+double tempJet_T4jet;
+double tempJet_T5jet_angle;
+double tempJet_T5jet;
 double tempJet_Tpruning;
 double tempJet_Ttrimming;
 double tempJet_Taktreclustering;
@@ -175,43 +194,63 @@ double tempJet_Tktreclustering;
 ///////////////////////////
 int    NumberOfVertices;
 
-vector<int>    TruthRaw_flavor;
-vector<double> TruthRaw_pt;
-vector<double> TruthRaw_eta;
-vector<double> TruthRaw_phi;
-vector<double> TruthRaw_m;
-vector<double> TruthRaw_Tau21;
-vector<double> TruthRaw_Tau32;
-vector<double> TruthRaw_D2;
-vector<double> TruthRaw_TJet_m1;
-vector<double> TruthRaw_TJet_m2;
-vector<double> TruthRaw_T2jet_angle;
-vector<double> TruthRaw_T2jet;
-vector<double> TruthRaw_T3jet_angle;
-vector<double> TruthRaw_T3jet;
-vector<double> TruthRaw_Tpruning;
-vector<double> TruthRaw_Ttrimming;
-vector<double> TruthRaw_Taktreclustering;
-vector<double> TruthRaw_Tktreclustering;
+std::vector<int>    TruthRaw_flavor;
+std::vector<double> TruthRaw_pt;
+std::vector<double> TruthRaw_eta;
+std::vector<double> TruthRaw_phi;
+std::vector<double> TruthRaw_m;
+std::vector<double> TruthRaw_Tau21;
+std::vector<double> TruthRaw_Tau32;
+std::vector<double> TruthRaw_D2;
+std::vector<double> TruthRaw_TJet_m1;
+std::vector<double> TruthRaw_TJet_m2;
+std::vector<double> TruthRaw_T1jet_angle;
+std::vector<double> TruthRaw_T1jet;
+std::vector<double> TruthRaw_T2jet_angle;
+std::vector<double> TruthRaw_T2jet;
+std::vector<double> TruthRaw_T3jet_angle;
+std::vector<double> TruthRaw_T3jet_angle1;
+std::vector<double> TruthRaw_T3jet_angle2;
+std::vector<double> TruthRaw_T3jet;
+std::vector<double> TruthRaw_T3jet_W;
+std::vector<double> TruthRaw_T3jet_mW;
+std::vector<double> TruthRaw_T4jet_angle;
+std::vector<double> TruthRaw_T4jet;
+std::vector<double> TruthRaw_T5jet_angle;
+std::vector<double> TruthRaw_T5jet;
+std::vector<double> TruthRaw_Tpruning;
+std::vector<double> TruthRaw_Ttrimming;
+std::vector<double> TruthRaw_Taktreclustering;
+std::vector<double> TruthRaw_Tktreclustering;
 
-vector<int>    TruthRawTrim_flavor;
-vector<double> TruthRawTrim_pt;
-vector<double> TruthRawTrim_eta;
-vector<double> TruthRawTrim_phi;
-vector<double> TruthRawTrim_m;
-vector<double> TruthRawTrim_Tau21;
-vector<double> TruthRawTrim_Tau32;
-vector<double> TruthRawTrim_D2;
-vector<double> TruthRawTrim_TJet_m1;
-vector<double> TruthRawTrim_TJet_m2;
-vector<double> TruthRawTrim_T2jet_angle;
-vector<double> TruthRawTrim_T2jet;
-vector<double> TruthRawTrim_T3jet_angle;
-vector<double> TruthRawTrim_T3jet;
-vector<double> TruthRawTrim_Tpruning;
-vector<double> TruthRawTrim_Ttrimming;
-vector<double> TruthRawTrim_Taktreclustering;
-vector<double> TruthRawTrim_Tktreclustering;
+std::vector<int>    TruthRawTrim_flavor;
+std::vector<double> TruthRawTrim_pt;
+std::vector<double> TruthRawTrim_eta;
+std::vector<double> TruthRawTrim_phi;
+std::vector<double> TruthRawTrim_m;
+std::vector<double> TruthRawTrim_Tau21;
+std::vector<double> TruthRawTrim_Tau32;
+std::vector<double> TruthRawTrim_D2;
+std::vector<double> TruthRawTrim_TJet_m1;
+std::vector<double> TruthRawTrim_TJet_m2;
+std::vector<double> TruthRawTrim_T1jet_angle;
+std::vector<double> TruthRawTrim_T1jet;
+std::vector<double> TruthRawTrim_T2jet_angle;
+std::vector<double> TruthRawTrim_T2jet;
+std::vector<double> TruthRawTrim_T3jet_angle;
+std::vector<double> TruthRawTrim_T3jet_angle1;
+std::vector<double> TruthRawTrim_T3jet_angle2;
+std::vector<double> TruthRawTrim_T3jet;
+std::vector<double> TruthRawTrim_T3jet_W;
+std::vector<double> TruthRawTrim_T3jet_mW;
+std::vector<double> TruthRawTrim_T4jet_angle;
+std::vector<double> TruthRawTrim_T4jet;
+std::vector<double> TruthRawTrim_T5jet_angle;
+std::vector<double> TruthRawTrim_T5jet;
+std::vector<double> TruthRawTrim_Tpruning;
+std::vector<double> TruthRawTrim_Ttrimming;
+std::vector<double> TruthRawTrim_Taktreclustering;
+std::vector<double> TruthRawTrim_Tktreclustering;
 
 ///////////////////////////
 //extra functions
@@ -226,17 +265,17 @@ int GetJetTruthFlavor(TLorentzVector jettemp,
                       TLorentzVector truth_H,
                       int debug);
 
-vector<PseudoJet> ToyCalorimeter(vector<PseudoJet> truth_particles);
+std::vector<fastjet::PseudoJet> ToyCalorimeter(std::vector<fastjet::PseudoJet> truth_particles);
 
-double GetTau21(PseudoJet& input);
-double GetTau32(PseudoJet& input);
+double GetTau21(fastjet::PseudoJet& input);
+double GetTau32(fastjet::PseudoJet& input);
 
-double T_Nsubjettiness(int N, PseudoJet& input, double beta_min, double beta_max, int N_beta);
-double T_NsubjettinessRatio(int N_num, int N_den, PseudoJet& input, double beta_min, double beta_max, int N_beta);
+double T_Nsubjettiness(int N, fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
+double T_NsubjettinessRatio(int N_num, int N_den, fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
 
-double T_EnergyCorrelator_C2(PseudoJet& input, double beta_min, double beta_max, int N_beta);
-double T_EnergyCorrelator_D2(PseudoJet& input, double beta_min, double beta_max, int N_beta);
-double T_EnergyCorrelator_C3(PseudoJet& input, double beta_min, double beta_max, int N_beta);
+double T_EnergyCorrelator_C2(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
+double T_EnergyCorrelator_D2(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
+double T_EnergyCorrelator_C3(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
 
 ///=========================================
 /// Telescoping Subjet
@@ -247,12 +286,21 @@ struct TSub{
   double volatility;
 };
 
-TSub T_2Subjet(PseudoJet& input, double R_min, double R_max, int N_R);
-TSub T_3Subjet(PseudoJet& input, double R_min, double R_max, int N_R);
+struct T3Sub{
+    double min_angle;
+    double mid_angle;
+    double max_angle;
+    double volatility;
+    double mass_W;
+    double volatility_mass_W;
+};
 
-double T_Pruning(PseudoJet& input, double dcut_min, double dcut_max, int N_dcut);
-double T_Trimming(PseudoJet& input, double fcut_min, double fcut_max, int N_fcut);
-double T_AkTreclustering(PseudoJet& input, double R_min, double R_max, int N_R);
-double T_kTreclustering(PseudoJet& input, double R_min, double R_max, int N_R);
+TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double R_min, double R_max, int N_R);
+T3Sub T_3Subjet(fastjet::PseudoJet& input, double R_min, double R_max, int N_R);
+
+
+double T_Pruning(fastjet::PseudoJet& input, double dcut_min, double dcut_max, int N_dcut);
+double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, int N_fcut);
+double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double R_min, double R_max, int N_R);
 
 #endif
