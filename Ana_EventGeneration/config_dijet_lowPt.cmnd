@@ -1,0 +1,21 @@
+! dijet production card
+
+Main:numberOfEvents = 1000
+
+Beams:idA = 2212 ! first incoming beam is a 2212, i.e. a proton.
+Beams:idB = 2212 ! second beam is also a proton.
+
+HardQCD:qg2qg = on 
+HardQCD:qq2qq = on 
+HardQCD:qqbar2gg = on 
+HardQCD:gg2qqbar = on
+HardQCD:gg2gg = on
+
+! Modify the region of phase space in which events are generated
+PhaseSpace:pTHatMin = 350.0 
+PhaseSpace:pTHatMax = 500.0
+
+! Bias the sampling of events to oversample at higher pT to make statistics the same across the spectrum
+PhaseSpace:bias2Selection = on
+PhaseSpace:bias2SelectionPow = 6.
+PhaseSpace:bias2SelectionRef = 100.
