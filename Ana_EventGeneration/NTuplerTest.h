@@ -213,7 +213,7 @@ vector<double> TruthRaw_T2jet;
 vector<double> TruthRaw_T3jet_angle;
 vector<double> TruthRaw_T3jet_angle1;
 vector<double> TruthRaw_T3jet_angle2;
-TruthRawTrim_T2Volatilityvector<double> TruthRaw_T3jet;
+vector<double> TruthRaw_T3jet;
 vector<double> TruthRaw_T3jet_W;
 vector<double> TruthRaw_T3jet_mW;
 vector<double> TruthRaw_T4jet_angle;
