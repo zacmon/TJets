@@ -173,7 +173,8 @@ int main(int argc, char* argv[]){
   treeout->Branch("TruthRawTrim_Tktreclustering",	&TruthRawTrim_Tktreclustering);
   treeout->Branch("TruthRawTrim_TJet_m1",       &TruthRawTrim_TJet_m1);
   treeout->Branch("TruthRawTrim_TJet_m2",       &TruthRawTrim_TJet_m2);
-
+  treeout->Branch("TruthRawTrim_T2Volatility", &TruthRawTrim_T2Volatility);
+  treeout->Branch("TruthRawTrim_T3Volatility", &TruthRawTrim_T3Volatility);
     
   //////////////////////////////////////////////
   //random number generator for pileup
@@ -452,9 +453,9 @@ int main(int argc, char* argv[]){
       /////////////////////////////////
       TSub  T1SubOutputTrim  = T_1Subjet(groomed_jet, 0.1, 0.6, 20);
         
-      TSub  T2SubOutputTrim  = T_2Subjet(groomed_jet, 0.1, 0.6, 20);
+      TSub  T2SubOutputTrim  = T_2Subjet(groomed_jet, 0.1, 1.5, 50);
 
-      T3Sub  T3SubOutputTrim = T_3Subjet(groomed_jet, 0.1, 0.6, 20);
+      T3Sub  T3SubOutputTrim = T_3Subjet(groomed_jet, 0.1, 1.5, 50);
 
       TruthRawTrim_flavor.push_back(jetflavor);
 
