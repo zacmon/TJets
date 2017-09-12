@@ -737,9 +737,14 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     }
     
     double deltaR = (maxRadius - minRadius) / (numRadii - 1);
-    std::vector<TLorentzVector> TSubjets(numSubjets);
 
+    //  TODO
+    //  Exploit that constituents at smaller R are contained in the
+    //  larger R subjets. No need to loop and add and calculate all
+    //  the necessary items for those constituents. Sort vector by
+    //  what metric? Store in another vector?
     for (double r = minRadius; r <= maxRadius; r += deltaR) {
+	std::vector<TLorentzVector> TSubjets(numSubjets);
 	for (auto const &constituent : input.constituents()) {
 	    TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
 

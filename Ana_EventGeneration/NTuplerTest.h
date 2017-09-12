@@ -254,6 +254,9 @@ vector<double> TruthRawTrim_Ttrimming;
 vector<double> TruthRawTrim_Taktreclustering;
 vector<double> TruthRawTrim_Tktreclustering;
 
+std::vector<std::vector<double>> TruthRawTrim_T2Volatility;
+std::vector<std::vector<double>> TruthRawTrim_T3Volatility;
+
 ///////////////////////////
 //extra functions
 ///////////////////////////
@@ -286,6 +289,7 @@ double T_EnergyCorrelator_C3(PseudoJet& input, double beta_min, double beta_max,
 struct TSub{
   double min_angle;
   double volatility;
+    std::vector<double> volVec;
 };
 
 struct T3Sub{
@@ -295,6 +299,7 @@ struct T3Sub{
     double volatility;
     double mass_W;
     double volatility_mass_W;
+    std::vector<double> volVec;
 };
 
 TSub T_1Subjet(PseudoJet& input, double R_min, double R_max, int N_R);

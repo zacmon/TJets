@@ -450,73 +450,34 @@ int main(int argc, char* argv[]){
       /////////////////////////////////
       //Fill variables that will go into ntuple
       /////////////////////////////////
-      tempJet_flavor         = jetflavor;
-      tempJet_pt             = jettemp.Pt();
-      tempJet_eta            = jettemp.Eta();
-      tempJet_phi            = jettemp.Phi();
-      tempJet_m              = jettemp.M();
-      tempJet_Tau21          = GetTau21(groomed_jet);
-      tempJet_Tau32          = GetTau32(groomed_jet);
-//      tempJet_D2             = ecfD2(groomed_jet);
-
       TSub  T1SubOutputTrim  = T_1Subjet(groomed_jet, 0.1, 0.6, 20);
-      tempJet_T1jet_angle    = T1SubOutputTrim.min_angle;
-      tempJet_T1jet          = T1SubOutputTrim.volatility;
         
       TSub  T2SubOutputTrim  = T_2Subjet(groomed_jet, 0.1, 0.6, 20);
-      tempJet_T2jet_angle    = T2SubOutputTrim.min_angle;
-      tempJet_T2jet          = T2SubOutputTrim.volatility;
 
       T3Sub  T3SubOutputTrim = T_3Subjet(groomed_jet, 0.1, 0.6, 20);
-      tempJet_T3jet_angle    = T3SubOutputTrim.min_angle;
-//      tempJet_T3jet_angle1    = T3SubOutputTrim.mid_angle;
-//      tempJet_T3jet_angle2    = T3SubOutputTrim.max_angle;
-      tempJet_T3jet          = T3SubOutputTrim.volatility;
-      tempJet_T3jet_W        = T3SubOutputTrim.mass_W;
-      tempJet_T3jet_mW       = T3SubOutputTrim.volatility_mass_W;
-//      TSub  T4SubOutputTrim = T_4Subjet(groomed_jet, 0.05, 0.6, 20);
-//      tempJet_T4jet_angle    = T4SubOutputTrim.min_angle;
-//      tempJet_T4jet          = T4SubOutputTrim.volatility;
 
-//      TSub  T5SubOutputTrim = T_5Subjet(groomed_jet, 0.05, 0.6, 20);
-//      tempJet_T5jet_angle    = T5SubOutputTrim.min_angle;
-//      tempJet_T5jet          = T5SubOutputTrim.volatility;
+      TruthRawTrim_flavor.push_back(jetflavor);
 
-//      tempJet_Tpruning       = T_Pruning (groomed_jet, 0.1, 2.0, 20);
-//      tempJet_Ttrimming      = T_Trimming(groomed_jet, 0.0, 0.1, 20);
-//      tempJet_Taktreclustering = T_AkTreclustering(groomed_jet, 0.05, 0.6, 20);
-//      tempJet_Tktreclustering = T_kTreclustering(groomed_jet, 0.05, 0.6, 20);
-//      tempJet_TJet_m1        = T_Mass(1,groomed_jet);
-//      tempJet_TJet_m2        = T_Mass(2,groomed_jet);
+      TruthRawTrim_pt.push_back(jettemp.Pt());
+      TruthRawTrim_eta.push_back(jettemp.Eta());
+      TruthRawTrim_phi.push_back(jettemp.Phi());
+      TruthRawTrim_m.push_back(jettemp.M());
 
-      TruthRawTrim_flavor     .push_back(tempJet_flavor);
-      TruthRawTrim_pt         .push_back(tempJet_pt);
-      TruthRawTrim_eta        .push_back(tempJet_eta);
-      TruthRawTrim_phi        .push_back(tempJet_phi);
-      TruthRawTrim_m          .push_back(tempJet_m);
-      TruthRawTrim_Tau21      .push_back(tempJet_Tau21);
-      TruthRawTrim_Tau32      .push_back(tempJet_Tau32);
-//      TruthRawTrim_D2         .push_back(tempJet_D2);
-      TruthRawTrim_T1jet_angle.push_back(tempJet_T1jet_angle);
-      TruthRawTrim_T1jet      .push_back(tempJet_T1jet);
-      TruthRawTrim_T2jet_angle.push_back(tempJet_T2jet_angle);
-      TruthRawTrim_T2jet      .push_back(tempJet_T2jet);
-      TruthRawTrim_T3jet_angle.push_back(tempJet_T3jet_angle);
-//      TruthRawTrim_T3jet_angle1.push_back(tempJet_T3jet_angle1);
-//      TruthRawTrim_T3jet_angle2.push_back(tempJet_T3jet_angle2);
-      TruthRawTrim_T3jet      .push_back(tempJet_T3jet);
-      TruthRawTrim_T3jet_W      .push_back(tempJet_T3jet_W);
-      TruthRawTrim_T3jet_mW      .push_back(tempJet_T3jet_mW);
-      //      TruthRawTrim_T4jet_angle.push_back(tempJet_T4jet_angle);
-//      TruthRawTrim_T4jet      .push_back(tempJet_T4jet);
-//      TruthRawTrim_T5jet_angle.push_back(tempJet_T5jet_angle);
-//      TruthRawTrim_T5jet      .push_back(tempJet_T5jet);
-//      TruthRawTrim_Tpruning   .push_back(tempJet_Tpruning);
-//      TruthRawTrim_Ttrimming  .push_back(tempJet_Ttrimming);
-//      TruthRawTrim_Taktreclustering .push_back(tempJet_Taktreclustering);
-//      TruthRawTrim_Tktreclustering .push_back(tempJet_Tktreclustering);
-//      TruthRawTrim_TJet_m1    .push_back(tempJet_TJet_m1);
-//      TruthRawTrim_TJet_m2    .push_back(tempJet_TJet_m2);
+      TruthRawTrim_Tau21.push_back(GetTau21(groomed_jet));
+      TruthRawTrim_Tau32.push_back(GetTau32(groomed_jet));
+
+      TruthRawTrim_T1jet_angle.push_back(T1SubOutputTrim.min_angle);
+      TruthRawTrim_T1jet.push_back(T1SubOutputTrim.volatility);
+
+      TruthRawTrim_T2jet_angle.push_back(T2SubOutputTrim.min_angle);
+      TruthRawTrim_T2jet.push_back(T2SubOutputTrim.volatility);
+      TruthRawTrim_T2Volatility.push_back(T2SubOutputTrim.volVec);
+
+      TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.min_angle);
+      TruthRawTrim_T3jet.push_back(T3SubOutputTrim.volatility);
+      TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.mass_W);
+      TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatility_mass_W);
+      TruthRawTrim_T3Volatility.push_back(T3SubOutputTrim.volVec);
     }
 
 
@@ -828,9 +789,10 @@ TSub T_1Subjet(PseudoJet& input, double R_min, double R_max, int N_R){
 
 
 TSub T_2Subjet(PseudoJet& input, double R_min, double R_max, int N_R){
-  vector<double> m12s;
-  double beta = 1.0;
-  double Tmass = 0;
+    TSub result;
+    vector<double> m12s;
+    double beta = 1.0;
+    double Tmass = 0;
   fastjet::contrib::UnnormalizedMeasure nsubMeasure(beta);
   fastjet::contrib::Nsubjettiness nSub(2, fastjet::contrib::OnePass_KT_Axes(), nsubMeasure);
   double tau2 = nSub.result(input);
@@ -860,10 +822,13 @@ TSub T_2Subjet(PseudoJet& input, double R_min, double R_max, int N_R){
       }
     }
     Tmass = (Tsubjet1 + Tsubjet2).M();
-    if(Tmass > M0){m12s.push_back(Tmass);}
+    if(Tmass > M0) {
+	m12s.push_back(Tmass);
+	result.volVec.push_back(getVolatility(m12s));
+    }
     R += deltaR;
   }
-    TSub result;
+
     result.min_angle = D_min;
     if(m12s.size()>0) {
         result.volatility = getVolatility(m12s);
@@ -877,7 +842,8 @@ TSub T_2Subjet(PseudoJet& input, double R_min, double R_max, int N_R){
 
 
 T3Sub T_3Subjet(PseudoJet& input, double R_min, double R_max, int N_R){
-  vector<double> m123s; m123s.clear();
+    T3Sub result;
+    vector<double> m123s; m123s.clear();
   vector<double> m12s; m12s.clear();
   vector<double> m13s; m13s.clear();
   vector<double> m23s; m23s.clear();
@@ -934,13 +900,15 @@ T3Sub T_3Subjet(PseudoJet& input, double R_min, double R_max, int N_R){
     Tmass_12 = (Tsubjet1 + Tsubjet2).M();
     Tmass_13 = (Tsubjet1 + Tsubjet3).M();
     Tmass_23 = (Tsubjet2 + Tsubjet3).M();
-    if(Tmass > M0){m123s.push_back(Tmass);}
+    if(Tmass > M0){
+	m123s.push_back(Tmass);
+	result.volVec.push_back(getVolatility(m123s));
+    }
     if(Tmass_12 > M0){m12s.push_back(Tmass_12);}
     if(Tmass_13 > M0){m13s.push_back(Tmass_13);}
     if(Tmass_23 > M0){m23s.push_back(Tmass_23);}
     R += deltaR;
   }
-    T3Sub result;
     result.min_angle = D_min;
     result.mid_angle = D_mid;
     result.max_angle = D_max;
