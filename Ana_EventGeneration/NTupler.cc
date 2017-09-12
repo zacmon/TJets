@@ -175,7 +175,8 @@ int main(int argc, char* argv[]){
   treeout->Branch("TruthRawTrim_TJet_m2",       &TruthRawTrim_TJet_m2);
   treeout->Branch("TruthRawTrim_T2Volatility", &TruthRawTrim_T2Volatility);
   treeout->Branch("TruthRawTrim_T3Volatility", &TruthRawTrim_T3Volatility);
-    
+  treeout->Branch("v32", &v32);
+  
   //////////////////////////////////////////////
   //random number generator for pileup
   //////////////////////////////////////////////
@@ -479,6 +480,8 @@ int main(int argc, char* argv[]){
       TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.mass_W);
       TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatility_mass_W);
       TruthRawTrim_T3Volatility.push_back(T3SubOutputTrim.volVec);
+
+      v32.push_back(T3SubOutputTrim.volatility / T2SubOutputTrim.volatility);
     }
 
 
