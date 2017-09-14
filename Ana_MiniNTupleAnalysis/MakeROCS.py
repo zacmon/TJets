@@ -8,8 +8,8 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-sigFile="ntuple_tt_test50000.root"
-bkgFile="ntuple_dijet_test50000.root"
+sigFile="ntuple_tt_test_10000volvec.root"
+bkgFile="ntuple_dijet_test10000volvec.root"
 
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
@@ -31,6 +31,9 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     
     #Get signal and background histograms
     histname = alg+"_"+variable
+    if variable == "v32":
+        histname = variable
+        
     print histname
     hsig = GetHist1D(InputDir+sigFile,    "JetTree", histname, range, weight+"*("+alg+"_flavor==3)")
     hbkg = GetHist1D(InputDir+bkgFile, "JetTree", histname, range, weight+"*("+alg+"_flavor==0)")
@@ -1301,6 +1304,13 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc7.SetLineColor(95)
     roc7.SetFillStyle(3001)
 
+    path = outputdir1 + "ROC_" + alg + "_v32_pt" + pt1 + pt2 + ".root"
+    f8   = TFile(path)
+    roc8 = f8.Get("ROC_SoverB")
+    roc8.SetFillColor(5)
+    roc8.SetLineColor(5)
+    roc8.SetFillStyle(3001)
+    
     cgr = TCanvas("cgr","cgr",500,500);
     gr=MakeReferenceGraph(1)
     gr.Draw("ACE3")
@@ -1312,7 +1322,8 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc4.Draw("CE3same")
     roc5.Draw("CE3same")
     roc7.Draw("CE3same")
-
+    roc8.Draw("CE3same")
+    
     ATLASLabel(   0.20,0.90,1,0.1,0.03,"#sqrt{s}=13 TeV")
     myText(       0.20,0.85,1,0.03, TranslateAlg(alg))
     myText(       0.20,0.80,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
@@ -1323,6 +1334,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     rocbox4=myLineBoxText(0.26, 0.55, 1, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet"))
     rocbox5=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet_angle"))
     rocbox7=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
+    rocbox8=myLineBoxText(0.26, 0.40, 5, 1, 1, 0, 0.1, 0.08, "v32")
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
 
 
@@ -1371,6 +1383,7 @@ VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1" ,"L"]
 VarsAndRanges["T3jet_mW"]      = [0, "100,0,1", "100,0,1" ,"L"]
 VarsAndRanges["T3jet_W"]      = [0, "100,40,120", "100,40,120" ,"L"]
 VarsAndRanges["T3jet_angle"]  = [0, "100,0,0.5", "100,0,0.5" ,"R"]
+VarsAndRanges["v32"] = [0, "100,0,1", "100,0,1", "L"]
 #VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
 #VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
 # VarsAndRanges["D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
