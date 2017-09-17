@@ -160,36 +160,6 @@ const double jet_mass_cut_low = 150, jet_mass_cut_up = 190;
 
 int jetflavor;
 
-int    tempJet_flavor;
-double tempJet_pt;
-double tempJet_eta;
-double tempJet_phi;
-double tempJet_m;
-double tempJet_Tau21;
-double tempJet_Tau32;
-double tempJet_D2;
-double tempJet_TJet_m1;
-double tempJet_TJet_m2;
-
-double tempJet_T1jet_angle;
-double tempJet_T1jet;
-double tempJet_T2jet_angle;
-double tempJet_T2jet;
-double tempJet_T3jet_angle;
-double tempJet_T3jet_angle1;
-double tempJet_T3jet_angle2;
-double tempJet_T3jet;
-double tempJet_T3jet_W;
-double tempJet_T3jet_mW;
-double tempJet_T4jet_angle;
-double tempJet_T4jet;
-double tempJet_T5jet_angle;
-double tempJet_T5jet;
-double tempJet_Tpruning;
-double tempJet_Ttrimming;
-double tempJet_Taktreclustering;
-double tempJet_Tktreclustering;
-
 ///////////////////////////
 //output tree branches
 ///////////////////////////
@@ -253,8 +223,14 @@ std::vector<double> TruthRawTrim_Ttrimming;
 std::vector<double> TruthRawTrim_Taktreclustering;
 std::vector<double> TruthRawTrim_Tktreclustering;
 
+std::vector<std::vector<double>> TruthRawTrim_T1Volatility;
 std::vector<std::vector<double>> TruthRawTrim_T2Volatility;
 std::vector<std::vector<double>> TruthRawTrim_T3Volatility;
+
+std::vector<double> TruthRawTrim_v32;
+std::vector<std::vector<double>> TruthRawTrim_T1masses;
+std::vector<std::vector<double>> TruthRawTrim_T2masses;
+std::vector<std::vector<double>> TruthRawTrim_T3masses;
 
 ///////////////////////////
 //extra functions
@@ -289,6 +265,7 @@ struct TSub{
   double min_angle;
   double volatility;
     std::vector<double> volVec;
+    std::vector<double> masses;
 };
 
 struct T3Sub{
@@ -299,11 +276,11 @@ struct T3Sub{
     double mass_W;
     double volatility_mass_W;
     std::vector<double> volVec;
+    std::vector<double> masses;
 };
 
 TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double R_min, double R_max, int N_R);
 T3Sub T_3Subjet(fastjet::PseudoJet& input, double R_min, double R_max, int N_R);
-
 
 double T_Pruning(fastjet::PseudoJet& input, double dcut_min, double dcut_max, int N_dcut);
 double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, int N_fcut);

@@ -155,41 +155,11 @@ const double zcut = 0.1, dcut0 = 0.5;
 const double Rfilt0 = 0.3, fcut0 = 0.05;
 const double jet_pt_cut_low = 800, jet_pt_cut_up = 1000;
 const double jet_eta_cut_low = -1.2, jet_eta_cut_up = 1.2;
-const double jet_mass_cut_low = 150, jet_mass_cut_up = 190;
+const double jet_mass_cut_low = 160, jet_mass_cut_up = 190;
 ///////////////////////////////////////////////////////////////
 
 
 int jetflavor;
-
-int    tempJet_flavor;
-double tempJet_pt;
-double tempJet_eta;
-double tempJet_phi;
-double tempJet_m;
-double tempJet_Tau21;
-double tempJet_Tau32;
-double tempJet_D2;
-double tempJet_TJet_m1;
-double tempJet_TJet_m2;
-
-double tempJet_T1jet_angle;
-double tempJet_T1jet;
-double tempJet_T2jet_angle;
-double tempJet_T2jet;
-double tempJet_T3jet_angle;
-double tempJet_T3jet_angle1;
-double tempJet_T3jet_angle2;
-double tempJet_T3jet;
-double tempJet_T3jet_W;
-double tempJet_T3jet_mW;
-double tempJet_T4jet_angle;
-double tempJet_T4jet;
-double tempJet_T5jet_angle;
-double tempJet_T5jet;
-double tempJet_Tpruning;
-double tempJet_Ttrimming;
-double tempJet_Taktreclustering;
-double tempJet_Tktreclustering;
 
 ///////////////////////////
 //output tree branches
@@ -254,10 +224,14 @@ vector<double> TruthRawTrim_Ttrimming;
 vector<double> TruthRawTrim_Taktreclustering;
 vector<double> TruthRawTrim_Tktreclustering;
 
+std::vector<std::vector<double>> TruthRawTrim_T1Volatility;
 std::vector<std::vector<double>> TruthRawTrim_T2Volatility;
 std::vector<std::vector<double>> TruthRawTrim_T3Volatility;
 
-std::vector<double> v32;
+std::vector<double> TruthRawTrim_v32;
+std::vector<std::vector<double>> TruthRawTrim_T1masses;
+std::vector<std::vector<double>> TruthRawTrim_T2masses;
+std::vector<std::vector<double>> TruthRawTrim_T3masses;
 
 ///////////////////////////
 //extra functions
@@ -292,6 +266,7 @@ struct TSub{
   double min_angle;
   double volatility;
     std::vector<double> volVec;
+    std::vector<double> masses;
 };
 
 struct T3Sub{
@@ -302,6 +277,7 @@ struct T3Sub{
     double mass_W;
     double volatility_mass_W;
     std::vector<double> volVec;
+    std::vector<double> masses;
 };
 
 TSub T_1Subjet(PseudoJet& input, double R_min, double R_max, int N_R);

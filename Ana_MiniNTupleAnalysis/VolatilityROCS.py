@@ -8,8 +8,8 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-sigFile="ntuple_tt_50000v32.root"
-bkgFile="ntuple_dijet_50000v32.root"
+sigFile="ntuple_tt_test_10000volvec.root"
+bkgFile="ntuple_dijet_test10000volvec.root"
 
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
@@ -1250,120 +1250,122 @@ def OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt
     rocbox4=myLineBoxText(0.26, 0.55, 6, 1, 1, 0, 0.1, 0.08, "Multi Layer Perceptron")
     rocbox4=myLineBoxText(0.26, 0.50, 9, 1, 1, 0, 0.1, 0.08, "K Nearest Neighbors")
     rocbox4=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
+    
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_"+var0+"_"+var1+"_pt"+pt1+pt2+".eps")
 
 
 def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges):
 
 
-    path = outputdir1+"ROC_"+alg+"_Tau32_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T2Volatility[][0]_pt"+pt1+pt2+".root"
     f1   = TFile(path)
     roc1 = f1.Get("ROC_SoverB")
-    roc1.SetFillColor(2)
-    roc1.SetLineColor(2)
+    roc1.SetFillColor(1)
+    roc1.SetLineColor(1)
     roc1.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2jet_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T2Volatility[][4]_pt"+pt1+pt2+".root"
     f2   = TFile(path)
     roc2 = f2.Get("ROC_SoverB")
-    roc2.SetFillColor(4)
-    roc2.SetLineColor(4)
+    roc2.SetFillColor(2)
+    roc2.SetLineColor(2)
     roc2.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2jet_angle_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T2Volatility[][8]_pt"+pt1+pt2+".root"
     f3   = TFile(path)
     roc3 = f3.Get("ROC_SoverB")
     roc3.SetFillColor(3)
     roc3.SetLineColor(3)
     roc3.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T3jet_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T2Volatility[][12]_pt"+pt1+pt2+".root"
     f4   = TFile(path)
     roc4 = f4.Get("ROC_SoverB")
-    roc4.SetFillColor(1)
-    roc4.SetLineColor(1)
+    roc4.SetFillColor(4)
+    roc4.SetLineColor(4)
     roc4.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T3jet_angle_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T2Volatility[][16]_pt"+pt1+pt2+".root"
     f5   = TFile(path)
     roc5 = f5.Get("ROC_SoverB")
-    roc5.SetFillColor(6)
-    roc5.SetLineColor(6)
+    roc5.SetFillColor(5)
+    roc5.SetLineColor(5)
     roc5.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_Tau21_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T2Volatility[][20]_pt"+pt1+pt2+".root"
     f6   = TFile(path)
     roc6 = f6.Get("ROC_SoverB")
-    roc6.SetFillColor(9)
-    roc6.SetLineColor(9)
+    roc6.SetFillColor(6)
+    roc6.SetLineColor(6)
     roc6.SetFillStyle(3001)
 
-
-    path = outputdir3+"TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+"_ROCSBDT.root"
+    path = outputdir1+"ROC_"+alg+"_T2Volatility[][24]_pt"+pt1+pt2+".root"
     f7   = TFile(path)
-    roc7 = f7.Get("ROC_SoverB")
-    roc7.SetFillColor(95)
-    roc7.SetLineColor(95)
+    roc7 = f6.Get("ROC_SoverB")
+    roc7.SetFillColor(7)
+    roc7.SetLineColor(7)
     roc7.SetFillStyle(3001)
-
-    path = outputdir1 + "ROC_" + alg + "_v32_pt" + pt1 + pt2 + ".root"
+    
+    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][28]_pt" + pt1 + pt2 + ".root"
     f8   = TFile(path)
     roc8 = f8.Get("ROC_SoverB")
-    roc8.SetFillColor(5)
-    roc8.SetLineColor(5)
+    roc8.SetFillColor(8)
+    roc8.SetLineColor(8)
     roc8.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_play_pt" + pt1 + pt2 + ".root"
+    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][32]_pt" + pt1 + pt2 + ".root"
     f9 = TFile(path)
     roc9 = f9.Get("ROC_SoverB")
-    roc9.SetFillColor(7)
-    roc9.SetLineColor(7)
+    roc9.SetFillColor(9)
+    roc9.SetLineColor(9)
     roc9.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_T3jet_W_pt" + pt1 + pt2 + ".root"
+    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][36]_pt" + pt1 + pt2 + ".root"
     f10 = TFile(path)
     roc10 = f10.Get("ROC_SoverB")
-    roc10.SetFillColor(8)
-    roc10.SetLineColor(8)
+    roc10.SetFillColor(28)
+    roc10.SetLineColor(28)
     roc10.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_T3jet_mW_pt" + pt1 + pt2 + ".root"
+    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][39]_pt" + pt1 + pt2 + ".root"
     f11 = TFile(path)
     roc11 = f11.Get("ROC_SoverB")
-    roc11.SetFillColor(28)
-    roc11.SetLineColor(28)
+    roc11.SetFillColor(95)
+    roc11.SetLineColor(95)
     roc11.SetFillStyle(3001)
     
     cgr = TCanvas("cgr","cgr",500,500);
     gr=MakeReferenceGraph(1)
-    gr.Draw("ACE3")
+    gr.Draw("AC")
 
-    roc1.Draw("CE3same")
-    roc6.Draw("CE3same")
-    roc2.Draw("CE3same")
-    roc3.Draw("CE3same")
-    roc4.Draw("CE3same")
-    roc5.Draw("CE3same")
-    roc7.Draw("CE3same")
-    roc8.Draw("CE3same")
-    roc9.Draw("CE3same")
-    roc10.Draw("CE3same")
-    roc11.Draw("CE3same")
+    roc1.Draw("CsameEX0Y0")
+    roc2.Draw("CsameEX0Y0")
+    roc3.Draw("CsameEX0Y0")
+    roc4.Draw("CsameEX0Y0")
+    roc5.Draw("CsameEX0Y0")
+    roc6.Draw("CsameEX0Y0")
+    roc7.Draw("CsameEX0Y0")
+    roc8.Draw("CsameEX0Y0")
+    roc9.Draw("CsameEX0Y0")
+    roc10.Draw("CsameEX0Y0")
+    roc11.Draw("CsameEX0Y0")
     
     ATLASLabel(   0.20,0.90,1,0.1,0.03,"#sqrt{s}=13 TeV")
     myText(       0.20,0.85,1,0.03, TranslateAlg(alg))
     myText(       0.20,0.80,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
-    rocbox1=myLineBoxText(0.26, 0.75, 2, 1, 2, 0, 0.1, 0.08, TranslateVar("Tau32"))
-    rocbox6=myLineBoxText(0.26, 0.70, 9, 1, 1, 0, 0.1, 0.08, TranslateVar("Tau21"))
-    rocbox2=myLineBoxText(0.26, 0.65, 4, 1, 4, 0, 0.1, 0.08, TranslateVar("T2jet"))
-    rocbox3=myLineBoxText(0.26, 0.60, 3, 1, 1, 0, 0.1, 0.08, TranslateVar("T2jet_angle"))
-    rocbox4=myLineBoxText(0.26, 0.55, 1, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet"))
-    rocbox5=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet_angle"))
-    rocbox7=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
-    rocbox8=myLineBoxText(0.26, 0.40, 5, 1, 1, 0, 0.1, 0.08, "v32")
-    rocbox9=myLineBoxText(0.26, 0.35, 7, 1, 1, 0, 0.1, 0.08, "play")
-    rocbox10=myLineBoxText(0.26, 0.30, 8, 1, 1, 0, 0.1, 0.08, "W mass")
-    rocbox11=myLineBoxText(0.26, 0.25, 28, 1, 1, 0, 0.1, 0.08, "W mass volatility")
+    rocbox1=myLineBoxText(0.26, 0.75, 1, 1, 2, 0, 0.1, 0.08, "0.1")
+    rocbox2=myLineBoxText(0.26, 0.70, 2, 1, 1, 0, 0.1, 0.08, "0.192308")
+    rocbox3=myLineBoxText(0.26, 0.65, 3, 1, 4, 0, 0.1, 0.08, "0.284615")
+    rocbox4=myLineBoxText(0.26, 0.60, 4, 1, 1, 0, 0.1, 0.08, "0.376923")
+    rocbox5=myLineBoxText(0.26, 0.55, 5, 1, 1, 0, 0.1, 0.08, "0.469231")                          
+    rocbox6=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, "0.561538")
+    rocbox7=myLineBoxText(0.26, 0.45, 7, 1, 1, 0, 0.1, 0.08, "0.653846")
+    rocbox8=myLineBoxText(0.26, 0.40, 8, 1, 1, 0, 0.1, 0.08, "0.746154")
+    rocbox9=myLineBoxText(0.26, 0.35, 9, 1, 1, 0, 0.1, 0.08, "0.838462")
+    rocbox10=myLineBoxText(0.26, 0.30, 28, 1, 1, 0, 0.1, 0.08, "0.930769")
+    rocbox11=myLineBoxText(0.26, 0.25, 95, 1, 1, 0, 0.1, 0.08, "1.0")
+    #gPad.SetLogy();
+    #gPad.SetLogx();
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
 
 
@@ -1403,24 +1405,17 @@ algs.append("TruthRawTrim")
 
 # VARIABLES AND RANGES
 VarsAndRanges={}
-VarsAndRanges["Tau21"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","L"]
-VarsAndRanges["T1jet"]      = [0, "100,0,1", "100,0,1.2", "100,0,1.2","R"]
-VarsAndRanges["T2jet"]      = [0, "100,0,1", "100,0,1","100,0,1","R"]
-VarsAndRanges["T2jet_angle"]  = [0, "100,0,1.0", "100,0,1.0","100,0,1","L"]
-VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1", "100,0,1","L"]
-VarsAndRanges["T3jet_mW"]      = [0, "100,0,1", "100,0,1", "100,0,1", "L"]
-VarsAndRanges["T3jet_W"]      = [0, "100,40,120", "100,40,120", "100,40,120","L"]
-VarsAndRanges["T3jet_angle"]  = [0, "100,0,0.5", "100,0,0.5", "100,0,0.5","R"]
-VarsAndRanges["v32"] = [0, "100,0,1.2", "100,0,1.2", "100,0,1.2", "100,0,1.2","L"]
-VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,5", "100,0,5","L"]
-#VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
-#VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
-# VarsAndRanges["D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
-# VarsAndRanges["C2"]         = [0, "100,0,1", "100,0,1" ,"L"]
-# VarsAndRanges["TJet_Tau21"]      = [0, "100,0,1", "100,0,1" ,"L"]
-# VarsAndRanges["TJet_D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
-# VarsAndRanges["TJet_C2"]         = [0, "100,0,1", "100,0,1" ,"L"]
+VarsAndRanges["T2Volatility[][0]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][4]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][8]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][12]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][16]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][20]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][24]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][28]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][32]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][36]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T2Volatility[][39]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
 
 #################################
 # Loop over algorithms
@@ -1454,61 +1449,6 @@ for alg in algs:
                 print "LOOK AT ME", VarsAndRanges[var][int(CutRegion)]
                 SignalBGCompare1D(InputDir, alg, var, VarsAndRanges[var][int(CutRegion)], VarsAndRanges[var][0], pt1, pt2, m1, m2, outputdir1)    
 
-        ##################################################################
-        # ROC curves for two variable combinations defined below
-        ##################################################################
-        TwoVarCombos = []
-        #TwoVarCombos.append(["Tau21","T2jet_angle"])
-        TwoVarCombos.append(["Tau32","T3jet"])
-
-        for combo in TwoVarCombos:
-        #if 1:
-            var0 = combo[0]
-            var1 = combo[1]
-
-            print var0,var1
-
-            if flag_2variable_hand:
-                #######################
-                #Get basic 2D correlation plots
-                GetCorrelationAndSeparationSigBG(InputDir, alg, var0, var1, VarsAndRanges[var0][int(CutRegion)], VarsAndRanges[var1][int(CutRegion)], pt1, pt2, m1, m2, outputdir2)    
-            
-                #######################
-                #Do simple likelihood combination
-                SignalBGCompare2D(InputDir, alg, var0, VarsAndRanges[var0][3], var1, VarsAndRanges[var1][3], VarsAndRanges[var0][int(CutRegion)], VarsAndRanges[var1][int(CutRegion)], pt1, pt2, m1, m2, outputdir2)
-
-            if flag_AllTjet_tmva:
-                #######################
-                #TMVA combination
-                #mvatypes="Likelihood,MLP,BDT,KNN"
-                mvatypes="BDT"
- 
-                tmvacommand =  " python MyTMVAClassification.py "
-                tmvacommand += " "+alg+" "
-                tmvacommand += alg+"_pt,"+alg+"_m"
-                tmvacommand += " \"pt>"+str(pt1)+",pt<"+str(pt2)+","+alg+"_m>"+str(m1)+","+alg+"_m<"+str(m2)+"\" "
-                tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle\" "
-                tmvacommand += " "+mvatypes+" "
-                tmvacommand += " " + InputDir + sigFile + " "
-                tmvacommand += " " + InputDir + bkgFile + " " 
-
-                outfilename=outputdir3+"TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+".root"
-                print "Running TMVA: ",tmvacommand
-                os.system(tmvacommand)
- 
-                copycommand = "cp testout.root "+outfilename
-                print "Copying: ",copycommand
-                os.system(copycommand)
-                os.system("rm testout.root")
-            
-                #open output root file and draw ROC curves as previously
-                MakeMVAROCS(outfilename,outputdir3,mvatypes)
         
             if flag_rocoverlay:
                 mvatypes="BDT"
