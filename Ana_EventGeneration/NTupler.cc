@@ -192,7 +192,7 @@ int main (int argc, char* argv[]) {
 
   for (Long64_t jentry=0; jentry<nEvents; jentry++) {
       
-      if (jentry % 10 == 0) std::cout << jentry << " processed." << std::endl;
+      if (jentry % 100 == 0) std::cout << jentry << " processed." << std::endl;
 
       filein->cd();
       treein->GetEntry(jentry);
@@ -714,16 +714,20 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     if (!telescopingMasses[0].empty() && !telescopingMasses[1].empty() && !telescopingMasses[2].empty() && !telescopingMasses[3].empty()) {
         result.volatility = getVolatility(telescopingMasses[0]);
 	result.masses = telescopingMasses[0];
+
+	//  TODO
+	//  Is there a better way to recover W masses?
+	std::vector<double> residualWMass = masses;
 	
-	std::transform(masses.begin() + 1, masses.end(), masses.begin() + 1,
+	std::transform(residualWMass.begin() + 1, residualWMass.end(), residualWMass.begin() + 1,
 		  bind2nd(std::minus<double>(), massW));
-	std::transform(masses.begin() + 1, masses.end(), masses.begin() + 1,
+	std::transform(residualWMass.begin() + 1, residualWMass.end(), residualWMass.begin() + 1,
 		       static_cast<double (*)(double)>(&std::abs));
 
-	auto wMassPredictionIt = std::min_element(masses.cbegin() + 1, masses.cend());
-	unsigned int wMassPredictionIndex = std::distance(masses.cbegin(), wMassPredictionIt);
+	auto wMassPredictionIt = std::min_element(residualWMass.cbegin() + 1, residualWMass.cend());
+	unsigned int wMassPredictionIndex = std::distance(residualWMass.cbegin(), wMassPredictionIt);
 
-	result.massW = *wMassPredictionIt + massW;
+	result.massW = masses[wMassPredictionIndex];
 	result.volatilityW = getVolatility(telescopingMasses[wMassPredictionIndex]);
     }
     else {
