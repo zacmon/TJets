@@ -148,7 +148,7 @@ double Tprun_volatility, Ttrim_volatility, TakTrecl_volatility, TkTrecl_volatili
 double Tsubj_angle;
 
 const double M0 = 0.1;
-const double mW = 80.4;
+const double massW = 80.4;
 const double Rfat = 1.0;
 const double zcut = 0.1, dcut0 = 0.5;
 const double Rfilt0 = 0.3, fcut0 = 0.05;
@@ -261,27 +261,29 @@ double T_EnergyCorrelator_C3(fastjet::PseudoJet& input, double beta_min, double 
 /// Telescoping Subjet
 ///=========================================
 
-struct TSub{
-  double min_angle;
-  double volatility;
+struct TSub {
+    double minAngle = -1;
+    double volatility = -1;
     std::vector<double> volVec;
     std::vector<double> masses;
 };
 
-struct T3Sub{
-    double min_angle;
-    double mid_angle;
-    double max_angle;
-    double volatility;
-    double mass_W;
-    double volatility_mass_W;
+struct T3Sub {
+    double minAngle = -1;
+    double volatility = -1;
     std::vector<double> volVec;
     std::vector<double> masses;
+
+    double midAngle = -1;
+    double maxAngle = -1;
+
+    double massW = -1;
+    double volatilityW = -1;
 };
 
-TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double R_min, double R_max, int N_R);
+TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadius, double maxRadius, int numRadii);
+T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii);
 T3Sub T_3Subjet(fastjet::PseudoJet& input, double R_min, double R_max, int N_R);
-
 double T_Pruning(fastjet::PseudoJet& input, double dcut_min, double dcut_max, int N_dcut);
 double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, int N_fcut);
 double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double R_min, double R_max, int N_R);

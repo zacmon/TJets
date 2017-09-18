@@ -1360,10 +1360,10 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     rocbox4=myLineBoxText(0.26, 0.55, 1, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet"))
     rocbox5=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet_angle"))
     rocbox7=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
-    rocbox8=myLineBoxText(0.26, 0.40, 5, 1, 1, 0, 0.1, 0.08, "v32")
+    rocbox8=myLineBoxText(0.26, 0.40, 5, 1, 1, 0, 0.1, 0.08, TranslateVar("v32"))
     rocbox9=myLineBoxText(0.26, 0.35, 7, 1, 1, 0, 0.1, 0.08, "play")
-    rocbox10=myLineBoxText(0.26, 0.30, 8, 1, 1, 0, 0.1, 0.08, "W mass")
-    rocbox11=myLineBoxText(0.26, 0.25, 28, 1, 1, 0, 0.1, 0.08, "W mass volatility")
+    rocbox10=myLineBoxText(0.26, 0.30, 8, 1, 1, 0, 0.1, 0.08, TranslateVar("Wmass"))
+    rocbox11=myLineBoxText(0.26, 0.25, 28, 1, 1, 0, 0.1, 0.08, TranslateVar("WmassVolatility"))
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
 
 
