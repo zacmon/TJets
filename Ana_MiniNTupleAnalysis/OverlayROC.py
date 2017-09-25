@@ -8,7 +8,7 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-outputDir = "OutputTwoVariableTMVA/20170912/"
+outputDir = "OutputTwoVariableTMVA/20170922/"
 preFileName = "TMVAOutput__TruthRawTrim__BDTAll"
 postFileName = "Tjet__pt8001000_ROCSBDT.root"
 rocs = []

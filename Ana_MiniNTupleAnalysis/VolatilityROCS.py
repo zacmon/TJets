@@ -8,8 +8,8 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-sigFile="ntuple_tt_test_10000volvec.root"
-bkgFile="ntuple_dijet_test10000volvec.root"
+sigFile="newNTupleTT50k.root"
+bkgFile="newNTupleDijet50k.root"
 
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
@@ -1257,77 +1257,77 @@ def OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt
 def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges):
 
 
-    path = outputdir1+"ROC_"+alg+"_T2Volatility[][0]_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3Volatility[][0]_pt"+pt1+pt2+".root"
     f1   = TFile(path)
     roc1 = f1.Get("ROC_SoverB")
     roc1.SetFillColor(1)
     roc1.SetLineColor(1)
     roc1.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2Volatility[][4]_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3Volatility[][4]_pt"+pt1+pt2+".root"
     f2   = TFile(path)
     roc2 = f2.Get("ROC_SoverB")
     roc2.SetFillColor(2)
     roc2.SetLineColor(2)
     roc2.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2Volatility[][8]_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3Volatility[][8]_pt"+pt1+pt2+".root"
     f3   = TFile(path)
     roc3 = f3.Get("ROC_SoverB")
     roc3.SetFillColor(3)
     roc3.SetLineColor(3)
     roc3.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2Volatility[][12]_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3Volatility[][12]_pt"+pt1+pt2+".root"
     f4   = TFile(path)
     roc4 = f4.Get("ROC_SoverB")
     roc4.SetFillColor(4)
     roc4.SetLineColor(4)
     roc4.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2Volatility[][16]_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3Volatility[][16]_pt"+pt1+pt2+".root"
     f5   = TFile(path)
     roc5 = f5.Get("ROC_SoverB")
     roc5.SetFillColor(5)
     roc5.SetLineColor(5)
     roc5.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2Volatility[][20]_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3Volatility[][20]_pt"+pt1+pt2+".root"
     f6   = TFile(path)
     roc6 = f6.Get("ROC_SoverB")
     roc6.SetFillColor(6)
     roc6.SetLineColor(6)
     roc6.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2Volatility[][24]_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3Volatility[][24]_pt"+pt1+pt2+".root"
     f7   = TFile(path)
     roc7 = f6.Get("ROC_SoverB")
     roc7.SetFillColor(7)
     roc7.SetLineColor(7)
     roc7.SetFillStyle(3001)
     
-    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][28]_pt" + pt1 + pt2 + ".root"
+    path = outputdir1 + "ROC_" + alg + "_T3Volatility[][28]_pt" + pt1 + pt2 + ".root"
     f8   = TFile(path)
     roc8 = f8.Get("ROC_SoverB")
     roc8.SetFillColor(8)
     roc8.SetLineColor(8)
     roc8.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][32]_pt" + pt1 + pt2 + ".root"
+    path = outputdir1 + "ROC_" + alg + "_T3Volatility[][32]_pt" + pt1 + pt2 + ".root"
     f9 = TFile(path)
     roc9 = f9.Get("ROC_SoverB")
     roc9.SetFillColor(9)
     roc9.SetLineColor(9)
     roc9.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][36]_pt" + pt1 + pt2 + ".root"
+    path = outputdir1 + "ROC_" + alg + "_T3Volatility[][36]_pt" + pt1 + pt2 + ".root"
     f10 = TFile(path)
     roc10 = f10.Get("ROC_SoverB")
     roc10.SetFillColor(28)
     roc10.SetLineColor(28)
     roc10.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_T2Volatility[][39]_pt" + pt1 + pt2 + ".root"
+    path = outputdir1 + "ROC_" + alg + "_T3Volatility[][40]_pt" + pt1 + pt2 + ".root"
     f11 = TFile(path)
     roc11 = f11.Get("ROC_SoverB")
     roc11.SetFillColor(95)
@@ -1354,18 +1354,18 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     myText(       0.20,0.85,1,0.03, TranslateAlg(alg))
     myText(       0.20,0.80,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
     rocbox1=myLineBoxText(0.26, 0.75, 1, 1, 2, 0, 0.1, 0.08, "0.1")
-    rocbox2=myLineBoxText(0.26, 0.70, 2, 1, 1, 0, 0.1, 0.08, "0.192308")
-    rocbox3=myLineBoxText(0.26, 0.65, 3, 1, 4, 0, 0.1, 0.08, "0.284615")
-    rocbox4=myLineBoxText(0.26, 0.60, 4, 1, 1, 0, 0.1, 0.08, "0.376923")
-    rocbox5=myLineBoxText(0.26, 0.55, 5, 1, 1, 0, 0.1, 0.08, "0.469231")                          
-    rocbox6=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, "0.561538")
-    rocbox7=myLineBoxText(0.26, 0.45, 7, 1, 1, 0, 0.1, 0.08, "0.653846")
-    rocbox8=myLineBoxText(0.26, 0.40, 8, 1, 1, 0, 0.1, 0.08, "0.746154")
-    rocbox9=myLineBoxText(0.26, 0.35, 9, 1, 1, 0, 0.1, 0.08, "0.838462")
-    rocbox10=myLineBoxText(0.26, 0.30, 28, 1, 1, 0, 0.1, 0.08, "0.930769")
+    rocbox2=myLineBoxText(0.26, 0.70, 2, 1, 1, 0, 0.1, 0.08, "0.19")
+    rocbox3=myLineBoxText(0.26, 0.65, 3, 1, 4, 0, 0.1, 0.08, "0.28")
+    rocbox4=myLineBoxText(0.26, 0.60, 4, 1, 1, 0, 0.1, 0.08, "0.37")
+    rocbox5=myLineBoxText(0.26, 0.55, 5, 1, 1, 0, 0.1, 0.08, "0.46")                          
+    rocbox6=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, "0.55")
+    rocbox7=myLineBoxText(0.26, 0.45, 7, 1, 1, 0, 0.1, 0.08, "0.64")
+    rocbox8=myLineBoxText(0.26, 0.40, 8, 1, 1, 0, 0.1, 0.08, "0.73")
+    rocbox9=myLineBoxText(0.26, 0.35, 9, 1, 1, 0, 0.1, 0.08, "0.82")
+    rocbox10=myLineBoxText(0.26, 0.30, 28, 1, 1, 0, 0.1, 0.08, "0.91")
     rocbox11=myLineBoxText(0.26, 0.25, 95, 1, 1, 0, 0.1, 0.08, "1.0")
     #gPad.SetLogy();
-    #gPad.SetLogx();
+    gPad.SetLogx();
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
 
 
@@ -1405,17 +1405,17 @@ algs.append("TruthRawTrim")
 
 # VARIABLES AND RANGES
 VarsAndRanges={}
-VarsAndRanges["T2Volatility[][0]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][4]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][8]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][12]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][16]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][20]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][24]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][28]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][32]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][36]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["T2Volatility[][39]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][0]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][4]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][8]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][12]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][16]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][20]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][24]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][28]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][32]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][36]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
+VarsAndRanges["T3Volatility[][40]"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
 
 #################################
 # Loop over algorithms

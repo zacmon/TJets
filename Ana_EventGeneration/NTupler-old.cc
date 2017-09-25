@@ -330,7 +330,7 @@ int main (int argc, char* argv[]) {
       TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
       TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatilityW);
       TruthRawTrim_T3Volatility.push_back(T3SubOutputTrim.volVec);
-      TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
+      TruthRawTrim_T3masses.push_back(T3SubOutputTrim.volVec);
     }
 
 
@@ -583,41 +583,33 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     if (!anglesBetweenTauAxes.empty()) result.minAngle = *(std::min_element(anglesBetweenTauAxes.cbegin(), anglesBetweenTauAxes.cend()));
     
     std::vector<fastjet::PseudoJet> constituents = input.constituents();
-    std::vector<std::vector<std::pair<TLorentzVector, double>>> constituentsSorted(numSubjets);
-    for (auto const &constituent: constituents) {
-	TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
-
-	std::vector<double> distanceToTauAxes(numSubjets);
-	for (unsigned int i = 0; i < numSubjets; ++i) {
-	    distanceToTauAxes[i] = pConstituent.DeltaR(pTauAxes[i]);
-	}
-
-	auto minDistanceToTauAxesIt = std::min_element(distanceToTauAxes.cbegin(), distanceToTauAxes.cend());
-	double minDistanceToTauAxes = *minDistanceToTauAxesIt;
-	unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
-
-	constituentsSorted[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
-    }
-    
-    for (auto &a : constituentsSorted) {
-	std::sort(a.begin(), a.end(), [](const std::pair<TLorentzVector, double> &b, const std::pair<TLorentzVector, double> &c) {
-		return b.second < c.second;
-	    });
-    }
-    
     std::vector<TLorentzVector> TSubjets(numSubjets);
     std::vector<double> telescopingMasses;
 
     double deltaR = (maxRadius - minRadius) / (numRadii);
     
+    //  TODO
+    //  Sort constituents by distance to tau axes to speed up clustering?
+    //  Branch prediction or avoid branch prediction with some other hack?
     for (double r = minRadius; r <= maxRadius; r += deltaR) {
-	for (unsigned int i = 0; i < constituentsSorted.size(); ++i) {
-	    for (auto it = constituentsSorted[i].begin(); it != constituentsSorted[i].end(); ++it) {
-		if (it->second <= r) {
-		    TSubjets[i] += it->first;
-		    constituentsSorted[i].erase(it);
-		    --it;
-		}
+	for (auto it = constituents.cbegin(); it != constituents.cend(); ++it) {
+	    const fastjet::PseudoJet constituent = *it;
+	    TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
+	    
+	    std::vector<double> distanceToTauAxes(numSubjets);
+	    for (unsigned int i = 0; i < numSubjets; ++i) {
+		distanceToTauAxes[i] = pConstituent.DeltaR(pTauAxes[i]);
+	    }
+	    
+	    auto minDistanceToTauAxesIt = std::min_element(distanceToTauAxes.cbegin(), distanceToTauAxes.cend());
+	    double minDistanceToTauAxes = *minDistanceToTauAxesIt;
+	    
+	    if (minDistanceToTauAxes <= r) {
+		unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
+		TSubjets[minDistanceToTauAxesIndex] += pConstituent;
+
+		constituents.erase(it);
+		--it;
 	    }
 	}
 	
@@ -625,7 +617,7 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 	for (auto const &TSubjet : TSubjets) {
 	    sumTSubjet += TSubjet;
 	}
-	
+
 	if (sumTSubjet.M() > M0) {
 	    telescopingMasses.push_back(sumTSubjet.M());
 	    result.volVec.push_back(getVolatility(telescopingMasses));
@@ -673,45 +665,32 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     result.maxAngle = tempAnglesBetweenTauAxes[2];
 
     std::vector<fastjet::PseudoJet> constituents = input.constituents();
-
-    std::vector<std::vector<std::pair<TLorentzVector, double>>> constituentsSorted(3);
-    for (auto const &constituent: constituents) {
-        TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
-
-        std::vector<double> distanceToTauAxes(3);
-        for (unsigned int i = 0; i < 3; ++i) {
-            distanceToTauAxes[i] = pConstituent.DeltaR(pTauAxes[i]);
-        }
-
-	auto minDistanceToTauAxesIt = std::min_element(distanceToTauAxes.cbegin(), distanceToTauAxes.cend());
-        double minDistanceToTauAxes = *minDistanceToTauAxesIt;
-        unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
-
-        constituentsSorted[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
-    }
-
-    for (auto &a : constituentsSorted) {
-	std::sort(a.begin(), a.end(), [](const std::pair<TLorentzVector, double> &b, const std::pair<TLorentzVector, double> &c) {
-                return b.second < c.second;
-            });
-    }
-
     std::vector<TLorentzVector> TSubjets(3);
     std::vector<std::vector<double>> telescopingMasses(4);
     std::vector<double> masses(4);
 
     double deltaR = (maxRadius - minRadius) / (numRadii);
-    for
-	(double r = minRadius; r <= maxRadius; r += deltaR) {
-	for (unsigned int i = 0; i < constituentsSorted.size(); ++i) {
-	    for (auto it = constituentsSorted[i].begin(); it != constituentsSorted[i].end(); ++it) {
-		if (it->second <= r) {
-		    TSubjets[i] += it->first;
-		    constituentsSorted[i].erase(it);
-		    --it;
-		}
+    
+    for (double r = minRadius; r <= maxRadius; r += deltaR) {
+	for (auto it = constituents.cbegin(); it != constituents.cend(); ++it) {
+	    const fastjet::PseudoJet constituent = *it;
+	    TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
+
+	    std::vector<double> distanceToTauAxes(3);
+	    for (unsigned int i = 0; i < 3; ++i) {
+		distanceToTauAxes[i] = pConstituent.DeltaR(pTauAxes[i]);
 	    }
-	
+
+	    auto minDistanceToTauAxesIt = std::min_element(distanceToTauAxes.cbegin(), distanceToTauAxes.cend());
+            double minDistanceToTauAxes = *minDistanceToTauAxesIt;
+
+	    if (minDistanceToTauAxes <= r) {
+		unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
+                TSubjets[minDistanceToTauAxesIndex] += pConstituent;
+		
+                constituents.erase(it);
+		--it;
+            }
 	}
 	
 	masses[0] = (TSubjets[0] + TSubjets[1] + TSubjets[2]).M();

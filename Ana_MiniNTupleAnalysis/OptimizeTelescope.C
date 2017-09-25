@@ -8,44 +8,30 @@
 #include <TH1D.h>
 
 void OptimizeTelescope() {
-    int numRadii = 40;
+    int numRadii = 36;
     std::vector<double> radii;
     double minRadius = 0.1;
-    double maxRadius = 1.5;
-    double deltaR = (maxRadius - minRadius) / (numRadii - 1);
+    double maxRadius = 1;
+    double deltaR = (maxRadius - minRadius) / (numRadii);
 
     for (double r = minRadius; r <= maxRadius; r += deltaR) {
 	radii.push_back(r);
     }
     
-    TString fileName = "../Ana_EventGeneration/ntuple_tt_50000v32.root";
-    TFile* file = new TFile(fileName, "READ");
-    TTree* tree = (TTree*)file->Get("JetTree");
+    TString fileName = "../Ana_EventGeneration/";
+    TFile* newFile = new TFile(fileName+"blah.root", "READ");
+    TTree* newTree = (TTree*)newFile->Get("JetTree");
 
-    std::vector<std::vector<double>> *vol3 = nullptr;
-    std::vector<double> *v32 = nullptr;
-    
-    tree->SetBranchAddress("TruthRawTrim_T3Volatility", &vol3);
-    tree->SetBranchAddress("v32", &v32);
-    
-    Long64_t numEntries = tree->GetEntries();
+    TFile* oldFile = new TFile(fileName+"ntuple_tt_test50000.root", "READ");
+    TTree* oldTree = (TTree*)oldFile->Get("JetTree");
 
-    TH1D* h = new TH1D("h", ";v32", 100, 0, 3);
-    TH2D* hist = new TH2D("hist", ";r;volatility", 40, minRadius-deltaR, maxRadius+deltaR, 50, 0, 0.3);
+    TString var = "TruthRawTrim_T3jet";
     
-    for (Long64_t i = 0; i < numEntries; ++i) {
-	tree->GetEntry(i);
-	for (unsigned int j = 0; j < vol3->size(); ++j) {
-	    for (unsigned int k = 0; k < vol3->at(j).size(); ++k) {
-		hist->Fill(radii[k], vol3->at(j).at(k));
-	    }
-	}
-	for (unsigned int j = 0; j < v32->size(); ++j) {
-	    h->Fill(v32->at(j));
-	}
-    }
-
+    newTree->Draw(var+">>h1(100,0,1.0)");
+    oldTree->Draw(var+">>h2(100,0,1.0)");
+    TH1D *h1 = (TH1D*)gDirectory->Get("h1");
+    TH1D *h2 = (TH1D*)gDirectory->Get("h2");
+    h1->Divide(h2);
     TCanvas* c = new TCanvas("c", "c");
-    h->Draw();
-    
+    h1->Draw();   
 }

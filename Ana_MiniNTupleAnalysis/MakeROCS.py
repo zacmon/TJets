@@ -8,8 +8,8 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-sigFile="ntuple_tt_50000v32.root"
-bkgFile="ntuple_dijet_50000v32.root"
+sigFile="ntuple_tt_1.root"
+bkgFile="ntuple_dijet_1.root"
 
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
@@ -32,7 +32,7 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     #Get signal and background histograms
     histname = alg+"_"+variable
     if variable == "v32":
-        histname = "v32"
+        histname = "TruthRawTrim_T3jet / TruthRawTrim_T2jet"
     if variable == "play":
         histname = "TruthRawTrim_m / TruthRawTrim_T3jet_W"
 
@@ -1284,7 +1284,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc4.SetLineColor(1)
     roc4.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T3jet_angle_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3jet_minAngle_pt"+pt1+pt2+".root"
     f5   = TFile(path)
     roc5 = f5.Get("ROC_SoverB")
     roc5.SetFillColor(6)
@@ -1309,16 +1309,16 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     path = outputdir1 + "ROC_" + alg + "_v32_pt" + pt1 + pt2 + ".root"
     f8   = TFile(path)
     roc8 = f8.Get("ROC_SoverB")
-    roc8.SetFillColor(5)
-    roc8.SetLineColor(5)
+    roc8.SetFillColor(7)
+    roc8.SetLineColor(7)
     roc8.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_play_pt" + pt1 + pt2 + ".root"
-    f9 = TFile(path)
-    roc9 = f9.Get("ROC_SoverB")
-    roc9.SetFillColor(7)
-    roc9.SetLineColor(7)
-    roc9.SetFillStyle(3001)
+    # path = outputdir1 + "ROC_" + alg + "_play_pt" + pt1 + pt2 + ".root"
+    # f9 = TFile(path)
+    # roc9 = f9.Get("ROC_SoverB")
+    # roc9.SetFillColor(7)
+    # roc9.SetLineColor(7)
+    # roc9.SetFillStyle(3001)
 
     path = outputdir1 + "ROC_" + alg + "_T3jet_W_pt" + pt1 + pt2 + ".root"
     f10 = TFile(path)
@@ -1360,8 +1360,8 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     rocbox4=myLineBoxText(0.26, 0.55, 1, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet"))
     rocbox5=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet_angle"))
     rocbox7=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
-    rocbox8=myLineBoxText(0.26, 0.40, 5, 1, 1, 0, 0.1, 0.08, TranslateVar("v32"))
-    rocbox9=myLineBoxText(0.26, 0.35, 7, 1, 1, 0, 0.1, 0.08, "play")
+    rocbox8=myLineBoxText(0.26, 0.40, 7, 1, 1, 0, 0.1, 0.08, TranslateVar("v32"))
+    #rocbox9=myLineBoxText(0.26, 0.35, 7, 1, 1, 0, 0.1, 0.08, "play")
     rocbox10=myLineBoxText(0.26, 0.30, 8, 1, 1, 0, 0.1, 0.08, TranslateVar("Wmass"))
     rocbox11=myLineBoxText(0.26, 0.25, 28, 1, 1, 0, 0.1, 0.08, TranslateVar("WmassVolatility"))
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
@@ -1404,16 +1404,16 @@ algs.append("TruthRawTrim")
 # VARIABLES AND RANGES
 VarsAndRanges={}
 VarsAndRanges["Tau21"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","L"]
+VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"100,0.15,0.98","L"]
 VarsAndRanges["T1jet"]      = [0, "100,0,1", "100,0,1.2", "100,0,1.2","R"]
-VarsAndRanges["T2jet"]      = [0, "100,0,1", "100,0,1","100,0,1","R"]
+VarsAndRanges["T2jet"]      = [0, "100,0,1", "100,0,1","100,0,0.4","R"]
 VarsAndRanges["T2jet_angle"]  = [0, "100,0,1.0", "100,0,1.0","100,0,1","L"]
 VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1", "100,0,1","L"]
 VarsAndRanges["T3jet_mW"]      = [0, "100,0,1", "100,0,1", "100,0,1", "L"]
 VarsAndRanges["T3jet_W"]      = [0, "100,40,120", "100,40,120", "100,40,120","L"]
-VarsAndRanges["T3jet_angle"]  = [0, "100,0,0.5", "100,0,0.5", "100,0,0.5","R"]
-VarsAndRanges["v32"] = [0, "100,0,1.2", "100,0,1.2", "100,0,1.2", "100,0,1.2","L"]
-VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,5", "100,0,5","L"]
+VarsAndRanges["T3jet_minAngle"]  = [0, "100,0,0.5", "100,0,0.5", "100,0,0.5","R"]
+VarsAndRanges["v32"] = [0, "100,0,1.2", "100,0,1.2", "100,0,1.02","L"]
+#VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,5", "100,0,5","L"]
 #VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
 #VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
 # VarsAndRanges["D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
@@ -1487,13 +1487,14 @@ for alg in algs:
                 tmvacommand += " "+alg+" "
                 tmvacommand += alg+"_pt,"+alg+"_m"
                 tmvacommand += " \"pt>"+str(pt1)+",pt<"+str(pt2)+","+alg+"_m>"+str(m1)+","+alg+"_m<"+str(m2)+"\" "
-                tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle, TruthRawTrim_T3jet_angle, TruthRawTrim_T3jet_W\" "
+                tmvacommand += " \"TruthRawTrim_T3jet, TruthRawTrim_T2jet\" "
+                #tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
+                #tmvacommand += " \"TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
+                #tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
+                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
+                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle, TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
                 #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_W\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_angle\" "
+                #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_minAngle\" "
                 tmvacommand += " "+mvatypes+" "
                 tmvacommand += " " + InputDir + sigFile + " "
                 tmvacommand += " " + InputDir + bkgFile + " " 
@@ -1518,5 +1519,5 @@ for alg in algs:
             
             
             
-            
+ 
             
