@@ -153,8 +153,8 @@ int main (int argc, char* argv[]) {
   treeout->Branch("TruthRawTrim_T2jet",         &TruthRawTrim_T2jet);
   treeout->Branch("TruthRawTrim_T3jet_minAngle",   &TruthRawTrim_T3jet_angle);
   treeout->Branch("TruthRawTrim_T3jet",         &TruthRawTrim_T3jet);
-  treeout->Branch("TruthRawTrim_T3jet_W",       &TruthRawTrim_T3jet_W);
-  treeout->Branch("TruthRawTrim_T3jet_mW",      &TruthRawTrim_T3jet_mW);
+  treeout->Branch("TruthRawTrim_T3jet_Wmass",       &TruthRawTrim_T3jet_W);
+  treeout->Branch("TruthRawTrim_T3jet_WmassVolatility",      &TruthRawTrim_T3jet_mW);
   treeout->Branch("TruthRawTrim_T4jet_angle",   &TruthRawTrim_T4jet_angle);
   treeout->Branch("TruthRawTrim_T4jet",         &TruthRawTrim_T4jet);
   treeout->Branch("TruthRawTrim_T5jet_angle",   &TruthRawTrim_T5jet_angle);
@@ -291,18 +291,17 @@ int main (int argc, char* argv[]) {
       //Getting truth label for filling into ntuple
       /////////////////////////////////
       jetflavor = GetJetTruthFlavor(jettemp, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
-      if(debug) std::cout<<"FillingJet Trimmed: flav="<<jetflavor<<"  pt="<<jettemp.Pt()<<"  m="<<jettemp.M()<< std::endl;
+      if (debug) std::cout<<"FillingJet Trimmed: flav="<<jetflavor<<"  pt="<<jettemp.Pt()<<"  m="<<jettemp.M()<< std::endl;
 
-      if(jetflavor == -1) continue;
+      if (jetflavor == -1) continue;
 
       /////////////////////////////////
       //Fill variables that will go into ntuple
       /////////////////////////////////
       TSub  T1SubOutputTrim  = TNSubjet(groomed_jet, 1, 0.1, 1.0, 36);
       TSub  T2SubOutputTrim  = TNSubjet(groomed_jet, 2, 0.1, 1.0, 36);
-
       T3Sub  T3SubOutputTrim = T3Subjet(groomed_jet, 0.1, 1.0, 36);
-      
+
       TruthRawTrim_flavor.push_back(jetflavor);
 
       TruthRawTrim_pt.push_back(jettemp.Pt());
@@ -324,8 +323,6 @@ int main (int argc, char* argv[]) {
       TruthRawTrim_T2masses.push_back(T2SubOutputTrim.masses);
       
       TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.minAngle);
-      //TruthRawTrim_T3jet_angle1.push_back(T3SubOutputTrim.midAngle);
-      //TruthRawTrim_T3jet_angle2.push_back(T3SubOutputTrim.maxAngle);
       TruthRawTrim_T3jet.push_back(T3SubOutputTrim.volatility);
       TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
       TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatilityW);
@@ -333,18 +330,10 @@ int main (int argc, char* argv[]) {
       TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
     }
 
-
-    //////////////////////////////////////
-    //Fill event into tree
-    //////////////////////////////////////
     if(debug) std::cout<<"Filling Tree"<< std::endl;
     treeout->Fill();
   }
 
-
-  /////////////////////////////////
-  //Write the output TTree to the OutputFile
-  /////////////////////////////////
   fileout->cd();
   treeout->Write();
   fileout->Close();
@@ -352,7 +341,6 @@ int main (int argc, char* argv[]) {
   return 0;
 
 }
-
 
 ///=========================================
 /// Reset Branches
@@ -426,10 +414,7 @@ void ResetBranches(){
   TruthRawTrim_T1masses.clear();
   TruthRawTrim_T2masses.clear();
   TruthRawTrim_T3masses.clear();
-
-  TruthRawTrim_v32.clear();
 }
-
 
 ///=========================================
 /// Calorimeter Simulation
@@ -467,53 +452,49 @@ std::vector<fastjet::PseudoJet> ToyCalorimeter(std::vector<fastjet::PseudoJet> t
   return cell_particles;
 }
 
-
 ///=========================================
 /// Telescoping Pruning
 ///=========================================
-double T_Pruning(fastjet::PseudoJet& input, double dcut_min, double dcut_max, int N_dcut) {
-    double zcut = 0.1; // single choice of zcut. can be further telescoped
-    double Tmass = 0;
-    std::vector<double> ms; ms.clear();
-    for (int i = 0; i < N_dcut; i++){
-        double dcut = dcut_min + (dcut_max-dcut_min)*i/(N_dcut-1);
-        fastjet::Pruner pruner(fastjet::cambridge_algorithm, zcut, dcut);
-        fastjet::PseudoJet pruned_jet = pruner(input);
-        Tmass = pruned_jet.m();
-        if(Tmass > M0){ms.push_back(Tmass);}
+double T_Pruning(fastjet::PseudoJet& input, double minDCut, double maxDCut, int numDCuts) {
+    double zCut = 0.1; // Single choice of zcut but can be further telescoped.
+    std::vector<double> telescopingMasses;
+
+    double dCutStep = (maxDCut - minDCut) / (numDCuts);
+
+    for (double dCut = minDCut; dCut <= maxDCut; dCut += dCutStep) {
+        fastjet::Pruner pruner(fastjet::cambridge_algorithm, zCut, dCut);
+        fastjet::PseudoJet prunedJet = pruner(input);
+        double mass = prunedJet.m();
+        if (mass > M0) telescopingMasses.push_back(mass);
     }
-    // getVolatility function provided by TelescopingJets
-    if(ms.size()>0)
-        return getVolatility(ms);
+    if (!telescopingMasses.empty()) return getVolatility(telescopingMasses);
     
-    std::cout <<"WARNING: zero entries for T_Pruning "<< dcut_min <<" "<< dcut_max <<" "<< N_dcut <<" "<<  std::endl;
+    std::cout << "WARNING zero entries for T_Pruning! minDCut: "<< minDCut << "\tmaxDCut: "<< maxDCut << "\tnumDCuts: "<< numDCuts << std::endl;
     return -1;
-    
 }
 
 
 ///=========================================
 /// Telescoping Trimming
 ///=========================================
-double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, int N_fcut) {
+double T_Trimming(fastjet::PseudoJet& input, double minFCut, double maxFCut, int numFCuts) {
     double Rfilt = 0.1; // single choice of Rfilt. can be further telescoped.
     // used Rfilt = 0.1 for higher pT jets and Rfilt = 0.2 for lower pT jets.
-    double Tmass = 0;
-    std::vector<double> ms; ms.clear();
-    for (int i = 0; i < N_fcut; i++){
-        double fcut = fcut_min + (fcut_max-fcut_min)*i/(N_fcut-1);
-        fastjet::Filter trimmer(Rfilt,fastjet::SelectorPtFractionMin(fcut));
-        fastjet::PseudoJet trimmed_jet = trimmer(input);
-        Tmass = trimmed_jet.m();
-        if(Tmass > M0){ms.push_back(Tmass);}
+    std::vector<double> telescopingMasses;
+    
+    double fCutStep = (maxFCut - minFCut) / (numFCuts);
+    
+    for (double fCut = minFCut; fCut <= maxFCut; fCut += fCutStep) {
+        fastjet::Filter trimmer(Rfilt, fastjet::SelectorPtFractionMin(fCut));
+        fastjet::PseudoJet trimmedJet = trimmer(input);
+        double mass = trimmedJet.m();
+        if (mass > M0) telescopingMasses.push_back(mass);
     }
-    // getVolatility function provided by TelescopingJets
-    if(ms.size()>0)
-        return getVolatility(ms);
+
+    if (!telescopingMasses.empty()) return getVolatility(telescopingMasses);
     
-    std::cout <<"WARNING: zero entries for T_Trimming "<< fcut_min <<" "<< fcut_max <<" "<< N_fcut <<" "<<  std::endl;
+    std::cout <<"WARNING zero entries for T_Trimming! minFCut: "<< minFCut << "\tmaxFCut: "<< maxFCut << "\tnumFCuts: "<< numFCuts << std::endl;
     return -1;
-    
 }
 
 ///=========================================
@@ -523,32 +504,31 @@ double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, i
 ///=========================================
 double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double minRadius, double maxRadius, int numRadii) {
     std::vector<double> telescopingMass; 
-    double mass = 0;
-    double deltaR = (maxRadius - minRadius) / (numRadii - 1);
+    double deltaR = (maxRadius - minRadius) / (numRadii);
 
     for (double r = minRadius; r <= maxRadius; r += deltaR) {
         fastjet::JetDefinition TjetDefinition(fastjet::JetAlgorithm(algorithm), r);
         fastjet::ClusterSequence TClusterSequence(input.constituents(), TjetDefinition);
 
         std::vector<fastjet::PseudoJet> recoTJets = sorted_by_pt(TClusterSequence.inclusive_jets());
-        if (recoTJets.size() < 1) {
-            std::cout << "Warning: recluster number of subjet is " << recoTJets.size() << std::endl;
+        if (recoTJets.empty()) {
+            std::cout << "WARNING! Recluster number of subjets is " << recoTJets.size() << std::endl;
             continue;
         }
         if (recoTJets.size() == 1) {
             Tsubjet1.SetPxPyPzE(recoTJets[0].px(), recoTJets[0].py(), recoTJets[0].pz(), recoTJets[0].e());
-            mass = Tsubjet1.M();
+            double mass = Tsubjet1.M();
             if (mass > M0) telescopingMass.push_back(mass);
         }
         else if (recoTJets.size() >= 2) {
             Tsubjet1.SetPxPyPzE(recoTJets[0].px(), recoTJets[0].py(), recoTJets[0].pz(), recoTJets[0].e());
             Tsubjet2.SetPxPyPzE(recoTJets[1].px(), recoTJets[1].py(), recoTJets[1].pz(), recoTJets[1].e());
-            mass = (Tsubjet1 + Tsubjet2).M();
+            double mass = (Tsubjet1 + Tsubjet2).M();
             if (mass > M0) telescopingMass.push_back(mass);
         }
     }
     
-    if (telescopingMass.size() > 0) return getVolatility(telescopingMass);
+    if (!telescopingMass.empty()) return getVolatility(telescopingMass);
     
     std::cout << "WARNING: zero entries for T_reclustering." <<
 	"\tAlgorithm: " << algorithm << "\tminRadius: " << minRadius << "\tmaxRadius: " << maxRadius << "\tnumRadii: " << numRadii <<  std::endl;
@@ -564,26 +544,25 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     double beta = 1.0;    
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
     fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
-    
+
     double tauN = nSubjettiness.result(input);
     std::vector<fastjet::PseudoJet> tauAxes = nSubjettiness.currentAxes();
-
     std::vector<TLorentzVector> pTauAxes(numSubjets);
+
     for (unsigned int i = 0; i < numSubjets; ++i) {
 	pTauAxes[i].SetPxPyPzE(tauAxes[i].px(), tauAxes[i].py(), tauAxes[i].pz(), tauAxes[i].e());
     }
-    
     std::vector<double> anglesBetweenTauAxes;
     for (unsigned int i = 0; i < numSubjets; ++i) {
 	for (unsigned int j = i + 1; j < numSubjets; ++j) {
 	    anglesBetweenTauAxes.push_back(pTauAxes[i].DeltaR(pTauAxes[j]));
 	}
     }
-    
     if (!anglesBetweenTauAxes.empty()) result.minAngle = *(std::min_element(anglesBetweenTauAxes.cbegin(), anglesBetweenTauAxes.cend()));
     
     std::vector<fastjet::PseudoJet> constituents = input.constituents();
-    std::vector<std::vector<std::pair<TLorentzVector, double>>> constituentsSorted(numSubjets);
+    std::vector<std::vector<std::pair<TLorentzVector, double>>> sortedConstituents(numSubjets);
+    
     for (auto const &constituent: constituents) {
 	TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
 
@@ -596,12 +575,12 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 	double minDistanceToTauAxes = *minDistanceToTauAxesIt;
 	unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
 
-	constituentsSorted[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
+	sortedConstituents[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
     }
     
-    for (auto &a : constituentsSorted) {
-	std::sort(a.begin(), a.end(), [](const std::pair<TLorentzVector, double> &b, const std::pair<TLorentzVector, double> &c) {
-		return b.second < c.second;
+    for (auto &subjetConstituents : sortedConstituents) {
+	std::sort(subjetConstituents.begin(), subjetConstituents.end(), [](const std::pair<TLorentzVector, double> &pair1, const std::pair<TLorentzVector, double> &pair2) {
+		return pair1.second < pair2.second;
 	    });
     }
     
@@ -611,13 +590,14 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     double deltaR = (maxRadius - minRadius) / (numRadii);
     
     for (double r = minRadius; r <= maxRadius; r += deltaR) {
-	for (unsigned int i = 0; i < constituentsSorted.size(); ++i) {
-	    for (auto it = constituentsSorted[i].begin(); it != constituentsSorted[i].end(); ++it) {
+	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
+	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
 		if (it->second <= r) {
 		    TSubjets[i] += it->first;
-		    constituentsSorted[i].erase(it);
+		    sortedConstituents[i].erase(it);
 		    --it;
 		}
+		else break;
 	    }
 	}
 	
@@ -673,8 +653,8 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     result.maxAngle = tempAnglesBetweenTauAxes[2];
 
     std::vector<fastjet::PseudoJet> constituents = input.constituents();
+    std::vector<std::vector<std::pair<TLorentzVector, double>>> sortedConstituents(3);
 
-    std::vector<std::vector<std::pair<TLorentzVector, double>>> constituentsSorted(3);
     for (auto const &constituent: constituents) {
         TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
 
@@ -687,12 +667,12 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
         double minDistanceToTauAxes = *minDistanceToTauAxesIt;
         unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
 
-        constituentsSorted[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
+        sortedConstituents[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
     }
 
-    for (auto &a : constituentsSorted) {
-	std::sort(a.begin(), a.end(), [](const std::pair<TLorentzVector, double> &b, const std::pair<TLorentzVector, double> &c) {
-                return b.second < c.second;
+    for (auto &subjetConstituents : sortedConstituents) {
+	std::sort(subjetConstituents.begin(), subjetConstituents.end(), [](const std::pair<TLorentzVector, double> &pair1, const std::pair<TLorentzVector, double> &pair2) {
+                return pair1.second < pair2.second;
             });
     }
 
@@ -701,17 +681,16 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     std::vector<double> masses(4);
 
     double deltaR = (maxRadius - minRadius) / (numRadii);
-    for
-	(double r = minRadius; r <= maxRadius; r += deltaR) {
-	for (unsigned int i = 0; i < constituentsSorted.size(); ++i) {
-	    for (auto it = constituentsSorted[i].begin(); it != constituentsSorted[i].end(); ++it) {
+    for (double r = minRadius; r <= maxRadius; r += deltaR) {
+	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
+	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
 		if (it->second <= r) {
 		    TSubjets[i] += it->first;
-		    constituentsSorted[i].erase(it);
+		    sortedConstituents[i].erase(it);
 		    --it;
 		}
+		else break;
 	    }
-	
 	}
 	
 	masses[0] = (TSubjets[0] + TSubjets[1] + TSubjets[2]).M();
@@ -754,65 +733,53 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 ///=========================================
 /// Telescoping N-subjettiness
 ///=========================================
-double T_Nsubjettiness(int N, fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta) {
-  std::vector<double> taus; taus.clear();
-  for (int i = 0; i < N_beta; i++) {
-    double beta = beta_min + i*(beta_max - beta_min)/(N_beta-1);
-    fastjet::contrib::UnnormalizedMeasure nsubMeasure(beta);
-    fastjet::contrib::Nsubjettiness nsub(N, fastjet::contrib::OnePass_KT_Axes(), nsubMeasure);
-//    fastjet::contrib::Nsubjettiness nsub(N, fastjet::contrib::WTA_KT_Axes(), nsubMeasure);
-    taus.push_back(nsub(input));
+double T_Nsubjettiness(int N, fastjet::PseudoJet& input, double minBeta, double maxBeta, int numBetas) {
+  std::vector<double> taus;
+  double betaStep = (maxBeta - minBeta) / (numBetas);
+  
+  for (double beta = minBeta; beta <= maxBeta; beta += betaStep) {
+      fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
+      fastjet::contrib::Nsubjettiness nSub(N, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
+      //fastjet::contrib::Nsubjettiness nsub(N, fastjet::contrib::WTA_KT_Axes(), nsubMeasure);
+      taus.push_back(nSub(input));
   }
-  // getVolatility function provided by TelescopingJets
-    if(taus.size()>0)
-        return getVolatility(taus);
-    
-    std::cout <<"WARNING: zero entries for T_Nsubjettiness "<< beta_min <<" "<< beta_max <<" "<< N_beta <<" "<<  std::endl;
-    return -1;
-    
+  if (!taus.empty()) return getVolatility(taus);
+  
+  std::cout <<"WARNING zero entries for T_Nsubjettiness! minBeta: " << minBeta << "\tmaxBeta: "<< maxBeta << "\tnumBetas: " << numBetas << std::endl;
+  return -1;
 }
 
-double T_NsubjettinessRatio(int N_num, int N_den, fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta) {
-  std::vector<double> taus; taus.clear();
-  for (int i = 0; i < N_beta; i++) {
-
-    double beta = beta_min + i*(beta_max - beta_min)/(N_beta-1);
-
-    fastjet::contrib::UnnormalizedMeasure nsubMeasure(beta);
-
-    fastjet::contrib::Nsubjettiness nsub_num(N_num, fastjet::contrib::WTA_KT_Axes(), nsubMeasure);
-    fastjet::contrib::Nsubjettiness nsub_den(N_den, fastjet::contrib::WTA_KT_Axes(), nsubMeasure);
-
-    double num=nsub_num(input);
-    double den=nsub_den(input);
-
-    if(den!=0)
-      taus.push_back(num/den);
-    else
-      taus.push_back(-1.0);
-
+double T_NsubjettinessRatio(int N_num, int N_den, fastjet::PseudoJet& input, double minBeta, double maxBeta, int numBetas) {
+  std::vector<double> taus;
+  double betaStep = (maxBeta - minBeta) / (numBetas);
+  
+  for (double beta = minBeta; beta <= maxBeta; beta += betaStep) {
+      fastjet::contrib::UnnormalizedMeasure nsubMeasure(beta);
+      
+      fastjet::contrib::Nsubjettiness nSubNumerator(N_num, fastjet::contrib::WTA_KT_Axes(), nsubMeasure);
+      fastjet::contrib::Nsubjettiness nSubDenominator(N_den, fastjet::contrib::WTA_KT_Axes(), nsubMeasure);
+      
+      double numerator = nSubNumerator(input);
+      double denominator = nSubDenominator(input);
+      
+      if (denominator != 0) taus.push_back(numerator / denominator);
+      else taus.push_back(-1.0);
   }
-    if(taus.size()==0){
-        std::cout <<"WARNING: zero entries for T_NsubjetinessRatio "<< beta_min <<" "<< beta_max <<" "<< N_beta <<" "<<  std::endl;
-        return -1;
-    }
-    // getVolatility function provided by TelescopingJets
-    if(taus.size()>0)
-        return getVolatility(taus);
-    
-    std::cout <<"WARNING: zero entries for T_NsubjettinessRatio "<< beta_min <<" "<< beta_max <<" "<< N_beta <<" "<<  std::endl;
-    return -1;
-    
+  
+  if (!taus.empty()) return getVolatility(taus);
+  
+  std::cout <<"WARNING: zero entries for T_NsubjettinessRatio "<< minBeta <<" "<< maxBeta <<" "<< numBetas <<" "<<  std::endl;
+  return -1;
 }
 
 
 ///=========================================
 /// Telescoping Energy Correlators
 ///=========================================
-double T_EnergyCorrelator_C2(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta) {
+double T_EnergyCorrelator_C2(fastjet::PseudoJet& input, double minBeta, double maxBeta, int numBetas) {
   std::vector<double> ecfs; ecfs.clear();
-  for (int i = 0; i < N_beta; i++) {
-    double beta = beta_min + i*(beta_max - beta_min)/(N_beta-1);
+  for (int i = 0; i < numBetas; i++) {
+    double beta = minBeta + i*(maxBeta - minBeta)/(numBetas-1);
     fastjet::contrib::EnergyCorrelatorC2 ecf(beta);
     ecfs.push_back(ecf(input));
   }
@@ -820,15 +787,15 @@ double T_EnergyCorrelator_C2(fastjet::PseudoJet& input, double beta_min, double 
     if(ecfs.size()>0)
         return getVolatility(ecfs);
     
-    std::cout <<"WARNING: zero entries for T_EnergyCorrelator_C2 "<< beta_min <<" "<< beta_max <<" "<< N_beta <<" "<<  std::endl;
+    std::cout <<"WARNING: zero entries for T_EnergyCorrelator_C2 "<< minBeta <<" "<< maxBeta <<" "<< numBetas <<" "<<  std::endl;
     return -1;
     
 }
 
-double T_EnergyCorrelator_D2(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta) {
+double T_EnergyCorrelator_D2(fastjet::PseudoJet& input, double minBeta, double maxBeta, int numBetas) {
   std::vector<double> ecfs; ecfs.clear();
-  for (int i = 0; i < N_beta; i++) {
-    double beta = beta_min + i*(beta_max - beta_min)/(N_beta-1);
+  for (int i = 0; i < numBetas; i++) {
+    double beta = minBeta + i*(maxBeta - minBeta)/(numBetas-1);
     fastjet::contrib::EnergyCorrelatorD2 ecf(beta);
     ecfs.push_back(ecf(input));
   }
@@ -836,15 +803,15 @@ double T_EnergyCorrelator_D2(fastjet::PseudoJet& input, double beta_min, double 
     if(ecfs.size()>0)
         return getVolatility(ecfs);
     
-    std::cout <<"WARNING: zero entries for T_EnergyCorrelator_C2 "<< beta_min <<" "<< beta_max <<" "<< N_beta <<" "<<  std::endl;
+    std::cout <<"WARNING: zero entries for T_EnergyCorrelator_C2 "<< minBeta <<" "<< maxBeta <<" "<< numBetas <<" "<<  std::endl;
     return -1;
     
 }
 
-double T_EnergyCorrelator_C3(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta) {
+double T_EnergyCorrelator_C3(fastjet::PseudoJet& input, double minBeta, double maxBeta, int numBetas) {
   std::vector<double> ecfs; ecfs.clear();
-  for (int i = 0; i < N_beta; i++) {
-    double beta = beta_min + i*(beta_max - beta_min)/(N_beta-1);
+  for (int i = 0; i < numBetas; i++) {
+    double beta = minBeta + i*(maxBeta - minBeta)/(numBetas-1);
     fastjet::contrib::EnergyCorrelatorDoubleRatio ecf(3, beta);
     ecfs.push_back(ecf(input));
   }
@@ -852,7 +819,7 @@ double T_EnergyCorrelator_C3(fastjet::PseudoJet& input, double beta_min, double 
     if(ecfs.size()>0)
         return getVolatility(ecfs);
     
-    std::cout <<"WARNING: zero entries for T_EnergyCorrelator_C3 "<< beta_min <<" "<< beta_max <<" "<< N_beta <<" "<<  std::endl;
+    std::cout <<"WARNING: zero entries for T_EnergyCorrelator_C3 "<< minBeta <<" "<< maxBeta <<" "<< numBetas <<" "<<  std::endl;
     return -1;
     
 }

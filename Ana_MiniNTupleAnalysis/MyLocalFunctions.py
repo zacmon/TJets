@@ -93,7 +93,7 @@ def TranslateVar(var):
     AllVars["tnsub_beta10to20_tau21_vol"]= "T(#tau_{2}^{wta}, #beta=[1.0,2.0])"
     AllVars["C2"]= "C_{2}"
     AllVars["D2"]= "D_{2}"
-    AllVars["v32"] = "v_{3}/v_{2}"
+    AllVars["v32"] = "T_{3}/T_{2}"
     AllVars["Wmass"] = "M_{W}"
     AllVars["WmassVolatility"] = "v_{W}"
     

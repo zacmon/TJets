@@ -1258,7 +1258,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir1+"ROC_"+alg+"_Tau32_pt"+pt1+pt2+".root"
     f1   = TFile(path)
-    roc1 = f1.Get("ROC_SoverB")
+    roc1 = f1.Get("ROC_L")
     roc1.SetFillColor(2)
     roc1.SetLineColor(2)
     roc1.SetFillStyle(3001)
@@ -1308,7 +1308,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir1 + "ROC_" + alg + "_v32_pt" + pt1 + pt2 + ".root"
     f8   = TFile(path)
-    roc8 = f8.Get("ROC_SoverB")
+    roc8 = f8.Get("ROC_L")
     roc8.SetFillColor(7)
     roc8.SetLineColor(7)
     roc8.SetFillStyle(3001)
@@ -1346,12 +1346,12 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc5.Draw("CE3same")
     roc7.Draw("CE3same")
     roc8.Draw("CE3same")
-    roc9.Draw("CE3same")
+    #roc9.Draw("CE3same")
     roc10.Draw("CE3same")
     roc11.Draw("CE3same")
     
     ATLASLabel(   0.20,0.90,1,0.1,0.03,"#sqrt{s}=13 TeV")
-    myText(       0.20,0.85,1,0.03, TranslateAlg(alg))
+    myText(       0.20,0.85,1,0.03, alg)
     myText(       0.20,0.80,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
     rocbox1=myLineBoxText(0.26, 0.75, 2, 1, 2, 0, 0.1, 0.08, TranslateVar("Tau32"))
     rocbox6=myLineBoxText(0.26, 0.70, 9, 1, 1, 0, 0.1, 0.08, TranslateVar("Tau21"))
@@ -1362,8 +1362,8 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     rocbox7=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
     rocbox8=myLineBoxText(0.26, 0.40, 7, 1, 1, 0, 0.1, 0.08, TranslateVar("v32"))
     #rocbox9=myLineBoxText(0.26, 0.35, 7, 1, 1, 0, 0.1, 0.08, "play")
-    rocbox10=myLineBoxText(0.26, 0.30, 8, 1, 1, 0, 0.1, 0.08, TranslateVar("Wmass"))
-    rocbox11=myLineBoxText(0.26, 0.25, 28, 1, 1, 0, 0.1, 0.08, TranslateVar("WmassVolatility"))
+    rocbox10=myLineBoxText(0.26, 0.35, 8, 1, 1, 0, 0.1, 0.08, TranslateVar("Wmass"))
+    rocbox11=myLineBoxText(0.26, 0.30, 28, 1, 1, 0, 0.1, 0.08, TranslateVar("WmassVolatility"))
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
 
 
@@ -1408,7 +1408,7 @@ VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"100,0.15,0.98","L"]
 VarsAndRanges["T1jet"]      = [0, "100,0,1", "100,0,1.2", "100,0,1.2","R"]
 VarsAndRanges["T2jet"]      = [0, "100,0,1", "100,0,1","100,0,0.4","R"]
 VarsAndRanges["T2jet_angle"]  = [0, "100,0,1.0", "100,0,1.0","100,0,1","L"]
-VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1", "100,0,1","L"]
+VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1", "100,0,0.15","L"]
 VarsAndRanges["T3jet_mW"]      = [0, "100,0,1", "100,0,1", "100,0,1", "L"]
 VarsAndRanges["T3jet_W"]      = [0, "100,40,120", "100,40,120", "100,40,120","L"]
 VarsAndRanges["T3jet_minAngle"]  = [0, "100,0,0.5", "100,0,0.5", "100,0,0.5","R"]
@@ -1487,8 +1487,8 @@ for alg in algs:
                 tmvacommand += " "+alg+" "
                 tmvacommand += alg+"_pt,"+alg+"_m"
                 tmvacommand += " \"pt>"+str(pt1)+",pt<"+str(pt2)+","+alg+"_m>"+str(m1)+","+alg+"_m<"+str(m2)+"\" "
-                tmvacommand += " \"TruthRawTrim_T3jet, TruthRawTrim_T2jet\" "
-                #tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
+                #tmvacommand += " \"TruthRawTrim_T3jet, TruthRawTrim_T2jet\" "
+                tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
                 #tmvacommand += " \"TruthRawTrim_T2jet, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
                 #tmvacommand += " \"TruthRawTrim_T3jet_mW, TruthRawTrim_T2jet_angle,TruthRawTrim_T3jet, TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
                 #tmvacommand += " \"TruthRawTrim_T3jet_mW,TruthRawTrim_T2jet, TruthRawTrim_T3jet, TruthRawTrim_T3jet_minAngle, TruthRawTrim_T3jet_W\" "
