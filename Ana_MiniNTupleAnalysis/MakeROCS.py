@@ -1264,7 +1264,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir1+"ROC_"+alg+"_T2jet_pt"+pt1+pt2+".root"
     f2   = TFile(path)
-    roc2 = f2.Get("ROC_SoverB")
+    roc2 = f2.Get("ROC_R")
     roc2.SetFillColor(4)
     roc2.SetLineColor(4)
     roc2.SetFillStyle(3001)
@@ -1278,7 +1278,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir1+"ROC_"+alg+"_T3jet_pt"+pt1+pt2+".root"
     f4   = TFile(path)
-    roc4 = f4.Get("ROC_SoverB")
+    roc4 = f4.Get("ROC_L")
     roc4.SetFillColor(1)
     roc4.SetLineColor(1)
     roc4.SetFillStyle(3001)
@@ -1300,7 +1300,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir3+"TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+"_ROCSBDT.root"
     f7   = TFile(path)
-    roc7 = f7.Get("ROC_SoverB")
+    roc7 = f7.Get("ROC_L")
     roc7.SetFillColor(95)
     roc7.SetLineColor(95)
     roc7.SetFillStyle(3001)
@@ -1403,13 +1403,13 @@ algs.append("TruthRawTrim")
 # VARIABLES AND RANGES
 VarsAndRanges={}
 VarsAndRanges["Tau21"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","R"]
-VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"100,0.15,0.98","L"]
-VarsAndRanges["T1jet"]      = [0, "100,0,1", "100,0,1.2", "100,0,1.2","R"]
+VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"100,0,1","L"]
+VarsAndRanges["T1jet"]      = [0, "100,0,1", "100,0,1.2", "100,0.2,1","R"]
 VarsAndRanges["T2jet"]      = [0, "100,0,1", "100,0,1","100,0,0.4","R"]
 VarsAndRanges["T2jet_angle"]  = [0, "100,0,1.0", "100,0,1.0","100,0,1","L"]
 VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1", "100,0,0.15","L"]
 VarsAndRanges["T3jet_Wmass"]      = [0, "100,0,1", "100,0,1", "100,40,120", "L"]
-VarsAndRanges["T3jet_WmassVolatility"]      = [0, "100,40,120", "100,0,1", "100,40,120","L"]
+VarsAndRanges["T3jet_WmassVolatility"]      = [0, "100,40,120", "100,0,1", "100,0,0.3","L"]
 VarsAndRanges["T3jet_minAngle"]  = [0, "100,0,0.5", "100,0,0.5", "100,0,0.5","R"]
 VarsAndRanges["v32"] = [0, "100,0,1.2", "100,0,1.2", "100,0,1.02","L"]
 VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,1.2","L"]
@@ -1515,8 +1515,3 @@ for alg in algs:
                 #Overlay all ROC curves relevant here
                 #OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt2,m1,m2,mvatypes,VarsAndRanges)
                 OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges) 
-            
-            
-            
- 
-            

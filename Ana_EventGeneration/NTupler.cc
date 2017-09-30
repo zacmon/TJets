@@ -175,6 +175,33 @@ int main (int argc, char* argv[]) {
 
   treeout->Branch("TruthRawTrim_T2jet_Wmass", &TruthRawTrim_T2jet_massW);
   treeout->Branch("TruthRawTrim_T2jet_WmassVolatility", &TruthRawTrim_T2jet_volatilityW);
+
+  treeout->Branch("CaloTrim_flavor",        &CaloTrim_flavor);
+  treeout->Branch("CaloTrim_pt",            &CaloTrim_pt);
+  treeout->Branch("CaloTrim_eta",           &CaloTrim_eta);
+  treeout->Branch("CaloTrim_phi",           &CaloTrim_phi);
+  treeout->Branch("CaloTrim_m",             &CaloTrim_m);
+  treeout->Branch("CaloTrim_Tau21",         &CaloTrim_Tau21);
+  treeout->Branch("CaloTrim_Tau32",         &CaloTrim_Tau32);
+  treeout->Branch("CaloTrim_D2",            &CaloTrim_D2);
+  treeout->Branch("CaloTrim_T1jet_angle",   &CaloTrim_T1jet_angle);
+  treeout->Branch("CaloTrim_T1jet",         &CaloTrim_T1jet);
+  treeout->Branch("CaloTrim_T2jet_angle",   &CaloTrim_T2jet_angle);
+  treeout->Branch("CaloTrim_T2jet",         &CaloTrim_T2jet);
+  treeout->Branch("CaloTrim_T3jet_minAngle",   &CaloTrim_T3jet_angle);
+  treeout->Branch("CaloTrim_T3jet",         &CaloTrim_T3jet);
+  treeout->Branch("CaloTrim_T3jet_Wmass",       &CaloTrim_T3jet_W);
+  treeout->Branch("CaloTrim_T3jet_WmassVolatility",      &CaloTrim_T3jet_mW);
+  treeout->Branch("CaloTrim_T4jet_angle",   &CaloTrim_T4jet_angle);
+  treeout->Branch("CaloTrim_T4jet",         &CaloTrim_T4jet);
+  treeout->Branch("CaloTrim_T5jet_angle",   &CaloTrim_T5jet_angle);
+  treeout->Branch("CaloTrim_T5jet",         &CaloTrim_T5jet);
+  treeout->Branch("CaloTrim_Tpruning",      &CaloTrim_Tpruning);
+  treeout->Branch("CaloTrim_Ttrimming",     &CaloTrim_Ttrimming);
+  treeout->Branch("CaloTrim_Taktreclustering",	&CaloTrim_Taktreclustering);
+  treeout->Branch("CaloTrim_Tktreclustering",	&CaloTrim_Tktreclustering);
+  treeout->Branch("CaloTrim_TJet_m1",       &CaloTrim_TJet_m1);
+  treeout->Branch("CaloTrim_TJet_m2",       &CaloTrim_TJet_m2);
   
   //////////////////////////////////////////////
   //random number generator for pileup
@@ -188,6 +215,19 @@ int main (int argc, char* argv[]) {
   
   std::cout << "Number of events: " << nEvents << std::endl;
 
+  fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 1.0);
+  
+  //Energy correlation functions
+  fastjet::contrib::EnergyCorrelatorC2 ecfC2(1);
+  fastjet::contrib::EnergyCorrelatorD2 ecfD2(1);
+  fastjet::contrib::EnergyCorrelatorDoubleRatio ecfC3(2, 1);
+  
+  // Filtering with a pt cut as for trimming (arXiv:0912.1342)
+  double Rfilt0 = 0.3;
+  double fcut0 = 0.05;
+  fastjet::Transformer *trimmer = new fastjet::Filter(fastjet::JetDefinition(fastjet::kt_algorithm, Rfilt0), fastjet::SelectorPtFractionMin(fcut0) );
+  const fastjet::Transformer &f = *trimmer;
+  
   for (Long64_t jentry=0; jentry<nEvents; jentry++) {
       
       if (jentry % 1000 == 0) std::cout << jentry << " processed." << std::endl;
@@ -222,7 +262,6 @@ int main (int argc, char* argv[]) {
       //////////////////////////////////////////////
       // get the resulting jets ordered in pt
       //////////////////////////////////////////////
-      fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 1.0);
       
       fastjet::ClusterSequence clust_seq_TruthRaw(input_particles, jet_def);
       std::vector<fastjet::PseudoJet> inclusive_jets_TruthRaw = sorted_by_pt(clust_seq_TruthRaw.inclusive_jets(5.0));
@@ -239,33 +278,7 @@ int main (int argc, char* argv[]) {
 		       <<"  "<<inclusive_jets_TruthRaw[i].m()<< std::endl;
 	  }
       }
-
-    //////////////////////////////////////////////
-    //Setup tools for substructure calculation
-    //////////////////////////////////////////////
-
-    //Telescoping jets (this looks like the Telescoping reclustering)
-    fastjet::contrib::KT_Axes axes_def;
-    std::vector<double> r_values;
-    int N_r = 20;
-    double r_min = 0.1;
-    double r_max = 0.6;
-    for (int i = 0; i < N_r; i++) {
-      r_values.push_back(r_min + i * (r_max - r_min) / (N_r - 1));
-    }
-    TelescopingJets T_Mass(axes_def,r_values);
-
-    //Energy correlation functions
-    fastjet::contrib::EnergyCorrelatorC2 ecfC2(1);
-    fastjet::contrib::EnergyCorrelatorD2 ecfD2(1);
-    fastjet::contrib::EnergyCorrelatorDoubleRatio ecfC3(2, 1);
-
-    // Filtering with a pt cut as for trimming (arXiv:0912.1342)
-    double Rfilt0 = 0.3;
-    double fcut0 = 0.05;
-    fastjet::Transformer *trimmer = new fastjet::Filter(fastjet::JetDefinition(fastjet::kt_algorithm, Rfilt0), fastjet::SelectorPtFractionMin(fcut0) );
-    const fastjet::Transformer &f = *trimmer;
-
+      
     /////////////////////////////////////////////
     //Get truth objects for truth matching
     /////////////////////////////////////////////
@@ -281,74 +294,111 @@ int main (int argc, char* argv[]) {
     //TruthRawTrim
     /////////////////////////////
     for (unsigned int ijet = 0; ijet < inclusive_jets_TruthRaw.size(); ijet++) {
-      fastjet::PseudoJet groomed_jet = f(inclusive_jets_TruthRaw[ijet]);
+	fastjet::PseudoJet groomed_jet = f(inclusive_jets_TruthRaw[ijet]);
 
-      TLorentzVector jettemp;
-      jettemp.SetPtEtaPhiM(groomed_jet.pt(),
-                           groomed_jet.eta(),
-                           groomed_jet.phi(),
-                           groomed_jet.m());
-
-      /////////////////////////////////
-      //Getting truth label for filling into ntuple
-      /////////////////////////////////
-      jetflavor = GetJetTruthFlavor(jettemp, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
-      if (debug) std::cout<<"FillingJet Trimmed: flav="<<jetflavor<<"  pt="<<jettemp.Pt()<<"  m="<<jettemp.M()<< std::endl;
-
-      if (jetflavor == -1) continue;
-
-      /////////////////////////////////
-      //Fill variables that will go into ntuple
-      /////////////////////////////////
-      TSub  T1SubOutputTrim  = TNSubjet(groomed_jet, 1, 0.1, 1.0, 36);
-      //TSub T2Test = TNSubjet(groomed_jet, 2, 0.1, 1.0, 36);
-      T2Sub  T2SubOutputTrim  = T2Subjet(groomed_jet, 0.1, 1.0, 36);
-      T3Sub  T3SubOutputTrim = T3Subjet(groomed_jet, 0.1, 1.0, 36);
-
-      if (T1SubOutputTrim.volatility == -1) {
-	  std::cout << jentry << std::endl;
-      }
-      
-      TruthRawTrim_flavor.push_back(jetflavor);
-
-      TruthRawTrim_pt.push_back(jettemp.Pt());
-      TruthRawTrim_eta.push_back(jettemp.Eta());
-      TruthRawTrim_phi.push_back(jettemp.Phi());
-      TruthRawTrim_m.push_back(jettemp.M());
-      
-      TruthRawTrim_Tau21.push_back(GetTau21(groomed_jet));
-      TruthRawTrim_Tau32.push_back(GetTau32(groomed_jet));
-      
-      TruthRawTrim_T1jet_angle.push_back(T1SubOutputTrim.minAngle);
-      TruthRawTrim_T1jet.push_back(T1SubOutputTrim.volatility);
-      TruthRawTrim_T1Volatility.push_back(T1SubOutputTrim.volVec);
-      TruthRawTrim_T1masses.push_back(T1SubOutputTrim.masses);
-      
-      TruthRawTrim_T2jet_angle.push_back(T2SubOutputTrim.minAngle);
-      TruthRawTrim_T2jet.push_back(T2SubOutputTrim.volatility);
-      TruthRawTrim_T2Volatility.push_back(T2SubOutputTrim.volVec);
-      TruthRawTrim_T2masses.push_back(T2SubOutputTrim.masses);
-      TruthRawTrim_T2jet_massW.push_back(T2SubOutputTrim.massW);
-      TruthRawTrim_T2jet_volatilityW.push_back(T2SubOutputTrim.volatilityW);
-
-      TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.minAngle);
-      TruthRawTrim_T3jet.push_back(T3SubOutputTrim.volatility);
-      TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
-      TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatilityW);
-      TruthRawTrim_T3Volatility.push_back(T3SubOutputTrim.volVec);
-      TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
+	TLorentzVector jettemp;
+	jettemp.SetPtEtaPhiM(groomed_jet.pt(),
+			     groomed_jet.eta(),
+			     groomed_jet.phi(),
+			     groomed_jet.m());
+	
+	/////////////////////////////////
+	//Getting truth label for filling into ntuple
+	/////////////////////////////////
+	jetflavor = GetJetTruthFlavor(jettemp, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
+	if (debug) std::cout<<"FillingJet Trimmed: flav="<<jetflavor<<"  pt="<<jettemp.Pt()<<"  m="<<jettemp.M()<< std::endl;
+	
+	if (jetflavor == -1) continue;
+	
+	/////////////////////////////////
+	//Fill variables that will go into ntuple
+	/////////////////////////////////
+	TSub  T1SubOutputTrim  = TNSubjet(groomed_jet, 1, 0.1, 1.0, 36);
+	T2Sub  T2SubOutputTrim  = T2Subjet(groomed_jet, 0.1, 1.0, 36);
+	T3Sub  T3SubOutputTrim = T3Subjet(groomed_jet, 0.1, 1.0, 36);
+	
+	TruthRawTrim_flavor.push_back(jetflavor);
+	
+	TruthRawTrim_pt.push_back(jettemp.Pt());
+	TruthRawTrim_eta.push_back(jettemp.Eta());
+	TruthRawTrim_phi.push_back(jettemp.Phi());
+	TruthRawTrim_m.push_back(jettemp.M());
+	
+	TruthRawTrim_Tau21.push_back(GetTau21(groomed_jet));
+	TruthRawTrim_Tau32.push_back(GetTau32(groomed_jet));
+	
+	TruthRawTrim_T1jet_angle.push_back(T1SubOutputTrim.minAngle);
+	TruthRawTrim_T1jet.push_back(T1SubOutputTrim.volatility);
+	TruthRawTrim_T1Volatility.push_back(T1SubOutputTrim.volVec);
+	TruthRawTrim_T1masses.push_back(T1SubOutputTrim.masses);
+	
+	TruthRawTrim_T2jet_angle.push_back(T2SubOutputTrim.minAngle);
+	TruthRawTrim_T2jet.push_back(T2SubOutputTrim.volatility);
+	TruthRawTrim_T2Volatility.push_back(T2SubOutputTrim.volVec);
+	TruthRawTrim_T2masses.push_back(T2SubOutputTrim.masses);
+	TruthRawTrim_T2jet_massW.push_back(T2SubOutputTrim.massW);
+	TruthRawTrim_T2jet_volatilityW.push_back(T2SubOutputTrim.volatilityW);
+	
+	TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.minAngle);
+	TruthRawTrim_T3jet.push_back(T3SubOutputTrim.volatility);
+	TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
+	TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatilityW);
+	TruthRawTrim_T3Volatility.push_back(T3SubOutputTrim.volVec);
+	TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
     }
 
+    std::vector<fastjet::PseudoJet> caloClusters = ToyCalorimeter(input_particles);
+    fastjet::ClusterSequence clusterSequenceCalo(caloClusters, jet_def);
+    std::vector<fastjet::PseudoJet> caloJets = sorted_by_pt(clusterSequenceCalo.inclusive_jets(5.0));
+    
+    for (unsigned int i = 0; i < caloJets.size(); ++i) {
+	fastjet::PseudoJet groomedCaloJet = f(caloJets[i]);
+
+	TLorentzVector tempJet;
+	tempJet.SetPtEtaPhiM(groomedCaloJet.pt(),
+			     groomedCaloJet.eta(),
+			     groomedCaloJet.phi(),
+			     groomedCaloJet.m());
+
+	jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
+	if (jetflavor == -1) continue;
+
+	TSub T1CaloJet = TNSubjet(groomedCaloJet, 1, 0.1, 1.0, 36);
+	TSub T2CaloJet = TNSubjet(groomedCaloJet, 2, 0.1, 1.0, 36);
+	T3Sub T3CaloJet = T3Subjet(groomedCaloJet, 0.1, 1.0, 36);
+
+	CaloTrim_flavor.push_back(jetflavor);
+
+	CaloTrim_pt.push_back(tempJet.Pt());
+	CaloTrim_eta.push_back(tempJet.Eta());
+	CaloTrim_phi.push_back(tempJet.Phi());
+	CaloTrim_m.push_back(tempJet.M());
+	
+	CaloTrim_Tau21.push_back(GetTau21(groomedCaloJet));
+	CaloTrim_Tau32.push_back(GetTau32(groomedCaloJet));
+	
+	CaloTrim_T1jet_angle.push_back(T1CaloJet.minAngle);
+	CaloTrim_T1jet.push_back(T1CaloJet.volatility);
+	
+	CaloTrim_T2jet_angle.push_back(T2CaloJet.minAngle);
+	CaloTrim_T2jet.push_back(T2CaloJet.volatility);
+	
+	CaloTrim_T3jet_angle.push_back(T3CaloJet.minAngle);
+	CaloTrim_T3jet.push_back(T3CaloJet.volatility);
+	CaloTrim_T3jet_W.push_back(T3CaloJet.massW);
+	CaloTrim_T3jet_mW.push_back(T3CaloJet.volatilityW);
+    }
+    
     if(debug) std::cout<<"Filling Tree"<< std::endl;
     treeout->Fill();
   }
-
+  
   fileout->cd();
   treeout->Write();
   fileout->Close();
-
+  
   return 0;
-
+  
 }
 
 ///=========================================
@@ -426,6 +476,27 @@ void ResetBranches(){
 
   TruthRawTrim_T2jet_massW.clear();
   TruthRawTrim_T2jet_volatilityW.clear();
+  
+  CaloTrim_T1jet_angle.clear();
+  CaloTrim_T1jet.clear();
+  CaloTrim_T2jet_angle.clear();
+  CaloTrim_T2jet.clear();
+  CaloTrim_T3jet_angle.clear();
+  CaloTrim_T3jet_angle1.clear();
+  CaloTrim_T3jet_angle2.clear();
+  CaloTrim_T3jet.clear();
+  CaloTrim_T3jet_W.clear();
+  CaloTrim_T3jet_mW.clear();
+  CaloTrim_T4jet_angle.clear();
+  CaloTrim_T4jet.clear();
+  CaloTrim_T5jet_angle.clear();
+  CaloTrim_T5jet.clear();
+  CaloTrim_Tpruning.clear();
+  CaloTrim_Ttrimming.clear();
+  CaloTrim_Taktreclustering.clear();
+  CaloTrim_Tktreclustering.clear();
+  CaloTrim_TJet_m1.clear();
+  CaloTrim_TJet_m2.clear();
 }
 
 ///=========================================
@@ -556,7 +627,7 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     double beta = 1.0;    
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
     fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
-
+    //fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
     double tauN = nSubjettiness.result(input);
     std::vector<fastjet::PseudoJet> tauAxes = nSubjettiness.currentAxes();
     std::vector<TLorentzVector> pTauAxes(numSubjets);
@@ -642,7 +713,7 @@ T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     double beta = 1.0;
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
     fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
-    
+    //fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
     double tau2 = nSubjettiness.result(input);
     std::vector<fastjet::PseudoJet> tau2axes = nSubjettiness.currentAxes();
 
@@ -735,7 +806,7 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     double beta = 1.0;
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
     fastjet::contrib::Nsubjettiness nSubjettiness(3, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
-
+    //fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
     double tau3 = nSubjettiness.result(input);
     std::vector<fastjet::PseudoJet> tau3axes = nSubjettiness.currentAxes();
 

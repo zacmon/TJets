@@ -234,6 +234,36 @@ std::vector<std::vector<double>> TruthRawTrim_T3masses;
 
 std::vector<double> TruthRawTrim_T2jet_massW;
 std::vector<double> TruthRawTrim_T2jet_volatilityW;
+
+std::vector<int>    CaloTrim_flavor;
+std::vector<double> CaloTrim_pt;
+std::vector<double> CaloTrim_eta;
+std::vector<double> CaloTrim_phi;
+std::vector<double> CaloTrim_m;
+std::vector<double> CaloTrim_Tau21;
+std::vector<double> CaloTrim_Tau32;
+std::vector<double> CaloTrim_D2;
+std::vector<double> CaloTrim_TJet_m1;
+std::vector<double> CaloTrim_TJet_m2;
+std::vector<double> CaloTrim_T1jet_angle;
+std::vector<double> CaloTrim_T1jet;
+std::vector<double> CaloTrim_T2jet_angle;
+std::vector<double> CaloTrim_T2jet;
+std::vector<double> CaloTrim_T3jet_angle;
+std::vector<double> CaloTrim_T3jet_angle1;
+std::vector<double> CaloTrim_T3jet_angle2;
+std::vector<double> CaloTrim_T3jet;
+std::vector<double> CaloTrim_T3jet_W;
+std::vector<double> CaloTrim_T3jet_mW;
+std::vector<double> CaloTrim_T4jet_angle;
+std::vector<double> CaloTrim_T4jet;
+std::vector<double> CaloTrim_T5jet_angle;
+std::vector<double> CaloTrim_T5jet;
+std::vector<double> CaloTrim_Tpruning;
+std::vector<double> CaloTrim_Ttrimming;
+std::vector<double> CaloTrim_Taktreclustering;
+std::vector<double> CaloTrim_Tktreclustering;
+
 ///////////////////////////
 //extra functions
 ///////////////////////////
