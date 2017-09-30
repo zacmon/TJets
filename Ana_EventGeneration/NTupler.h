@@ -232,6 +232,8 @@ std::vector<std::vector<double>> TruthRawTrim_T1masses;
 std::vector<std::vector<double>> TruthRawTrim_T2masses;
 std::vector<std::vector<double>> TruthRawTrim_T3masses;
 
+std::vector<double> TruthRawTrim_T2jet_massW;
+std::vector<double> TruthRawTrim_T2jet_volatilityW;
 ///////////////////////////
 //extra functions
 ///////////////////////////
@@ -268,6 +270,16 @@ struct TSub {
     std::vector<double> masses;
 };
 
+struct T2Sub {
+    double minAngle = -1;
+    double volatility = -1;
+    std::vector<double> volVec;
+    std::vector<double> masses;
+
+    double massW = -1;
+    double volatilityW = -1;
+};
+    
 struct T3Sub {
     double minAngle = -1;
     double volatility = -1;
@@ -282,8 +294,8 @@ struct T3Sub {
 };
 
 TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadius, double maxRadius, int numRadii);
+T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii);
 T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii);
-T3Sub T_3Subjet(fastjet::PseudoJet& input, double R_min, double R_max, int N_R);
 double T_Pruning(fastjet::PseudoJet& input, double dcut_min, double dcut_max, int N_dcut);
 double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, int N_fcut);
 double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double R_min, double R_max, int N_R);

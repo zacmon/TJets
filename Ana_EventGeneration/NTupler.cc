@@ -17,8 +17,7 @@ type   : 0 = dijet , 1 = G*->W+W- , 2 = ttbar
 input  : Input file from Ana_MiniNTupleAnalysis
 output : Anything you want - but being logical
 
-//----------------------------------------------------------------------*/
-
+------------------------------------------------------------------------*/
 
 #include "NTupler.h"
 
@@ -173,6 +172,9 @@ int main (int argc, char* argv[]) {
   treeout->Branch("TruthRawTrim_T1masses", &TruthRawTrim_T1masses);
   treeout->Branch("TruthRawTrim_T2masses", &TruthRawTrim_T2masses);
   treeout->Branch("TruthRawTrim_T3masses", &TruthRawTrim_T3masses);
+
+  treeout->Branch("TruthRawTrim_T2jet_Wmass", &TruthRawTrim_T2jet_massW);
+  treeout->Branch("TruthRawTrim_T2jet_WmassVolatility", &TruthRawTrim_T2jet_volatilityW);
   
   //////////////////////////////////////////////
   //random number generator for pileup
@@ -188,7 +190,7 @@ int main (int argc, char* argv[]) {
 
   for (Long64_t jentry=0; jentry<nEvents; jentry++) {
       
-      if (jentry % 100 == 0) std::cout << jentry << " processed." << std::endl;
+      if (jentry % 1000 == 0) std::cout << jentry << " processed." << std::endl;
 
       filein->cd();
       treein->GetEntry(jentry);
@@ -299,9 +301,14 @@ int main (int argc, char* argv[]) {
       //Fill variables that will go into ntuple
       /////////////////////////////////
       TSub  T1SubOutputTrim  = TNSubjet(groomed_jet, 1, 0.1, 1.0, 36);
-      TSub  T2SubOutputTrim  = TNSubjet(groomed_jet, 2, 0.1, 1.0, 36);
+      //TSub T2Test = TNSubjet(groomed_jet, 2, 0.1, 1.0, 36);
+      T2Sub  T2SubOutputTrim  = T2Subjet(groomed_jet, 0.1, 1.0, 36);
       T3Sub  T3SubOutputTrim = T3Subjet(groomed_jet, 0.1, 1.0, 36);
 
+      if (T1SubOutputTrim.volatility == -1) {
+	  std::cout << jentry << std::endl;
+      }
+      
       TruthRawTrim_flavor.push_back(jetflavor);
 
       TruthRawTrim_pt.push_back(jettemp.Pt());
@@ -321,7 +328,9 @@ int main (int argc, char* argv[]) {
       TruthRawTrim_T2jet.push_back(T2SubOutputTrim.volatility);
       TruthRawTrim_T2Volatility.push_back(T2SubOutputTrim.volVec);
       TruthRawTrim_T2masses.push_back(T2SubOutputTrim.masses);
-      
+      TruthRawTrim_T2jet_massW.push_back(T2SubOutputTrim.massW);
+      TruthRawTrim_T2jet_volatilityW.push_back(T2SubOutputTrim.volatilityW);
+
       TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.minAngle);
       TruthRawTrim_T3jet.push_back(T3SubOutputTrim.volatility);
       TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
@@ -414,6 +423,9 @@ void ResetBranches(){
   TruthRawTrim_T1masses.clear();
   TruthRawTrim_T2masses.clear();
   TruthRawTrim_T3masses.clear();
+
+  TruthRawTrim_T2jet_massW.clear();
+  TruthRawTrim_T2jet_volatilityW.clear();
 }
 
 ///=========================================
@@ -579,9 +591,9 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     }
     
     for (auto &subjetConstituents : sortedConstituents) {
-	std::sort(subjetConstituents.begin(), subjetConstituents.end(), [](const std::pair<TLorentzVector, double> &pair1, const std::pair<TLorentzVector, double> &pair2) {
-		return pair1.second < pair2.second;
-	    });
+        std::sort(subjetConstituents.begin(), subjetConstituents.end(), [](const std::pair<TLorentzVector, double> &pair1, const std::pair<TLorentzVector, double> &pair2) {
+                return pair1.second < pair2.second;
+            });
     }
     
     std::vector<TLorentzVector> TSubjets(numSubjets);
@@ -589,7 +601,7 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 
     double deltaR = (maxRadius - minRadius) / (numRadii);
     
-    for (double r = minRadius; r <= maxRadius; r += deltaR) {
+    for (double r = minRadius; r < maxRadius + deltaR; r += deltaR) {
 	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
 	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
 		if (it->second <= r) {
@@ -623,6 +635,100 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     return result;
 }
 
+
+T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii) {
+    T2Sub result;
+    
+    double beta = 1.0;
+    fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
+    fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
+    
+    double tau2 = nSubjettiness.result(input);
+    std::vector<fastjet::PseudoJet> tau2axes = nSubjettiness.currentAxes();
+
+    std::vector<TLorentzVector> pTauAxes(2);
+    for (unsigned int i = 0; i < 2; ++i) {
+	pTauAxes[i].SetPxPyPzE(tau2axes[i].px(), tau2axes[i].py(), tau2axes[i].pz(), tau2axes[i].e());
+    }
+
+    result.minAngle = pTauAxes[0].DeltaR(pTauAxes[1]);
+
+    std::vector<fastjet::PseudoJet> constituents = input.constituents();
+    std::vector<std::vector<std::pair<TLorentzVector, double>>> sortedConstituents(2);
+
+    for (auto const &constituent : constituents) {
+	TLorentzVector pConstituent(constituent.px(), constituent.py(), constituent.pz(), constituent.e());
+
+	std::vector<double> distanceToTauAxes(2);
+	for (unsigned int i = 0; i < 2; ++i) {
+	    distanceToTauAxes[i] = pConstituent.DeltaR(pTauAxes[i]);
+	}
+
+	auto minDistanceToTauAxesIt = std::min_element(distanceToTauAxes.cbegin(), distanceToTauAxes.cend());
+	double minDistanceToTauAxes = *minDistanceToTauAxesIt;
+	unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
+
+	sortedConstituents[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
+    }
+    
+    for (auto &subjetConstituents : sortedConstituents) {
+	std::sort(subjetConstituents.begin(), subjetConstituents.end(), [](const std::pair<TLorentzVector, double> &pair1, const std::pair<TLorentzVector, double> &pair2) {
+		return pair1.second < pair2.second;
+	    });
+    }
+    
+    std::vector<TLorentzVector> TSubjets(2);
+    std::vector<std::vector<double>> telescopingMasses(3);
+    std::vector<double> masses(3);
+
+    double deltaR = (maxRadius - minRadius) / (numRadii);
+    for (double r = minRadius; r < maxRadius + deltaR; r += deltaR) {
+	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
+	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
+		if (it->second <= r) {
+		    TSubjets[i] += it->first;
+		    sortedConstituents[i].erase(it);
+		    --it;
+		}
+		else break;
+	    }
+	}
+    
+	masses[0] = (TSubjets[0] + TSubjets[1]).M();
+	masses[1] = TSubjets[0].M();
+	masses[2] = TSubjets[1].M();
+
+	for (unsigned int i = 0; i < masses.size(); ++i) {
+	    telescopingMasses[i].push_back(masses[i]);
+	    if (i == 0) result.volVec.push_back(getVolatility(telescopingMasses[i]));
+	}
+    }
+    
+    if (!telescopingMasses[0].empty() && !telescopingMasses[1].empty() && !telescopingMasses[2].empty()) {
+	result.volatility = getVolatility(telescopingMasses[0]);
+	result.masses = telescopingMasses[0];
+
+	std::vector<double> residualWMass = masses;
+
+	std::transform(residualWMass.begin() + 1, residualWMass.end(), residualWMass.begin() + 1,
+		       bind2nd(std::minus<double>(), massW));
+	std::transform(residualWMass.begin() + 1, residualWMass.end(), residualWMass.begin() + 1,
+		       static_cast<double (*)(double)>(&std::abs));
+
+	auto wMassPredictionIt = std::min_element(residualWMass.cbegin() + 1, residualWMass.cend());
+	unsigned int wMassPredictionIndex = std::distance(residualWMass.cbegin(), wMassPredictionIt);
+
+	result.massW = masses[wMassPredictionIndex];
+	result.volatilityW = getVolatility(telescopingMasses[wMassPredictionIndex]);
+    }
+    else {
+	std::cout << "WARNING zero entries for T2Subjet! minRadius: " << minRadius <<
+	    "\tmaxRadius: " << maxRadius <<
+	    "\tnumRadii: " << numRadii << std::endl;
+    }
+    return result;
+}
+
 T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii) {
     T3Sub result;
 
@@ -637,7 +743,7 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     for (unsigned int i = 0; i < 3; ++i) {
 	pTauAxes[i].SetPxPyPzE(tau3axes[i].px(), tau3axes[i].py(), tau3axes[i].pz(), tau3axes[i].e());
     }
-
+    
     std::vector<double> anglesBetweenTauAxes;
     for (unsigned int i = 0; i < 3; ++i) {
 	for (unsigned int j = i + 1; j < 3; ++j) {
@@ -681,7 +787,7 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     std::vector<double> masses(4);
 
     double deltaR = (maxRadius - minRadius) / (numRadii);
-    for (double r = minRadius; r <= maxRadius; r += deltaR) {
+    for (double r = minRadius; r < maxRadius + deltaR; r += deltaR) {
 	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
 	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
 		if (it->second <= r) {
@@ -724,8 +830,9 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 	result.volatilityW = getVolatility(telescopingMasses[wMassPredictionIndex]);
     }
     else {
-        std::cout <<"WARNING zero entries for T3Subjet! \tminRadius: " << minRadius <<
-	    "\tmaxRadius: " << maxRadius << "\tnumRadii: " << numRadii << std::endl;
+        std::cout << "WARNING zero entries for T3Subjet! \tminRadius: " << minRadius <<
+	    "\tmaxRadius: " << maxRadius <<
+	    "\tnumRadii: " << numRadii << std::endl;
     }    
     return result;
 }

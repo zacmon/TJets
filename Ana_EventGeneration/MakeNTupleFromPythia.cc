@@ -40,7 +40,7 @@ int main(int argc, char* argv[]){
   std::string ProcessType = argv[1];
 
   //get config file
-  string ConfigFile   = "config_DEFAULT.cmnd";
+  std::string ConfigFile   = "config_DEFAULT.cmnd";
 
   if(ProcessType=="dijet")
     ConfigFile="config_dijet.cmnd";
@@ -139,12 +139,11 @@ int main(int argc, char* argv[]){
   for (int iEvent = 0; iEvent < nEvents; ++iEvent) {
 
     //print out to show progress
-    if(iEvent%100==0)
-      cout<<"Pythia: ProcessType="<<ProcessType<<"  entry="<<iEvent<<endl;
+    if(iEvent%100==0) cout<<"Pythia: ProcessType="<<ProcessType<<"  entry="<<iEvent<<endl;
 
     //generates a new event
     pythia.next();
-
+    
     //accept event flag
     bool acceptevent=false;
 
@@ -192,149 +191,162 @@ int main(int argc, char* argv[]){
 
     bool flag_q1_set=false;
 
+    //  Optimizations can possibly be made by making use of Event::entry private member.
+    //  Possible hack to make it public member and then sort it?
+    //  First sort particles by isFinal. Put all those into TTree.
+    //  Then sort by by whatever, e.g. status() or checking if it's a particle of interest
+    //  The point here is not to iterate over gluons
+    //  Removing gluons may be more computationally expensive than sorting them to the back
+    //  Put break statements after both particles of interest or whatever have been found
+    //  because all final particles have already been collected
+    
     //loops through the particles in the event just generated
     for (int iPart = 0; iPart < pythia.event.size(); ++iPart) {
-        
-      //event filter for
-      if(debug) cout<<"Process specific filters: "<<ProcessType<<endl;
-      if(ProcessType=="dijet"){
-        if(debug) cout<<"Dijet Filter"<<endl;
-        //fill truth quark branches
-        if(debug) cout<<"FilterStatus : "<<pythia.event[iPart].status()<<"  "<<flag_q1_set<<endl;
-        if(pythia.event[iPart].status()==-23 && !flag_q1_set){
-          if(debug) cout<<"GotTruth - q1"<<endl;
-          truth_q1_pt=pythia.event[iPart].pT();
-          truth_q1_eta=pythia.event[iPart].eta();
-          truth_q1_phi=pythia.event[iPart].phi();
-          truth_q1_m=pythia.event[iPart].m();
-          if(debug) cout<<"q1  "<<truth_q1_pt<<"  "<<truth_q1_eta<<"  "<<truth_q1_phi<<"  "<<truth_q1_m<<endl;
-          if(truth_q1_pt>190){
-            acceptevent=true;
-          }
 
-          flag_q1_set=true;
-
-        }
-        else if(pythia.event[iPart].status()==-23){
-          if(debug) cout<<"GotTruth - q2"<<endl;
-          truth_q2_pt=pythia.event[iPart].pT();
-          truth_q2_eta=pythia.event[iPart].eta();
-          truth_q2_phi=pythia.event[iPart].phi();
-          truth_q2_m=pythia.event[iPart].m();
-          if(debug) cout<<"q2  "<<truth_q2_pt<<"  "<<truth_q2_eta<<"  "<<truth_q2_phi<<"  "<<truth_q2_m<<endl;
-          if(truth_q2_pt>190){
-            acceptevent=true;
-          }
-        }
-      }
-      else if(ProcessType=="ww"){
-        if(debug) cout<<"WW Filter"<<endl;
-        //only accept if Wprime decay is via G*->WW - identify by asking for Z0 in the intermediate state
-        if(pythia.event[iPart].id()==24 && pythia.event[iPart].status()==-22){
-          acceptevent=true;
-        }
-        //fill truth boson branches
-        if(pythia.event[iPart].id()==24 && pythia.event[iPart].status()==-22){
-          if(debug) cout<<"GotTruth - W1"<<endl;
-          truth_W1_pt  = pythia.event[iPart].pT();
-          truth_W1_eta = pythia.event[iPart].eta();
-          truth_W1_phi = pythia.event[iPart].phi();
-          truth_W1_m   = pythia.event[iPart].m();
-        }
-        else if( pythia.event[iPart].id()==-24 && pythia.event[iPart].status()==-22){
-          if(debug) cout<<"GotTruth - W2"<<endl;
-          truth_W2_pt  = pythia.event[iPart].pT();
-          truth_W2_eta = pythia.event[iPart].eta();
-          truth_W2_phi = pythia.event[iPart].phi();
-          truth_W2_m   = pythia.event[iPart].m();
+	//event filter for
+	if(debug) cout<<"Process specific filters: "<<ProcessType<<endl;
+	if (ProcessType=="dijet") {
+	    if(debug) cout<<"Dijet Filter"<<endl;
+	    //fill truth quark branches
+	    if(debug) cout<<"FilterStatus : "<<pythia.event[iPart].status()<<"  "<<flag_q1_set<<endl;
+	    if(pythia.event[iPart].status()==-23 && !flag_q1_set){
+		std::cout << "ad;slfajdfl;" << std::endl;
+		if(debug) cout<<"GotTruth - q1"<<endl;
+		truth_q1_pt=pythia.event[iPart].pT();
+		truth_q1_eta=pythia.event[iPart].eta();
+		truth_q1_phi=pythia.event[iPart].phi();
+		truth_q1_m=pythia.event[iPart].m();
+		if(debug) cout<<"q1  "<<truth_q1_pt<<"  "<<truth_q1_eta<<"  "<<truth_q1_phi<<"  "<<truth_q1_m<<endl;
+		if(truth_q1_pt>190){
+		    acceptevent=true;
+		}
+		std::cout << "hi" << std::endl;
+		flag_q1_set=true;
+		
+	    }
+	    else if(pythia.event[iPart].status()==-23){
+		if(debug) cout<<"GotTruth - q2"<<endl;
+		truth_q2_pt=pythia.event[iPart].pT();
+		truth_q2_eta=pythia.event[iPart].eta();
+		truth_q2_phi=pythia.event[iPart].phi();
+		truth_q2_m=pythia.event[iPart].m();
+		if(debug) cout<<"q2  "<<truth_q2_pt<<"  "<<truth_q2_eta<<"  "<<truth_q2_phi<<"  "<<truth_q2_m<<endl;
+		if(truth_q2_pt>190){
+		    acceptevent=true;
+		}
+	    }
 	}
 
-	//  Skip saving event if W decay to leptons.
-	if (std::abs(pythia.event[iPart].id()) == 12 || std::abs(pythia.event[iPart].id()) == 14 || std::abs(pythia.event[iPart].id()) == 16) {
-	    continue;
+	else if(ProcessType=="ww"){
+	    if(debug) cout<<"WW Filter"<<endl;
+	    //only accept if Wprime decay is via G*->WW - identify by asking for Z0 in the intermediate state
+	    if(pythia.event[iPart].id()==24 && pythia.event[iPart].status()==-22){
+		acceptevent=true;
+	    }
+	    //fill truth boson branches
+	    if(pythia.event[iPart].id()==24 && pythia.event[iPart].status()==-22){
+		if(debug) cout<<"GotTruth - W1"<<endl;
+		truth_W1_pt  = pythia.event[iPart].pT();
+		truth_W1_eta = pythia.event[iPart].eta();
+		truth_W1_phi = pythia.event[iPart].phi();
+		truth_W1_m   = pythia.event[iPart].m();
+	    }
+	    else if( pythia.event[iPart].id()==-24 && pythia.event[iPart].status()==-22){
+		if(debug) cout<<"GotTruth - W2"<<endl;
+		truth_W2_pt  = pythia.event[iPart].pT();
+		truth_W2_eta = pythia.event[iPart].eta();
+		truth_W2_phi = pythia.event[iPart].phi();
+		truth_W2_m   = pythia.event[iPart].m();
+	    }
+	    
+	    //  Skip saving event if W decay to leptons.
+	    if (std::abs(pythia.event[iPart].id()) == 12 || std::abs(pythia.event[iPart].id()) == 14 || std::abs(pythia.event[iPart].id()) == 16) {
+		continue;
+	    }
 	}
-      }
-      else if(ProcessType=="tt"){
-        if(debug) cout<<"Top quark Filter"<<endl;
-        //fill truth topquark branches
-        if(pythia.event[iPart].id()==6 && pythia.event[iPart].status()==-62){
-          if(debug) cout<<"GotTruth - t1"<<endl;
-          truth_t1_pt=pythia.event[iPart].pT();
-          truth_t1_eta=pythia.event[iPart].eta();
-          truth_t1_phi=pythia.event[iPart].phi();
-          truth_t1_m=pythia.event[iPart].m();
-          if(truth_t1_pt>180){
-            acceptevent=true;
-          }
-        }
-        else if(pythia.event[iPart].id()==-6 && pythia.event[iPart].status()==-62){
-          if(debug) cout<<"GotTruth - t2"<<endl;
-          truth_t2_pt=pythia.event[iPart].pT();
-          truth_t2_eta=pythia.event[iPart].eta();
-          truth_t2_phi=pythia.event[iPart].phi();
-          truth_t2_m=pythia.event[iPart].m();
-          if(truth_t2_pt>180){
-            acceptevent=true;
-          }
-        }
-
-	//  Skip saving event if top decays to W that decays to leptons.
-	if (std::abs(pythia.event[iPart].id()) == 12 || std::abs(pythia.event[iPart].id()) == 14 || std::abs(pythia.event[iPart].id()) == 16) {
-            continue;
+	else if(ProcessType=="tt"){
+	    if(debug) cout<<"Top quark Filter"<<endl;
+	    //fill truth topquark branches
+	    if(pythia.event[iPart].id()==6 && pythia.event[iPart].status()==-22){
+		if(debug) cout<<"GotTruth - t1"<<endl;
+		truth_t1_pt=pythia.event[iPart].pT();
+		truth_t1_eta=pythia.event[iPart].eta();
+		truth_t1_phi=pythia.event[iPart].phi();
+		truth_t1_m=pythia.event[iPart].m();
+		if(truth_t1_pt>180){
+		    acceptevent=true;
+		}
+	    }
+	    else if(pythia.event[iPart].id()==-6 && pythia.event[iPart].status()==-22){
+		if(debug) cout<<"GotTruth - t2"<<endl;
+		truth_t2_pt=pythia.event[iPart].pT();
+		truth_t2_eta=pythia.event[iPart].eta();
+		truth_t2_phi=pythia.event[iPart].phi();
+		truth_t2_m=pythia.event[iPart].m();
+		if(truth_t2_pt>180){
+		    acceptevent=true;
+		}
+	    }
+	    
+	    //  Skip saving event if top decays to W that decays to leptons.
+	    if (std::abs(pythia.event[iPart].id()) == 12 || std::abs(pythia.event[iPart].id()) == 14 || std::abs(pythia.event[iPart].id()) == 16) {
+		continue;
+	    }
 	}
-      }
-      else if(ProcessType=="hh"){
-        if(debug) cout<<"Higgs Filter"<<endl;
-        //fill truth higgs branches
-        if(pythia.event[iPart].id()==25 && pythia.event[iPart].status()==-62){
-          if(debug) cout<<"GotTruth - H"<<endl;
-          truth_H_pt=pythia.event[iPart].pT();
-          truth_H_eta=pythia.event[iPart].eta();
-          truth_H_phi=pythia.event[iPart].phi();
-          truth_H_m=pythia.event[iPart].m();
-          if(truth_H_pt>180){
-            acceptevent=true;
-          }
-        }
-      }
-      else{
-        if(debug) cout<<"Filling event"<<endl;
-        acceptevent=true;
-      }
-      if(debug) cout<<acceptevent<<endl;
+	else if(ProcessType=="hh"){
+	    if(debug) cout<<"Higgs Filter"<<endl;
+	    //fill truth higgs branches
+	    if(pythia.event[iPart].id()==25 && pythia.event[iPart].status()==-62){
+		if(debug) cout<<"GotTruth - H"<<endl;
+		truth_H_pt=pythia.event[iPart].pT();
+		truth_H_eta=pythia.event[iPart].eta();
+		truth_H_phi=pythia.event[iPart].phi();
+		truth_H_m=pythia.event[iPart].m();
+		if(truth_H_pt>180){
+		    acceptevent=true;
+		}
+	    }
+	}
+	
+	else {
+	    if(debug) cout<<"Filling event"<<endl;
+	    acceptevent=true;
+	}
 
-
-      //only save particles to output ttree if they are final state particles
-      //this is the method recommended by Yang-Ting
-      if(pythia.event[iPart].isFinal()){
-        if(debug) {
-          if(iEvent%10==0){
-            cout<<pythia.event[iPart].status()<<"  "
-                <<pythia.event[iPart].id()<<"  "
-                <<pythia.event[iPart].pT()<<"  "
-                <<pythia.event[iPart].eta()<<"  "
-                <<pythia.event[iPart].phi()<<"  "
-                <<pythia.event[iPart].m()<<endl;
-          }
-        }
-
-        fspart_id .push_back(pythia.event[iPart].id());
-        fspart_pt .push_back(pythia.event[iPart].pT());
-        fspart_eta.push_back(pythia.event[iPart].eta());
-        fspart_phi.push_back(pythia.event[iPart].phi());
-        fspart_m  .push_back(pythia.event[iPart].m());
-      }
+	if(debug) cout<<acceptevent<<endl;
+	
+	
+	//only save particles to output ttree if they are final state particles
+	//this is the method recommended by Yang-Ting
+	if(pythia.event[iPart].isFinal()){
+	    if(debug) {
+		if(iEvent%10==0){
+		    cout<<pythia.event[iPart].status()<<"  "
+			<<pythia.event[iPart].id()<<"  "
+			<<pythia.event[iPart].pT()<<"  "
+			<<pythia.event[iPart].eta()<<"  "
+			<<pythia.event[iPart].phi()<<"  "
+			<<pythia.event[iPart].m()<<endl;
+		}
+	    }
+	    
+	    fspart_id .push_back(pythia.event[iPart].id());
+	    fspart_pt .push_back(pythia.event[iPart].pT());
+	    fspart_eta.push_back(pythia.event[iPart].eta());
+	    fspart_phi.push_back(pythia.event[iPart].phi());
+	    fspart_m  .push_back(pythia.event[iPart].m());
+	}
     }
-
+    
     //fill event into tree if it has passed the event filter
     if(acceptevent){
-      nAcceptedEvents+=1;
-      tree->Fill();
+	nAcceptedEvents+=1;
+	tree->Fill();
     }
-
-
+    
+    
   }
-
+  
   ///////////////////////////////////
   //Summary of truth filters
   ///////////////////////////////////
@@ -342,7 +354,7 @@ int main(int argc, char* argv[]){
       <<"total      = "<<nEvents<<endl
       <<"accepted   = "<<nAcceptedEvents<<endl
       <<"efficiency = "<<float(nAcceptedEvents)/float(nEvents)<<endl;
-
+  
   TFile *fout = new TFile(OutputFile.c_str(),"RECREATE");
   tree->Write("tree");
   fout->Close();

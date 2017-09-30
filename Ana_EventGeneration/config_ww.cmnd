@@ -16,7 +16,8 @@ ExtraDimensionsG*:gg2G* = on
 5100039:onIfAny = 24
 
 !Specify mass of G*
-5100039:m0 = 4000
+5100039:m0 = 2000
+5100039:mWidth = 25
 
 !specify W+- decays only to quarks
 24:onMode = off 
