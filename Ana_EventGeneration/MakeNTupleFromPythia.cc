@@ -210,7 +210,6 @@ int main(int argc, char* argv[]){
 	    //fill truth quark branches
 	    if(debug) cout<<"FilterStatus : "<<pythia.event[iPart].status()<<"  "<<flag_q1_set<<endl;
 	    if(pythia.event[iPart].status()==-23 && !flag_q1_set){
-		std::cout << "ad;slfajdfl;" << std::endl;
 		if(debug) cout<<"GotTruth - q1"<<endl;
 		truth_q1_pt=pythia.event[iPart].pT();
 		truth_q1_eta=pythia.event[iPart].eta();
@@ -220,7 +219,6 @@ int main(int argc, char* argv[]){
 		if(truth_q1_pt>190){
 		    acceptevent=true;
 		}
-		std::cout << "hi" << std::endl;
 		flag_q1_set=true;
 		
 	    }
