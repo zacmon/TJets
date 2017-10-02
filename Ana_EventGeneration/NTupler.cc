@@ -290,6 +290,13 @@ int main (int argc, char* argv[]) {
     truth_W2.SetPtEtaPhiM(truth_W2_pt,truth_W2_eta,truth_W2_phi,truth_W2_m);
     truth_H.SetPtEtaPhiM(truth_H_pt,truth_H_eta,truth_H_phi,truth_H_m);
 
+    //  NOTE! All TJet errors ensue from fastjet grooming away the
+    //  entire jet. This yields a zero mass or even a negative mass
+    //  jet. So when you see a WARNING zero entries . . . error, it is
+    //  because fastjet has groomed away the entire jet for whatever
+    //  reason. This happens now and again but does not affect the
+    //  statistics of the ntupled sample heavily.
+    
     /////////////////////////////
     //TruthRawTrim
     /////////////////////////////
