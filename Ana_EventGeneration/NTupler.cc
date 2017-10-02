@@ -476,7 +476,15 @@ void ResetBranches(){
 
   TruthRawTrim_T2jet_massW.clear();
   TruthRawTrim_T2jet_volatilityW.clear();
-  
+
+  CaloTrim_flavor.clear();
+  CaloTrim_pt.clear();
+  CaloTrim_eta.clear();
+  CaloTrim_phi.clear();
+  CaloTrim_m.clear();
+  CaloTrim_Tau21.clear();
+  CaloTrim_Tau32.clear();
+  CaloTrim_D2.clear();
   CaloTrim_T1jet_angle.clear();
   CaloTrim_T1jet.clear();
   CaloTrim_T2jet_angle.clear();
