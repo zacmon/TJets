@@ -19,3 +19,7 @@ PhaseSpace:pTHatMax = 500.0
 PhaseSpace:bias2Selection = on
 PhaseSpace:bias2SelectionPow = 6.
 PhaseSpace:bias2SelectionRef = 100.
+
+!turn off underlying event
+PartonLevel:ISR = on
+PartonLevel:MPI = on
