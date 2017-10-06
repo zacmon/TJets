@@ -8,7 +8,7 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-sigFile="ntupleTopCalo.root"
+sigFile="GenNTuple/20171002/ntuple_ww_0.root"
 bkgFile="ntupleDijetCalo.root"
 
 
@@ -1252,7 +1252,7 @@ def OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt
     cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_"+var0+"_"+var1+"_pt"+pt1+pt2+".eps")
 
 
-def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges,particle):
+def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges):
 
 
     path = outputdir1+"ROC_"+alg+"_Tau32_pt"+pt1+pt2+".root"
@@ -1292,7 +1292,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir1+"ROC_"+alg+"_Tau21_pt"+pt1+pt2+".root"
     f6   = TFile(path)
-    roc6 = f6.Get("ROC_SoverB")
+    roc6 = f6.Get("ROC_L")
     roc6.SetFillColor(9)
     roc6.SetLineColor(9)
     roc6.SetFillStyle(3001)
@@ -1305,12 +1305,12 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc7.SetLineColor(95)
     roc7.SetFillStyle(3001)
 
-    path = outputdir1 + "ROC_" + alg + "_v32_pt" + pt1 + pt2 + ".root"
-    f8   = TFile(path)
-    roc8 = f8.Get("ROC_L")
-    roc8.SetFillColor(7)
-    roc8.SetLineColor(7)
-    roc8.SetFillStyle(3001)
+    #path = outputdir1 + "ROC_" + alg + "_v32_pt" + pt1 + pt2 + ".root"
+    #f8   = TFile(path)
+    #roc8 = f8.Get("ROC_L")
+    #roc8.SetFillColor(7)
+    #roc8.SetLineColor(7)
+    #roc8.SetFillStyle(3001)
 
     path = outputdir1 + "ROC_" + alg + "_play_pt" + pt1 + pt2 + ".root"
     f9 = TFile(path)
@@ -1337,10 +1337,6 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     gr=MakeReferenceGraph(1)
     gr.Draw("ACE3")
 
-    if (particle == 6) {
-            roc1.Draw("CE3same")
-            roc7.Draw("CE3same")
-            
     roc1.Draw("CE3same")
     roc6.Draw("CE3same")
     roc2.Draw("CE3same")
@@ -1518,4 +1514,4 @@ for alg in algs:
                 mvatypes="BDT"
                 #Overlay all ROC curves relevant here
                 #OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt2,m1,m2,mvatypes,VarsAndRanges)
-                OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges,6) 
+                OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges) 

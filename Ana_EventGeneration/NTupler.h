@@ -194,6 +194,17 @@ std::vector<double> TruthRaw_Ttrimming;
 std::vector<double> TruthRaw_Taktreclustering;
 std::vector<double> TruthRaw_Tktreclustering;
 
+std::vector<std::vector<double>> TruthRaw_T1Volatility;
+std::vector<std::vector<double>> TruthRaw_T2Volatility;
+std::vector<std::vector<double>> TruthRaw_T3Volatility;
+
+std::vector<std::vector<double>> TruthRaw_T1masses;
+std::vector<std::vector<double>> TruthRaw_T2masses;
+std::vector<std::vector<double>> TruthRaw_T3masses;
+
+std::vector<double> TruthRaw_T2jet_massW;
+std::vector<double> TruthRaw_T2jet_volatilityW;
+
 std::vector<int>    TruthRawTrim_flavor;
 std::vector<double> TruthRawTrim_pt;
 std::vector<double> TruthRawTrim_eta;
@@ -227,13 +238,41 @@ std::vector<std::vector<double>> TruthRawTrim_T1Volatility;
 std::vector<std::vector<double>> TruthRawTrim_T2Volatility;
 std::vector<std::vector<double>> TruthRawTrim_T3Volatility;
 
-std::vector<double> TruthRawTrim_v32;
 std::vector<std::vector<double>> TruthRawTrim_T1masses;
 std::vector<std::vector<double>> TruthRawTrim_T2masses;
 std::vector<std::vector<double>> TruthRawTrim_T3masses;
 
 std::vector<double> TruthRawTrim_T2jet_massW;
 std::vector<double> TruthRawTrim_T2jet_volatilityW;
+
+std::vector<int>    CaloRaw_flavor;
+std::vector<double> CaloRaw_pt;
+std::vector<double> CaloRaw_eta;
+std::vector<double> CaloRaw_phi;
+std::vector<double> CaloRaw_m;
+std::vector<double> CaloRaw_Tau21;
+std::vector<double> CaloRaw_Tau32;
+std::vector<double> CaloRaw_D2;
+std::vector<double> CaloRaw_TJet_m1;
+std::vector<double> CaloRaw_TJet_m2;
+std::vector<double> CaloRaw_T1jet_angle;
+std::vector<double> CaloRaw_T1jet;
+std::vector<double> CaloRaw_T2jet_angle;
+std::vector<double> CaloRaw_T2jet;
+std::vector<double> CaloRaw_T3jet_angle;
+std::vector<double> CaloRaw_T3jet_angle1;
+std::vector<double> CaloRaw_T3jet_angle2;
+std::vector<double> CaloRaw_T3jet;
+std::vector<double> CaloRaw_T3jet_W;
+std::vector<double> CaloRaw_T3jet_mW;
+std::vector<double> CaloRaw_T4jet_angle;
+std::vector<double> CaloRaw_T4jet;
+std::vector<double> CaloRaw_T5jet_angle;
+std::vector<double> CaloRaw_T5jet;
+std::vector<double> CaloRaw_Tpruning;
+std::vector<double> CaloRaw_Ttrimming;
+std::vector<double> CaloRaw_Taktreclustering;
+std::vector<double> CaloRaw_Tktreclustering;
 
 std::vector<int>    CaloTrim_flavor;
 std::vector<double> CaloTrim_pt;
