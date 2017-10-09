@@ -42,34 +42,33 @@ int main(int argc, char* argv[]){
   //get config file
   std::string ConfigFile   = "config_DEFAULT.cmnd";
 
-  if(ProcessType=="dijet")
-    ConfigFile="config_dijet.cmnd";
-  else if(ProcessType=="ww")
-    ConfigFile="config_ww.cmnd";
-  else if(ProcessType=="tt")
-    ConfigFile="config_ttbar.cmnd";
-  else if(ProcessType=="hh")
-    ConfigFile="config_higgs.cmnd";
+  if (ProcessType=="dijet") ConfigFile="config_dijet.cmnd";
+  else if (ProcessType=="dijetLowPt") ConfigFile = "config_dijet_lowPt.cmnd";
+  else if (ProcessType=="ww") ConfigFile="config_ww.cmnd";
+  else if (ProcessType=="wwLowPt") ConfigFile = "config_ww_lowPt.cmnd";
+  else if (ProcessType=="tt") ConfigFile="config_ttbar.cmnd";
+  else if (ProcessType=="ttLowPt") ConfigFile="config_ttbar_lowPt.cmnd";
+  else if (ProcessType=="hh") ConfigFile="config_higgs.cmnd";
   else{
-    cout<<"Bad process type!"<<endl;
+      std::cout << "Bad process type!" << std::endl;
     return 0;
   }
 
   //get output file name
-  string OutputFile = argv[2];
+  std::string OutputFile = argv[2];
 
   //number of events
   int nEvents = atoi(argv[3]);
 
   //debug flag
   bool debug=false;
-  if(argc>=5){
-    string argdebug = argv[4];
-    if(argdebug=="debug")
-      debug=true;
+  if (argc>=5) {
+      std::string argdebug = argv[4];
+      if (argdebug=="debug") debug=true;
   }
+  
   //print out the input arguments
-  cout<<"InputArguments:  ProcessType="<<ProcessType<<"   ConfigFile="<<ConfigFile<<"  OutputFile="<<OutputFile<<"  Debug="<<debug<<endl;
+  std::cout << "InputArguments:  ProcessType="<<ProcessType<<"   ConfigFile="<<ConfigFile<<"  OutputFile="<<OutputFile<<"  Debug="<<debug<<std::endl;
 
 
   ///////////////////////////////////
@@ -205,7 +204,7 @@ int main(int argc, char* argv[]){
 
 	//event filter for
 	if(debug) cout<<"Process specific filters: "<<ProcessType<<endl;
-	if (ProcessType=="dijet") {
+	if (ProcessType=="dijet" || ProcessType=="dijetLowPt") {
 	    if(debug) cout<<"Dijet Filter"<<endl;
 	    //fill truth quark branches
 	    if(debug) cout<<"FilterStatus : "<<pythia.event[iPart].status()<<"  "<<flag_q1_set<<endl;
@@ -235,7 +234,7 @@ int main(int argc, char* argv[]){
 	    }
 	}
 
-	else if(ProcessType=="ww"){
+	else if(ProcessType=="ww" || ProcessType=="wwLowPt"){
 	    if(debug) cout<<"WW Filter"<<endl;
 	    //only accept if Wprime decay is via G*->WW - identify by asking for Z0 in the intermediate state
 	    if(pythia.event[iPart].id()==24 && pythia.event[iPart].status()==-22){
@@ -262,7 +261,7 @@ int main(int argc, char* argv[]){
 		continue;
 	    }
 	}
-	else if(ProcessType=="tt"){
+	else if(ProcessType=="tt" || ProcessType=="ttLowPt"){
 	    if(debug) cout<<"Top quark Filter"<<endl;
 	    //fill truth topquark branches
 	    if(pythia.event[iPart].id()==6 && pythia.event[iPart].status()==-22){
