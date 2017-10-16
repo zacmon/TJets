@@ -8,10 +8,8 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-sigFile="GenNTuple/20171015/ntuple_wwLowPt_0.root"
-bkgFile="GenNTuple/20171015/ntuple_dijetLowPt_0.root"
-#sigFile="GenNTuple/20171002/ntuple_ww_0.root"
-#bkgFile="ntupleDijetCalo.root"
+sigFile="GenNTuple/20171016/ntuple_ww_0.root"
+bkgFile="GenNTuple/20171016/ntuple_dijet_0.root"
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
     '''Implementation of simple signal and background comparison'''
@@ -36,7 +34,6 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
         histname = "TruthRawTrim_T3jet / TruthRawTrim_T2jet"
     if variable == "play":
         histname = "TruthRawTrim_T2jet / TruthRawTrim_T1jet"
-
     hsig = GetHist1D(InputDir+sigFile, "JetTree", histname, range, weight)#+"*("+alg+"_flavor==3)")
     hbkg = GetHist1D(InputDir+bkgFile, "JetTree", histname, range, weight)#+"*("+alg+"_flavor==0)")
 
@@ -119,7 +116,7 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     ATLASLabel(   0.20,0.85,1,0.1,0.03,"#sqrt{s}=13 TeV")
     myText(       0.20,0.80,1,0.03, TranslateAlg(alg))
     myText(       0.20,0.75,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
-    rocbox3=myLineBoxText(0.70, 0.85, 4, 1, 1, 0, 0.1, 0.08, "Top Jets")
+    rocbox3=myLineBoxText(0.70, 0.85, 4, 1, 1, 0, 0.1, 0.08, "W Jets")
     rocbox4=myLineBoxText(0.70, 0.80, 2, 1, 1, 0, 0.1, 0.08, "QCD Jets")
     c.SetLogy(logy)
     c.SaveAs(outputdir+"SignalBGCompare_"+alg+"_"+variable+"_pt"+pt1+pt2+".eps")
@@ -750,7 +747,7 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     sig.GetYaxis().SetTitle(TranslateVar(varY))
     sig.Draw("colz")
     ATLASLabel(   0.20,0.90,1,0.12,0.04,"#sqrt{s}=13 TeV")
-    myText(       0.20,0.80,1,0.04, "Top Jets")
+    myText(       0.20,0.80,1,0.04, "W Jets")
     myText(       0.50,0.90,1,0.04, TranslateAlg(alg))
     myText(       0.20,0.70,1,0.04, TranslateRegion(pt1,pt2,m1,m2))
     myText(       0.50,0.80,1,0.04, "corr = "+str(round(corrsig,4)))
@@ -793,7 +790,7 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
         sig.Draw("colz")
         ATLASLabel(   0.18,0.90,1,0.09,0.030,"#sqrt{s}=13 TeV")
         myText(       0.20,0.70,1,0.04, TranslateRegion(pt1,pt2,m1,m2))        
-        myText(       0.46,0.90,1,0.030, "Top Jets")
+        myText(       0.46,0.90,1,0.030, "W Jets")
         myText(       0.46,0.86,1,0.030, TranslateAlg(alg))
         csep.SetLogz(1)
         csep.SaveAs(outputdir+"2DSpectrum_"+alg+"_"+varX+"_"+varY+"_pt"+pt1+pt2+"_sig_log.eps")
@@ -903,7 +900,7 @@ def SignalBGCompare2D(InputDir, alg, var1, var1cutdir, var2, var2cutdir, range1,
     hsig.GetXaxis().SetTitle(var1)
     hsig.GetYaxis().SetTitle(var2)
     ATLASLabel(   0.20,0.90,1,0.12,0.04,"#sqrt{s}=13 TeV")
-    myText(       0.20,0.80,1,0.04, "Top Jets")
+    myText(       0.20,0.80,1,0.04, "W Jets")
     myText(       0.20,0.75,1,0.04, TranslateAlg(alg))
     myText(       0.20,0.80,1,0.04, TranslateRegion(pt1,pt2,m1,m2))
     myText(       0.20,0.65,1,0.04, "corr = "+str(corrsig))
@@ -958,7 +955,7 @@ def SignalBGCompare2D(InputDir, alg, var1, var1cutdir, var2, var2cutdir, range1,
     ATLASLabel(    0.20,0.90,1,0.1,0.03,"#sqrt{s}=13 TeV")
     myText(       0.20,0.80,1,0.04, TranslateRegion(pt1,pt2,m1,m2))
     box0=myLineBoxText(0.67, 0.80, 2, 2, 2, 3004, 0.1, 0.1, "QCD Jets")
-    box1=myLineBoxText(0.67, 0.75, 4, 1, 4, 3005, 0.1, 0.1, "Top Jets")
+    box1=myLineBoxText(0.67, 0.75, 4, 1, 4, 3005, 0.1, 0.1, "W Jets")
     myText(        0.60,0.70,1,0.03, "2D Likelihood")
     myText(        0.60,0.65,1,0.03, "0 = Signal-like")
     myText(        0.60,0.60,1,0.03, "1 = Background-like")
@@ -1035,7 +1032,7 @@ def GetCorrelationAndSeparationSigBG(InputDir, alg, var1, var2, range1, range2, 
     hsig.GetXaxis().SetTitle(var1)
     hsig.GetYaxis().SetTitle(var2)
     ATLASLabel(   0.20,0.90,1,0.12,0.04,"#sqrt{s}=13 TeV")
-    myText(       0.20,0.80,1,0.04, "Top Jets")
+    myText(       0.20,0.80,1,0.04, "W Jets")
     myText(       0.20,0.75,1,0.04, TranslateAlg(alg))
     myText(       0.20,0.80,1,0.04, TranslateRegion(pt1,pt2,m1,m2))
     myText(       0.20,0.65,1,0.04, "corr = "+str(corrsig))
@@ -1054,7 +1051,7 @@ def GetCorrelationAndSeparationSigBG(InputDir, alg, var1, var2, range1, range2, 
     proj1_bkg.Draw("hist")
     proj1_sig.Draw("histsame")
     ATLASLabel(   0.20,0.90,1,0.12,0.04,"#sqrt{s}=13 TeV")
-    bx1=myLineBoxText(0.56, 0.80, 2, 2, 0, 0, 0.08, 0.08, "Top Jets")
+    bx1=myLineBoxText(0.56, 0.80, 2, 2, 0, 0, 0.08, 0.08, "W Jets")
     bx2=myLineBoxText(0.75, 0.75, 4, 1, 0, 0, 0.08, 0.08, "QCD Jets")
     myText(       0.20,0.75,1,0.04, TranslateAlg(alg))
     myText(       0.20,0.65,1,0.04, "corr = "+str(corrbkg))
@@ -1065,7 +1062,7 @@ def GetCorrelationAndSeparationSigBG(InputDir, alg, var1, var2, range1, range2, 
     proj2_bkg.Draw("hist")
     proj2_sig.Draw("histsame")
     ATLASLabel(   0.20,0.90,1,0.12,0.04,"#sqrt{s}=13 TeV")
-    bx1=myLineBoxText(0.50, 0.80, 2, 2, 0, 0, 0.08, 0.08, "Top Jets")
+    bx1=myLineBoxText(0.50, 0.80, 2, 2, 0, 0, 0.08, 0.08, "W Jets")
     bx2=myLineBoxText(0.50, 0.75, 4, 1, 0, 0, 0.08, 0.08, "QCD Jets")
     myText(       0.20,0.75,1,0.04, TranslateAlg(alg))
     myText(       0.20,0.80,1,0.04, TranslateRegion(pt1,pt2,m1,m2))
@@ -1159,7 +1156,7 @@ def MakeMVAROCS(outfilename,outputdir,mvatypes):
         ATLASLabel(   0.20,0.85,1,0.12,0.04,"#sqrt{s}=13 TeV")
         myText(       0.20,0.80,1,0.03, TranslateAlg(alg))
         myText(       0.20,0.75,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
-        bx1=myLineBoxText(0.70, 0.85, 2, 1, 0, 0, 0.08, 0.1, "Top Jets")
+        bx1=myLineBoxText(0.70, 0.85, 2, 1, 0, 0, 0.08, 0.1, "W Jets")
         bx2=myLineBoxText(0.70, 0.80, 4, 1, 0, 0, 0.08, 0.1, "QCD Jets")
 
         c.SaveAs(outputdir+"SigBG_pt"+pt1+pt2+"_"+mvatype+".eps")
@@ -1421,8 +1418,8 @@ for alg in algs:
 
     print "\n\nGetting mass optimization"
     CutRegions=[]
-    CutRegions.append("1")
-    #CutRegions.append("2")
+    #CutRegions.append("1")
+    CutRegions.append("2")
 
     for CutRegion in CutRegions:
 

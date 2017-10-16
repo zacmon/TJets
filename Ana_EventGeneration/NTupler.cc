@@ -353,6 +353,13 @@ int main (int argc, char* argv[]) {
 	TruthRaw_T3jet.push_back(T3TruthRaw.volatility);
 	TruthRaw_T3jet_W.push_back(T3TruthRaw.massW);
 	TruthRaw_T3jet_mW.push_back(T3TruthRaw.volatilityW);
+
+	
+	double TruthRawTPruning = T_Pruning(jetsTruthRaw[ijet], 0.1, 2.0, 20);
+	TruthRaw_Tpruning.push_back(TruthRawTPruning);
+
+	double TruthRawTTrimming =	T_Trimming(jetsTruthRaw[ijet], 0.0, 0.1, 20);
+	TruthRaw_Ttrimming.push_back(TruthRawTTrimming);
 	
 	/////////////////////////////
 	//TruthRawTrim
@@ -402,6 +409,12 @@ int main (int argc, char* argv[]) {
 	TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
 	TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatilityW);
 	TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
+
+	double TruthRawTrimTPruning = T_Pruning(groomedJet, 0.1, 2.0, 20);
+	TruthRawTrim_Tpruning.push_back(TruthRawTrimTPruning);
+
+	double TruthRawTrimTTrimming = T_Trimming(groomedJet, 0.0, 0.1, 20);
+	TruthRawTrim_Ttrimming.push_back(TruthRawTrimTTrimming);
     }
 
     std::vector<fastjet::PseudoJet> caloClusters = ToyCalorimeter(input_particles);
@@ -444,6 +457,12 @@ int main (int argc, char* argv[]) {
 	CaloRaw_T3jet_W.push_back(T3CaloJetRaw.massW);
 	CaloRaw_T3jet_mW.push_back(T3CaloJetRaw.volatilityW);
 	
+	double CaloRawTPruning = T_Pruning(caloJets[i], 0.1, 2.0, 20);
+	CaloRaw_Tpruning.push_back(CaloRawTPruning);
+
+	double CaloRawTTrimming =	T_Trimming(caloJets[i], 0.0, 0.1, 20);
+	CaloRaw_Ttrimming.push_back(CaloRawTTrimming);
+	
 	//  Trimmed calo jet.
 	fastjet::PseudoJet groomedCaloJet = f(caloJets[i]);
 	
@@ -479,6 +498,12 @@ int main (int argc, char* argv[]) {
 	CaloTrim_T3jet.push_back(T3CaloJetTrim.volatility);
 	CaloTrim_T3jet_W.push_back(T3CaloJetTrim.massW);
 	CaloTrim_T3jet_mW.push_back(T3CaloJetTrim.volatilityW);
+
+	double CaloTrimTPruning = T_Pruning(groomedCaloJet, 0.1, 2.0, 20);
+	CaloTrim_Tpruning.push_back(CaloTrimTPruning);
+	
+	double CaloTrimTTrimming =	T_Trimming(groomedCaloJet, 0.0, 0.1, 20);
+	CaloTrim_Ttrimming.push_back(CaloTrimTTrimming);
     }
     
     if(debug) std::cout<<"Filling Tree"<< std::endl;
@@ -681,7 +706,10 @@ double T_Pruning(fastjet::PseudoJet& input, double minDCut, double maxDCut, int 
     }
     if (!telescopingMasses.empty()) return getVolatility(telescopingMasses);
     
-    std::cout << "WARNING zero entries for T_Pruning! minDCut: "<< minDCut << "\tmaxDCut: "<< maxDCut << "\tnumDCuts: "<< numDCuts << std::endl;
+    std::cout << "WARNING zero entries for T_Pruning!   minDCut: " << minDCut <<
+	"   maxDCut: " << maxDCut <<
+	"   numDCuts: " << numDCuts <<
+	"   input mass: " << input.m() << std::endl;
     return -1;
 }
 
@@ -705,7 +733,10 @@ double T_Trimming(fastjet::PseudoJet& input, double minFCut, double maxFCut, int
 
     if (!telescopingMasses.empty()) return getVolatility(telescopingMasses);
     
-    std::cout <<"WARNING zero entries for T_Trimming! minFCut: "<< minFCut << "\tmaxFCut: "<< maxFCut << "\tnumFCuts: "<< numFCuts << std::endl;
+    std::cout << "WARNING zero entries for T_Trimming!   minFCut: "<< minFCut <<
+	"   maxFCut: "<< maxFCut <<
+	"   numFCuts: "<< numFCuts <<
+	"   input mass: " << input.m() << std::endl;
     return -1;
 }
 
@@ -742,8 +773,10 @@ double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double minRadius
     
     if (!telescopingMass.empty()) return getVolatility(telescopingMass);
     
-    std::cout << "WARNING: zero entries for T_reclustering." <<
-	"\tAlgorithm: " << algorithm << "\tminRadius: " << minRadius << "\tmaxRadius: " << maxRadius << "\tnumRadii: " << numRadii <<  std::endl;
+    std::cout << "WARNING: zero entries for T_reclustering!   Algorithm" << algorithm <<
+	"   minRadius: " << minRadius <<
+	"   maxRadius: " << maxRadius <<
+	"   numRadii: " << numRadii <<  std::endl;
     return -1;
 }
 
@@ -829,8 +862,11 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 	result.masses = telescopingMasses;
     }
     else {
-	std::cout << "WARNING zero entries for TNSubjet! NumSubjets: " << numSubjets <<
-	    "\tminRadius: " << minRadius << "\tmaxRadius: " << maxRadius << "\tnumRadii: " << numRadii << std::endl;
+	std::cout << "WARNING zero entries for TNSubjet!   numSubjets: " << numSubjets <<
+	    "   minRadius: " << minRadius <<
+	    "   maxRadius: " << maxRadius <<
+	    "   numRadii: " << numRadii <<
+	    "   input mass: " << input.m() << std::endl;
     }
     return result;
 }
@@ -922,9 +958,10 @@ T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 	result.volatilityW = getVolatility(telescopingMasses[wMassPredictionIndex]);
     }
     else {
-	std::cout << "WARNING zero entries for T2Subjet! minRadius: " << minRadius <<
-	    "\tmaxRadius: " << maxRadius <<
-	    "\tnumRadii: " << numRadii << std::endl;
+	std::cout << "WARNING zero entries for T2Subjet!   minRadius: " << minRadius <<
+	    "   maxRadius: " << maxRadius <<
+	    "   numRadii: " << numRadii <<
+	    "   input mass: " << input.m() << std::endl;
     }
     return result;
 }
@@ -1030,9 +1067,10 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 	result.volatilityW = getVolatility(telescopingMasses[wMassPredictionIndex]);
     }
     else {
-        std::cout << "WARNING zero entries for T3Subjet! \tminRadius: " << minRadius <<
-	    "\tmaxRadius: " << maxRadius <<
-	    "\tnumRadii: " << numRadii << std::endl;
+        std::cout << "WARNING zero entries for T3Subjet!   minRadius: " << minRadius <<
+	    "   maxRadius: " << maxRadius <<
+	    "   numRadii: " << numRadii <<
+	    "   input mass: " << input.m() << std::endl;
     }    
     return result;
 }

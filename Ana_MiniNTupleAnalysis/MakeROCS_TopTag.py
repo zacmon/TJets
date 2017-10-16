@@ -8,10 +8,9 @@ SetAtlasStyle();
 gStyle.SetPalette(1)
 
 
-#sigFile="GenNTuple/20171015/ntuple_ttLowPt_0.root"
-#bkgFile="GenNTuple/20171015/ntuple_dijetLowPt_0.root"
-sigFile="ntupleTopCalo.root"
-bkgFile="ntupleDijetCalo.root"
+sigFile="GenNTuple/20171015/ntuple_ttLowPt_0.root"
+bkgFile="GenNTuple/20171015/ntuple_dijetLowPt_0.root"
+
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
     '''Implementation of simple signal and background comparison'''
@@ -1421,8 +1420,8 @@ for alg in algs:
 
     print "\n\nGetting mass optimization"
     CutRegions=[]
-    #CutRegions.append("1")
-    CutRegions.append("2")
+    CutRegions.append("1")
+    #CutRegions.append("2")
 
     for CutRegion in CutRegions:
 
