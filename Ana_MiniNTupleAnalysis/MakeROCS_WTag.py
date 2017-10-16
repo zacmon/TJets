@@ -7,7 +7,8 @@ from AtlasStyle import *
 SetAtlasStyle();
 gStyle.SetPalette(1)
 
-
+#sigFile="GenNTuple/20171015/ntuple_wwLowPt_0.root"
+#bkgFile="GenNTuple/20171015/ntuple_dijetLowPt_0.root"
 sigFile="GenNTuple/20171016/ntuple_ww_0.root"
 bkgFile="GenNTuple/20171016/ntuple_dijet_0.root"
 
@@ -56,7 +57,7 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     
     c.cd()
     rocSB.Draw("AC*")
-    c.SaveAs(outputdir+"ROCDraw_"+alg+"_"+variable.replace("\\","")+"_pt"+pt1+pt2+".eps")
+    c.SaveAs(outputdir+"W_"+"ROCDraw_"+alg+"_"+variable.replace("\\","")+"_pt"+pt1+pt2+".eps")
     
     #################################
 
@@ -119,7 +120,7 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     rocbox3=myLineBoxText(0.70, 0.85, 4, 1, 1, 0, 0.1, 0.08, "W Jets")
     rocbox4=myLineBoxText(0.70, 0.80, 2, 1, 1, 0, 0.1, 0.08, "QCD Jets")
     c.SetLogy(logy)
-    c.SaveAs(outputdir+"SignalBGCompare_"+alg+"_"+variable+"_pt"+pt1+pt2+".eps")
+    c.SaveAs(outputdir+"W_"+"SignalBGCompare_"+alg+"_"+variable+"_pt"+pt1+pt2+".eps")
 
 def GetMassEffs(InputDir, alg, m1, m2, outputdir):
 
@@ -843,7 +844,7 @@ def Make2DROC(alg, varX, varXcutdir, varY, varYcutdir, sig, bkg, rankMetric, sta
     rocbox1=myLineBoxText(0.26, 0.75, 2, 2, 2, 3001, 0.1, 0.08, TranslateVar(varX))
     rocbox2=myLineBoxText(0.26, 0.70, 4, 1, 4, 3001, 0.1, 0.08, TranslateVar(varY))
     myText(       0.20,0.65,1,0.03,"Stat Err Threshold = "+str(statErrorOnRatioThreshold))
-    cgr.SaveAs(outputdir+"ROCComparison_"+alg+"_"+varX+"_"+varY+"_pt"+pt1+pt2+"_"+flagFilterLabel+".eps")
+    cgr.SaveAs(outputdir+"W_"+"ROCComparison_"+alg+"_"+varX+"_"+varY+"_pt"+pt1+pt2+"_"+flagFilterLabel+".eps")
 
     return gr,has,hab,h1,zerobin
 
@@ -904,7 +905,7 @@ def SignalBGCompare2D(InputDir, alg, var1, var1cutdir, var2, var2cutdir, range1,
     myText(       0.20,0.75,1,0.04, TranslateAlg(alg))
     myText(       0.20,0.80,1,0.04, TranslateRegion(pt1,pt2,m1,m2))
     myText(       0.20,0.65,1,0.04, "corr = "+str(corrsig))
-    c.SaveAs(outputdir+"Correlation_"+alg+"_"+var1+"_"+var2+"_pt"+pt1+pt2+".eps")
+    c.SaveAs(outputdir+"W_"+"Correlation_"+alg+"_"+var1+"_"+var2+"_pt"+pt1+pt2+".eps")
     
 
     #FILTER
@@ -1159,7 +1160,7 @@ def MakeMVAROCS(outfilename,outputdir,mvatypes):
         bx1=myLineBoxText(0.70, 0.85, 2, 1, 0, 0, 0.08, 0.1, "W Jets")
         bx2=myLineBoxText(0.70, 0.80, 4, 1, 0, 0, 0.08, 0.1, "QCD Jets")
 
-        c.SaveAs(outputdir+"SigBG_pt"+pt1+pt2+"_"+mvatype+".eps")
+        c.SaveAs(outputdir+"W_"+"SigBG_pt"+pt1+pt2+"_"+mvatype+".eps")
 
         rocL,hsigregL,hcutvalL,hsigregL25,hcutvalL25 = RocCurve_SingleSided_WithUncer(hsig, hbkg, "L")
         rocR,hsigregR,hcutvalR,hsigregR25,hcutvalR25 = RocCurve_SingleSided_WithUncer(hsig, hbkg, "R")
@@ -1247,7 +1248,7 @@ def OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt
     rocbox4=myLineBoxText(0.26, 0.55, 6, 1, 1, 0, 0.1, 0.08, "Multi Layer Perceptron")
     rocbox4=myLineBoxText(0.26, 0.50, 9, 1, 1, 0, 0.1, 0.08, "K Nearest Neighbors")
     rocbox4=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
-    cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_"+var0+"_"+var1+"_pt"+pt1+pt2+".eps")
+    cgr.SaveAs(outputdir4+"W_"+"FullROCComparison_"+alg+"_"+var0+"_"+var1+"_pt"+pt1+pt2+".eps")
 
 
 def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges):
@@ -1352,7 +1353,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     rocbox8=myLineBoxText(0.26, 0.40, 7, 1, 1, 0, 0.1, 0.08, TranslateVar("v32"))
     rocbox10=myLineBoxText(0.26, 0.35, 8, 1, 1, 0, 0.1, 0.08, TranslateVar("Wmass"))
     rocbox11=myLineBoxText(0.26, 0.30, 28, 1, 1, 0, 0.1, 0.08, TranslateVar("WmassVolatility"))
-    cgr.SaveAs(outputdir4+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
+    cgr.SaveAs(outputdir4+"W_"+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
 
 
 ############################
@@ -1388,6 +1389,8 @@ outputdir4 = MakeNewDir(outputdir4)
 algs=[]
 algs.append("TruthRawTrim")
 algs.append("CaloTrim")
+#algs.append("TruthRaw")
+#algs.append("CaloRaw")
 
 # VARIABLES AND RANGES
 VarsAndRanges={}

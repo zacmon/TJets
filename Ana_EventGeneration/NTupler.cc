@@ -329,9 +329,9 @@ int main (int argc, char* argv[]) {
 	jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
 	if (jetflavor == -1) continue;
 
-	TSub T1TruthRaw = TNSubjet(jetsTruthRaw[ijet], 1, 0.1, 1.0, 36);
-	T2Sub T2TruthRaw = T2Subjet(jetsTruthRaw[ijet], 0.1, 1.0, 36);
-	T3Sub T3TruthRaw = T3Subjet(jetsTruthRaw[ijet], 0.1, 1.0, 36);
+	// TSub T1TruthRaw = TNSubjet(jetsTruthRaw[ijet], 1, 0.1, 1.0, 36);
+	// T2Sub T2TruthRaw = T2Subjet(jetsTruthRaw[ijet], 0.1, 1.0, 36);
+	// T3Sub T3TruthRaw = T3Subjet(jetsTruthRaw[ijet], 0.1, 1.0, 36);
 
 	TruthRaw_flavor.push_back(jetflavor);
 	
@@ -340,19 +340,19 @@ int main (int argc, char* argv[]) {
 	TruthRaw_phi.push_back(tempJet.Phi());
 	TruthRaw_m.push_back(tempJet.M());
 	
-	TruthRaw_Tau21.push_back(GetTau21(jetsTruthRaw[ijet]));
-	TruthRaw_Tau32.push_back(GetTau32(jetsTruthRaw[ijet]));
+	// TruthRaw_Tau21.push_back(GetTau21(jetsTruthRaw[ijet]));
+	// TruthRaw_Tau32.push_back(GetTau32(jetsTruthRaw[ijet]));
 	
-	TruthRaw_T1jet_angle.push_back(T1TruthRaw.minAngle);
-	TruthRaw_T1jet.push_back(T1TruthRaw.volatility);
+	// TruthRaw_T1jet_angle.push_back(T1TruthRaw.minAngle);
+	// TruthRaw_T1jet.push_back(T1TruthRaw.volatility);
 	
-	TruthRaw_T2jet_angle.push_back(T2TruthRaw.minAngle);
-	TruthRaw_T2jet.push_back(T2TruthRaw.volatility);
+	// TruthRaw_T2jet_angle.push_back(T2TruthRaw.minAngle);
+	// TruthRaw_T2jet.push_back(T2TruthRaw.volatility);
 	
-	TruthRaw_T3jet_angle.push_back(T3TruthRaw.minAngle);
-	TruthRaw_T3jet.push_back(T3TruthRaw.volatility);
-	TruthRaw_T3jet_W.push_back(T3TruthRaw.massW);
-	TruthRaw_T3jet_mW.push_back(T3TruthRaw.volatilityW);
+	// TruthRaw_T3jet_angle.push_back(T3TruthRaw.minAngle);
+	// TruthRaw_T3jet.push_back(T3TruthRaw.volatility);
+	// TruthRaw_T3jet_W.push_back(T3TruthRaw.massW);
+	// TruthRaw_T3jet_mW.push_back(T3TruthRaw.volatilityW);
 
 	
 	double TruthRawTPruning = T_Pruning(jetsTruthRaw[ijet], 0.1, 2.0, 20);
@@ -432,9 +432,9 @@ int main (int argc, char* argv[]) {
 	jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
 	if (jetflavor == -1) continue;
 
-	TSub T1CaloJetRaw = TNSubjet(caloJets[i], 1, 0.1, 1.0, 36);
-	TSub T2CaloJetRaw = TNSubjet(caloJets[i], 2, 0.1, 1.0, 36);
-	T3Sub T3CaloJetRaw = T3Subjet(caloJets[i], 0.1, 1.0, 36);
+	// TSub T1CaloJetRaw = TNSubjet(caloJets[i], 1, 0.1, 1.0, 36);
+	// TSub T2CaloJetRaw = TNSubjet(caloJets[i], 2, 0.1, 1.0, 36);
+	// T3Sub T3CaloJetRaw = T3Subjet(caloJets[i], 0.1, 1.0, 36);
 
 	CaloRaw_flavor.push_back(jetflavor);
 
@@ -443,19 +443,19 @@ int main (int argc, char* argv[]) {
 	CaloRaw_phi.push_back(tempJet.Phi());
 	CaloRaw_m.push_back(tempJet.M());
 	
-	CaloRaw_Tau21.push_back(GetTau21(caloJets[i]));
-	CaloRaw_Tau32.push_back(GetTau32(caloJets[i]));
+	// CaloRaw_Tau21.push_back(GetTau21(caloJets[i]));
+	// CaloRaw_Tau32.push_back(GetTau32(caloJets[i]));
 	
-	CaloRaw_T1jet_angle.push_back(T1CaloJetRaw.minAngle);
-	CaloRaw_T1jet.push_back(T1CaloJetRaw.volatility);
+	// CaloRaw_T1jet_angle.push_back(T1CaloJetRaw.minAngle);
+	// CaloRaw_T1jet.push_back(T1CaloJetRaw.volatility);
 	
-	CaloRaw_T2jet_angle.push_back(T2CaloJetRaw.minAngle);
-	CaloRaw_T2jet.push_back(T2CaloJetRaw.volatility);
+	// CaloRaw_T2jet_angle.push_back(T2CaloJetRaw.minAngle);
+	// CaloRaw_T2jet.push_back(T2CaloJetRaw.volatility);
 	
-	CaloRaw_T3jet_angle.push_back(T3CaloJetRaw.minAngle);
-	CaloRaw_T3jet.push_back(T3CaloJetRaw.volatility);
-	CaloRaw_T3jet_W.push_back(T3CaloJetRaw.massW);
-	CaloRaw_T3jet_mW.push_back(T3CaloJetRaw.volatilityW);
+	// CaloRaw_T3jet_angle.push_back(T3CaloJetRaw.minAngle);
+	// CaloRaw_T3jet.push_back(T3CaloJetRaw.volatility);
+	// CaloRaw_T3jet_W.push_back(T3CaloJetRaw.massW);
+	// CaloRaw_T3jet_mW.push_back(T3CaloJetRaw.volatilityW);
 	
 	double CaloRawTPruning = T_Pruning(caloJets[i], 0.1, 2.0, 20);
 	CaloRaw_Tpruning.push_back(CaloRawTPruning);
