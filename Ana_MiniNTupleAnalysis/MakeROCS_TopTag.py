@@ -1316,14 +1316,14 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir1 + "ROC_" + alg + "_T3jet_Wmass_pt" + pt1 + pt2 + ".root"
     f10 = TFile(path)
-    roc10 = f10.Get("ROC_SoverB")
+    roc10 = f10.Get("ROC_L")
     roc10.SetFillColor(8)
     roc10.SetLineColor(8)
     roc10.SetFillStyle(3001)
 
     path = outputdir1 + "ROC_" + alg + "_T3jet_WmassVolatility_pt" + pt1 + pt2 + ".root"
     f11 = TFile(path)
-    roc11 = f11.Get("ROC_SoverB")
+    roc11 = f11.Get("ROC_L")
     roc11.SetFillColor(28)
     roc11.SetLineColor(28)
     roc11.SetFillStyle(3001)
