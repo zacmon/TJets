@@ -1270,7 +1270,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
 
     path = outputdir1+"ROC_"+alg+"_T2jet_angle_pt"+pt1+pt2+".root"
     f3   = TFile(path)
-    roc3 = f3.Get("ROC_SoverB")
+    roc3 = f3.Get("ROC_R")
     roc3.SetFillColor(3)
     roc3.SetLineColor(3)
     roc3.SetFillStyle(3001)
@@ -1394,16 +1394,18 @@ algs.append("CaloTrim")
 
 # VARIABLES AND RANGES
 VarsAndRanges={}
-VarsAndRanges["Tau21"]      = [0, "100,0,1", "100,0,1" ,"R"]
-VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"L"]
-VarsAndRanges["T1jet"]      = [0, "100,0,1", "100,0,1.2","R"]
-VarsAndRanges["T2jet"]      = [0, "100,0,1", "100,0,1","R"]
-VarsAndRanges["T2jet_angle"]  = [0, "100,0,1.0", "100,0,1.0","L"]
-VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1","L"]
-VarsAndRanges["T3jet_Wmass"]      = [0, "100,40,120", "100,40,120","L"]
-VarsAndRanges["T3jet_WmassVolatility"]      = [0, "100,0,1", "100,0,1","L"]
-VarsAndRanges["T3jet_minAngle"]  = [0, "100,0,1", "100,0,1","R"]
-VarsAndRanges["v32"] = [0, "100,0,1.2", "100,0,1.2", "100,0,1.2","L"]
+VarsAndRanges["Tau21"] = [0, "100, 0, 0.9", "100, 0, 1" ,"R"]
+VarsAndRanges["Tau32"] = [0, "100, 0.2, 1", "100, 0, 1" ,"L"]
+VarsAndRanges["T1jet"] = [0, "100, 0.2, 0.9", "100, 0, 0.5","R"]
+VarsAndRanges["T2jet"] = [0, "100, 0, 0.45", "100, 0, 0.3","R"]
+VarsAndRanges["T2jet_angle"] = [0, "100, 0, 1.0", "100, 0, 0.45","L"]
+VarsAndRanges["T3jet"] = [0, "100, 0, 0.21", "100, 0, 0.25","L"]
+VarsAndRanges["T3jet_Wmass"] = [0, "100,45,90", "100,40,90","L"]
+VarsAndRanges["T3jet_WmassVolatility"] = [0, "100, 0, 0.25", "100, 0, 0.25","L"]
+VarsAndRanges["T3jet_minAngle"] = [0, "100, 0, 0.4", "100, 0, 0.3","R"]
+VarsAndRanges["v32"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
+VarsAndRanges["Ttrimming"] = [0, "100,0,2", "100,0,2", "L"]
+VarsAndRanges["Tpruning"] = [0, "100,0,2", "100,0,2", "L"]
 #VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,1.2","L"]
 #VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
 #VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]

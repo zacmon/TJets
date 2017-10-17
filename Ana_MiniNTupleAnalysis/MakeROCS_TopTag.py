@@ -7,10 +7,12 @@ from AtlasStyle import *
 SetAtlasStyle();
 gStyle.SetPalette(1)
 
-sigFile="GenNTuple/20171015/ntuple_ttLowPt_0.root"
-bkgFile="GenNTuple/20171015/ntuple_dijetLowPt_0.root"
-#sigFile="GenNTuple/20171016/ntuple_tt_0.root"
-#bkgFile="GenNTuple/20171016/ntuple_dijet_0.root"
+#sigFile="GenNTuple/20171015/ntuple_ttLowPt_0.root"
+#bkgFile="GenNTuple/20171015/ntuple_dijetLowPt_0.root"
+sigFile="GenNTuple/20171016/ntuple_tt_0.root"
+bkgFile="GenNTuple/20171016/ntuple_dijet_0.root"
+#sigFile="optimizeHighTop.root"
+#bkgFile="optimizeHighDijet.root"
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
     '''Implementation of simple signal and background comparison'''
@@ -1375,6 +1377,7 @@ flag_rocoverlay      = True
 #==========================
 #InputDir="~/Downloads/
 InputDir="../Ana_EventGeneration/"
+#InputDir="~/"
 
 outputdir1 = "OutputSingleVariable/"
 outputdir2 = "OutputTwoVariableByHand/"
@@ -1395,16 +1398,18 @@ algs.append("CaloTrim")
 
 # VARIABLES AND RANGES
 VarsAndRanges={}
-VarsAndRanges["Tau21"]      = [0, "100,0,1", "100,0,1" ,"R"]
-VarsAndRanges["Tau32"]      = [0, "100,0,1", "100,0,1" ,"L"]
-VarsAndRanges["T1jet"]      = [0, "100,0,1", "100,0,1.2","R"]
-VarsAndRanges["T2jet"]      = [0, "100,0,1", "100,0,1","R"]
-VarsAndRanges["T2jet_angle"]  = [0, "100,0,1.0", "100,0,1.0","L"]
-VarsAndRanges["T3jet"]      = [0, "100,0,1", "100,0,1","L"]
-VarsAndRanges["T3jet_Wmass"]      = [0, "100,40,120", "100,40,120","L"]
-VarsAndRanges["T3jet_WmassVolatility"]      = [0, "100,0,1", "100,0,1","L"]
-VarsAndRanges["T3jet_minAngle"]  = [0, "100,0,1", "100,0,1","R"]
-VarsAndRanges["v32"] = [0, "100,0,1.2", "100,0,1.2", "100,0,1.2","L"]
+VarsAndRanges["Tau21"] = [0, "100, 0, 0.8", "100, 0, 0.8" ,"R"]
+VarsAndRanges["Tau32"] = [0, "100, 0.1, 1", "100, 0.1, 1.0" ,"L"]
+VarsAndRanges["T1jet"] = [0, "100, 0.3, 1.4", "100, 0.2, 1.0","R"]
+VarsAndRanges["T2jet"] = [0, "100, 0, 0.45", "100, 0, 0.5","R"]
+VarsAndRanges["T2jet_angle"]  = [0, "100, 0.275 , 1.15", "100, 0.075 , 1.0","L"]
+VarsAndRanges["T3jet"] = [0, "100, 0, 0.25", "100, 0, 0.22","L"]
+VarsAndRanges["T3jet_Wmass"] = [0, "100,40,120", "100,40,120","L"]
+VarsAndRanges["T3jet_WmassVolatility"] = [0, "100, 0, 0.35", "100, 0, 0.25","L"]
+VarsAndRanges["T3jet_minAngle"]  = [0, "100, 0, 0.9", "100, 0, 0.45","R"]
+VarsAndRanges["v32"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
+VarsAndRanges["Ttrimming"] = [0, "100,0,1.5", "100,0,1.5", "L"]
+VarsAndRanges["Tpruning"] = [0, "100,0,1.5", "100,0,1.5", "R"]
 #VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,1.2","L"]
 #VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
 #VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
@@ -1422,8 +1427,8 @@ for alg in algs:
 
     print "\n\nGetting mass optimization"
     CutRegions=[]
-    CutRegions.append("1")
-    #CutRegions.append("2")
+    #CutRegions.append("1")
+    CutRegions.append("2")
 
     for CutRegion in CutRegions:
 
@@ -1478,6 +1483,7 @@ for alg in algs:
                 tmvacommand += " "+alg+" "
                 tmvacommand += alg+"_pt,"+alg+"_m"
                 tmvacommand += " \"pt>"+str(pt1)+",pt<"+str(pt2)+","+alg+"_m>"+str(m1)+","+alg+"_m<"+str(m2)+"\" "
+                #tmvacommand +=  " \"" + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T3jet_Wmass\" "
                 tmvacommand +=  " \"" + alg + "_T3jet_WmassVolatility, " + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T2jet_angle, " + alg + "_T3jet_minAngle, " + alg + "_T3jet_Wmass\" "
                 tmvacommand += " "+mvatypes+" "
                 tmvacommand += " " + InputDir + sigFile + " "
