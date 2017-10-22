@@ -38,31 +38,32 @@ std::vector<double> setVectorWithNElements(const std::vector<double>& v, double 
     double stepSize = currentNumElements / numElements;
     if (stepSize < 1) return {};
 
-    std::vector<double> newVec;
+    std::vector<double> vPrime;
     double k = 0;
     while (k < currentNumElements - 1) {
-	newVec.push_back(v[std::round(k)]);
+	vPrime.push_back(v[std::round(k)]);
 	k += stepSize;
     }
 
-    return newVec;
+    return vPrime;
 }
 
 std::vector<double> getVolForEvent(const std::vector<double>& masses, unsigned int maxMinRIndex ) {
-    double numElements = 33;
+    double numElements = 36;
     
     std::vector<double> volatilities;
     for (unsigned int j = 0; j < maxMinRIndex; ++j) {
 	//  Start vector at correct radius size. This insures we don't go beyond maxMinR.
-	std::vector<double> trimmedVector(masses.begin() + j, masses.end());
+	std::vector<double> shiftedVector(masses.begin() + j, masses.end());
 	//  Makes sure each vector has the same amount of elements so volatility comparisons are legitimate.
-	std::vector<double> v = setVectorWithNElements(trimmedVector, numElements);
-	volatilities.push_back(getVolatility(trimmedVector));
+	std::vector<double> trimmedVector = setVectorWithNElements(shiftedVector, numElements);
+	double volatility = getVolatility(trimmedVector);
+	volatilities.push_back(volatility);
     }
     return volatilities;
 }
 
-void OptimizeTParam() {
+void OptimizeTParam(TString fileName) {
     std::vector<double> massBounds = {160, 190};
     std::vector<double> pTBounds = {800, 1000};
     
@@ -80,15 +81,8 @@ void OptimizeTParam() {
 	if ((r - maxMinR) < deltaR) maxMinRIndex = radii.size();
     }
 
-    std::vector<TString> fileNames = {"Dijet"};//, "Top", "W"};
-    std::vector<TFile*> files;
-    std::vector<TTree*> trees;
-    for (auto const &name : fileNames) {
-    	TFile* file = new TFile("~/optimizeHigh" + name + ".root", "READ");
-    	TTree* tree = (TTree*)file->Get("JetTree");
-    	files.push_back(file);
-    	trees.push_back(tree);
-    }
+    TFile* file = new TFile(fileName + ".root", "READ");
+    TTree* tree = (Tree*)file->Get("JetTree");
 
     std::vector<std::vector<double>>* t1Masses = nullptr;
     std::vector<std::vector<double>>* t2Masses = nullptr;
@@ -97,34 +91,33 @@ void OptimizeTParam() {
     std::vector<double>* mass = nullptr;
     std::vector<double>* pT = nullptr;
     
-    for (auto const &tree : trees){
-	Long64_t numEntries = tree->GetEntries();
+    Long64_t numEntries = tree->GetEntries();
+    
+    std::vector<std::vector<double>> t1Volatilities(numEntries);
+    std::vector<std::vector<double>> t2Volatilities(numEntries);
+    std::vector<std::vector<double>> t3Volatilities(numEntries);
+    
+    tree->SetBranchAddress("TruthRawTrim_m", &mass);
+    tree->SetBranchAddress("TruthRawTrim_pt", &pT);
+    
+    tree->SetBranchAddress("TruthRawTrim_T1masses", &t1Masses);
+    tree->SetBranchAddress("TruthRawTrim_T2masses", &t2Masses);
+    tree->SetBranchAddress("TruthRawTrim_T3masses", &t3Masses);
+    
+    
+    for (Int_t entry = 0; entry < 100; ++entry) {//numEntries; ++entry) {
+	tree->GetEntry(entry);
 	
-	std::vector<std::vector<double>> t1Volatilities(numEntries);
-	std::vector<std::vector<double>> t2Volatilities(numEntries);
-	std::vector<std::vector<double>> t3Volatilities(numEntries);
-
-	tree->SetBranchAddress("TruthRawTrim_m", &mass);
-	tree->SetBranchAddress("TruthRawTrim_pt", &pT);
-	
-    	tree->SetBranchAddress("TruthRawTrim_T1masses", &t1Masses);
-    	tree->SetBranchAddress("TruthRawTrim_T2masses", &t2Masses);
-    	tree->SetBranchAddress("TruthRawTrim_T3masses", &t3Masses);
-	
-	
-	for (Int_t entry = 0; entry < numEntries; ++entry) {
-	    tree->GetEntry(entry);
-
-	    for (unsigned int i = 0; i < mass->size(); ++i) {
-		if ((mass->at(i) > massBounds[0] && mass->at(i) < massBounds[1]) && (pT->at(i) >  pTBounds[0] && pT->at(i) < pTBounds[1])) {
-		    std::cout << "mass: " << mass->at(i) << " pt: " << pT->at(i) << std::endl;
-       	    	    t1Volatilities[entry] = getVolForEvent(t1Masses->at(i), maxMinRIndex);
-		    t2Volatilities[entry] = getVolForEvent(t2Masses->at(i), maxMinRIndex);
-		    t3Volatilities[entry] = getVolForEvent(t3Masses->at(i), maxMinRIndex);
-		}
+	for (unsigned int i = 0; i < mass->size(); ++i) {
+	    if ((mass->at(i) > massBounds[0] && mass->at(i) < massBounds[1]) && (pT->at(i) >  pTBounds[0] && pT->at(i) < pTBounds[1])) {
+		std::cout << "mass: " << mass->at(i) << " pt: " << pT->at(i) << std::endl;
+		t1Volatilities[entry] = getVolForEvent(t1Masses->at(i), maxMinRIndex);
+		t2Volatilities[entry] = getVolForEvent(t2Masses->at(i), maxMinRIndex);
+		t3Volatilities[entry] = getVolForEvent(t3Masses->at(i), maxMinRIndex);
 	    }
 	}
     }
+
     //  TODO
     //  Create TTree and TFile to save results
     //  Save mass and pt for mass and pt cuts in OverlayROCS
