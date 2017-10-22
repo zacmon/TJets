@@ -733,7 +733,7 @@ double T_Pruning(fastjet::PseudoJet& input, double minDCut, double maxDCut, int 
 double T_Trimming(fastjet::PseudoJet& input, double minFCut, double maxFCut, int numFCuts) {
     double Rfilt = 0.2; // single choice of Rfilt. can be further telescoped.
     //  Use Rfilt = 0.1 for higher pT jets, Rfilt = 0.2 for lower pT jets.
-    if (input.pt() > 500) Rflit = 0.1;
+    if (input.pt() > 500) Rfilt = 0.1;
     
     std::vector<double> telescopingMasses;
     
