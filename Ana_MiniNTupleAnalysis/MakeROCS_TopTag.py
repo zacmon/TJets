@@ -34,7 +34,7 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     #Get signal and background histograms
     histname = alg+"_"+variable
     if variable == "v32":
-        histname = "TruthRawTrim_T3jet / TruthRawTrim_T2jet"
+        histname = alg + "_T3jet / " + alg + "_T2jet"
     if variable == "play":
         histname = "TruthRawTrim_T2jet / TruthRawTrim_T1jet"
 
@@ -1264,18 +1264,18 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc1.SetLineColor(2)
     roc1.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T2jet_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_Tau21_pt"+pt1+pt2+".root"
     f2   = TFile(path)
-    roc2 = f2.Get("ROC_R")
-    roc2.SetFillColor(4)
-    roc2.SetLineColor(4)
+    roc2 = f2.Get("ROC_SoverB")
+    roc2.SetFillColor(9)
+    roc2.SetLineColor(9)
     roc2.SetFillStyle(3001)
-
-    path = outputdir1+"ROC_"+alg+"_T2jet_angle_pt"+pt1+pt2+".root"
+    
+    path = outputdir1+"ROC_"+alg+"_T2jet_pt"+pt1+pt2+".root"
     f3   = TFile(path)
-    roc3 = f3.Get("ROC_SoverB")
-    roc3.SetFillColor(3)
-    roc3.SetLineColor(3)
+    roc3 = f3.Get("ROC_R")
+    roc3.SetFillColor(4)
+    roc3.SetLineColor(4)
     roc3.SetFillStyle(3001)
 
     path = outputdir1+"ROC_"+alg+"_T3jet_pt"+pt1+pt2+".root"
@@ -1285,77 +1285,41 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc4.SetLineColor(1)
     roc4.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T3jet_minAngle_pt"+pt1+pt2+".root"
-    f5   = TFile(path)
-    roc5 = f5.Get("ROC_SoverB")
-    roc5.SetFillColor(6)
-    roc5.SetLineColor(6)
-    roc5.SetFillStyle(3001)
-
-    path = outputdir1+"ROC_"+alg+"_Tau21_pt"+pt1+pt2+".root"
-    f6   = TFile(path)
-    roc6 = f6.Get("ROC_SoverB")
-    roc6.SetFillColor(9)
-    roc6.SetLineColor(9)
-    roc6.SetFillStyle(3001)
-
-
-    path = outputdir3+"TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+"_ROCSBDT.root"
-    f7   = TFile(path)
-    roc7 = f7.Get("ROC_L")
-    roc7.SetFillColor(95)
-    roc7.SetLineColor(95)
-    roc7.SetFillStyle(3001)
-
     path = outputdir1 + "ROC_" + alg + "_v32_pt" + pt1 + pt2 + ".root"
-    f8   = TFile(path)
-    roc8 = f8.Get("ROC_L")
-    roc8.SetFillColor(7)
-    roc8.SetLineColor(7)
-    roc8.SetFillStyle(3001)
-
-    path = outputdir1 + "ROC_" + alg + "_T3jet_Wmass_pt" + pt1 + pt2 + ".root"
-    f10 = TFile(path)
-    roc10 = f10.Get("ROC_L")
-    roc10.SetFillColor(8)
-    roc10.SetLineColor(8)
-    roc10.SetFillStyle(3001)
-
-    path = outputdir1 + "ROC_" + alg + "_T3jet_WmassVolatility_pt" + pt1 + pt2 + ".root"
-    f11 = TFile(path)
-    roc11 = f11.Get("ROC_L")
-    roc11.SetFillColor(28)
-    roc11.SetLineColor(28)
-    roc11.SetFillStyle(3001)
+    f5   = TFile(path)
+    roc5 = f5.Get("ROC_L")
+    roc5.SetFillColor(7)
+    roc5.SetLineColor(7)
+    roc5.SetFillStyle(3001)
+    
+    path = outputdir3+"TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+"_ROCSBDT.root"
+    f6   = TFile(path)
+    roc6 = f6.Get("ROC_L")
+    roc6.SetFillColor(95)
+    roc6.SetLineColor(95)
+    roc6.SetFillStyle(3001)
     
     cgr = TCanvas("cgr","cgr",500,500);
     gr=MakeReferenceGraph(1)
     gr.Draw("ACE3")
 
     roc1.Draw("CE3same")
-    roc6.Draw("CE3same")
     roc2.Draw("CE3same")
     roc3.Draw("CE3same")
     roc4.Draw("CE3same")
     roc5.Draw("CE3same")
-    roc7.Draw("CE3same")
-    roc8.Draw("CE3same")
-    roc10.Draw("CE3same")
-    roc11.Draw("CE3same")
+    roc6.Draw("CE3same")
     
     ATLASLabel(   0.20,0.90,1,0.1,0.03,"#sqrt{s}=13 TeV")
     myText(       0.20,0.85,1,0.03, alg)
     myText(       0.20,0.80,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
-    rocbox1=myLineBoxText(0.26, 0.75, 2, 1, 2, 0, 0.1, 0.08, TranslateVar("Tau32"))
-    rocbox6=myLineBoxText(0.26, 0.70, 9, 1, 1, 0, 0.1, 0.08, TranslateVar("Tau21"))
-    rocbox2=myLineBoxText(0.26, 0.65, 4, 1, 4, 0, 0.1, 0.08, TranslateVar("T2jet"))
-    rocbox3=myLineBoxText(0.26, 0.60, 3, 1, 1, 0, 0.1, 0.08, TranslateVar("T2jet_angle"))
-    rocbox4=myLineBoxText(0.26, 0.55, 1, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet"))
-    rocbox5=myLineBoxText(0.26, 0.50, 6, 1, 1, 0, 0.1, 0.08, TranslateVar("T3jet_angle"))
-    rocbox7=myLineBoxText(0.26, 0.45, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
-    rocbox8=myLineBoxText(0.26, 0.40, 7, 1, 1, 0, 0.1, 0.08, TranslateVar("v32"))
-    rocbox10=myLineBoxText(0.26, 0.35, 8, 1, 1, 0, 0.1, 0.08, TranslateVar("Wmass"))
-    rocbox11=myLineBoxText(0.26, 0.30, 28, 1, 1, 0, 0.1, 0.08, TranslateVar("WmassVolatility"))
+    rocbox1=myLineBoxText(0.26, 0.75, 2, 1, 2, 0, 0.1, 0.08, "#tau_{32}")
+    rocbox2=myLineBoxText(0.26, 0.70, 9, 1, 1, 0, 0.1, 0.08, "#tau_{21}")
+    rocbox3=myLineBoxText(0.26, 0.65, 4, 1, 4, 0, 0.1, 0.08, "v_{2}")
+    rocbox4=myLineBoxText(0.26, 0.60, 1, 1, 1, 0, 0.1, 0.08, "v_{3}")
+    rocbox5=myLineBoxText(0.26, 0.55, 7, 1, 1, 0, 0.1, 0.08, "v_{32}")
+    rocbox6=myLineBoxText(0.26, 0.50, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
+
     cgr.SaveAs(outputdir4+"Top_"+"FullROCComparison_"+alg+"_BDTAllTjet_pt"+pt1+pt2+".eps")
 
 
@@ -1408,16 +1372,6 @@ VarsAndRanges["T3jet_Wmass"] = [0, "100,40,120", "100,40,120","L"]
 VarsAndRanges["T3jet_WmassVolatility"] = [0, "100, 0, 0.35", "100, 0, 0.25","L"]
 VarsAndRanges["T3jet_minAngle"]  = [0, "100, 0, 0.9", "100, 0, 0.45","R"]
 VarsAndRanges["v32"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
-VarsAndRanges["Ttrimming"] = [0, "100,0,1.5", "100,0,1.5", "L"]
-VarsAndRanges["Tpruning"] = [0, "100,0,1.5", "100,0,1.5", "R"]
-#VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,1.2","L"]
-#VarsAndRanges["T3jet_angle1"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
-#VarsAndRanges["T3jet_angle2"]  = [0, "100,0,0.5", "100,0,0.5" ,"L"]
-# VarsAndRanges["D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
-# VarsAndRanges["C2"]         = [0, "100,0,1", "100,0,1" ,"L"]
-# VarsAndRanges["TJet_Tau21"]      = [0, "100,0,1", "100,0,1" ,"L"]
-# VarsAndRanges["TJet_D2"]         = [0, "100,0,5", "100,0,5" ,"L"]
-# VarsAndRanges["TJet_C2"]         = [0, "100,0,1", "100,0,1" ,"L"]
 
 #################################
 # Loop over algorithms
@@ -1473,12 +1427,12 @@ for alg in algs:
                 #Do simple likelihood combination
                 SignalBGCompare2D(InputDir, alg, var0, VarsAndRanges[var0][3], var1, VarsAndRanges[var1][3], VarsAndRanges[var0][int(CutRegion)], VarsAndRanges[var1][int(CutRegion)], pt1, pt2, m1, m2, outputdir2)
 
-            if flag_AllTjet_tmva:
+        if flag_AllTjet_tmva:
                 #######################
                 #TMVA combination
                 #mvatypes="Likelihood,MLP,BDT,KNN"
                 mvatypes="BDT"
- 
+                
                 tmvacommand =  " python MyTMVAClassification.py "
                 tmvacommand += " "+alg+" "
                 tmvacommand += alg+"_pt,"+alg+"_m"
@@ -1500,9 +1454,9 @@ for alg in algs:
             
                 #open output root file and draw ROC curves as previously
                 MakeMVAROCS(outfilename,outputdir3,mvatypes)
-        
-            if flag_rocoverlay:
-                mvatypes="BDT"
-                #Overlay all ROC curves relevant here
-                #OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt2,m1,m2,mvatypes,VarsAndRanges)
-                OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges) 
+                
+        if flag_rocoverlay:
+            mvatypes="BDT"
+            #Overlay all ROC curves relevant here
+            #OverlayROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,var0,var1,pt1,pt2,m1,m2,mvatypes,VarsAndRanges)
+            OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m2,mvatypes,VarsAndRanges) 

@@ -96,7 +96,9 @@ def TranslateVar(var):
     AllVars["v32"] = "T_{3}/T_{2}"
     AllVars["Wmass"] = "M_{W}"
     AllVars["WmassVolatility"] = "v_{W}"
-    
+    AllVars["Ttrimming"] = "T_{trim}"
+    AllVars["Tpruning"] = "T_{prune}"
+    AllVars["v21"] = "v_{2} / v_{1}"
     if var not in AllVars.keys():
         print "This var is not in your list: ",var," EXITTING ..."
         sys.exit()

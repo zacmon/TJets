@@ -358,13 +358,13 @@ int main (int argc, char* argv[]) {
 	// TruthRaw_T3jet_W.push_back(T3TruthRaw.massW);
 	// TruthRaw_T3jet_mW.push_back(T3TruthRaw.volatilityW);
 
-	
-	double TruthRawTPruning = T_Pruning(jetsTruthRaw[ijet], 0.1, 2.0, 20);
-	TruthRaw_Tpruning.push_back(TruthRawTPruning);
-
-	double TruthRawTTrimming =	T_Trimming(jetsTruthRaw[ijet], 0.0, 0.1, 20);
-	TruthRaw_Ttrimming.push_back(TruthRawTTrimming);
-	
+	if (jetflavor <= 1) {
+	    double TruthRawTPruning = T_Pruning(jetsTruthRaw[ijet], 0.1, 2.0, 20);
+	    TruthRaw_Tpruning.push_back(TruthRawTPruning);
+	    
+	    double TruthRawTTrimming =	T_Trimming(jetsTruthRaw[ijet], 0.0, 0.1, 20);
+	    TruthRaw_Ttrimming.push_back(TruthRawTTrimming);
+	}
 	/////////////////////////////
 	//TruthRawTrim
 	/////////////////////////////
@@ -413,12 +413,6 @@ int main (int argc, char* argv[]) {
 	TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
 	TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatilityW);
 	TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
-
-	double TruthRawTrimTPruning = T_Pruning(groomedJet, 0.1, 2.0, 20);
-	TruthRawTrim_Tpruning.push_back(TruthRawTrimTPruning);
-
-	double TruthRawTrimTTrimming = T_Trimming(groomedJet, 0.0, 0.1, 20);
-	TruthRawTrim_Ttrimming.push_back(TruthRawTrimTTrimming);
     }
 
     std::vector<fastjet::PseudoJet> caloClusters = ToyCalorimeter(input_particles);
@@ -460,13 +454,13 @@ int main (int argc, char* argv[]) {
 	// CaloRaw_T3jet.push_back(T3CaloJetRaw.volatility);
 	// CaloRaw_T3jet_W.push_back(T3CaloJetRaw.massW);
 	// CaloRaw_T3jet_mW.push_back(T3CaloJetRaw.volatilityW);
-	
-	double CaloRawTPruning = T_Pruning(caloJets[i], 0.1, 2.0, 20);
-	CaloRaw_Tpruning.push_back(CaloRawTPruning);
-
-	double CaloRawTTrimming =	T_Trimming(caloJets[i], 0.0, 0.1, 20);
-	CaloRaw_Ttrimming.push_back(CaloRawTTrimming);
-	
+	if (jetflavor <= 1) {
+	    double CaloRawTPruning = T_Pruning(caloJets[i], 0.1, 2.0, 20);
+	    CaloRaw_Tpruning.push_back(CaloRawTPruning);
+	    
+	    double CaloRawTTrimming =	T_Trimming(caloJets[i], 0.0, 0.1, 20);
+	    CaloRaw_Ttrimming.push_back(CaloRawTTrimming);
+	}
 	//  Trimmed calo jet.
 	fastjet::PseudoJet groomedCaloJet = f(caloJets[i]);
 	
