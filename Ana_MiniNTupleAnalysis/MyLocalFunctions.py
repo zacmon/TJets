@@ -74,8 +74,8 @@ def TranslateRegion(pt1,pt2,m1,m2):
 def TranslateAlg(alg):
     print "Translating alg: ",alg
     output = ""
-    if   alg=="TruthRaw":    output = "Truth anti-k_{t}^{R=1.0}"    
-    elif alg=="RecoRaw":     output = "Reco anti-k_{t}^{R=1.0}"   
+    if   alg=="TruthRawTrim":    output = "Trimmed truth anti-k_{t} R = 1.0"    
+    elif alg=="CaloTrim":     output = "Reco anti-k_{t} R = 1.0"   
     return output
 
 def TranslateVar(var):
@@ -83,27 +83,36 @@ def TranslateVar(var):
 
     AllVars={}
     AllVars["m"]                         = "M [GeV]"
-    AllVars["Tau21"]                     = "#tau_{2}/#tau_{1}"
-    AllVars["Tau32"]                     = "#tau_{3}/#tau_{2}"
-    AllVars["T2jet"]                     = "T_{2}"
-    AllVars["T3jet"]                     = "T_{3}"
+    AllVars["Tau21"]                     = "#tau_{21}"
+    AllVars["Tau32"]                     = "#tau_{32}"
+    AllVars["T2jet"]                     = "v_{2}"
+    AllVars["T3jet"]                     = "v_{3}"
     AllVars["T2jet_angle"]               = "#theta_{2}"
-    AllVars["T3jet_angle"]               = "#theta_{3}"
+    AllVars["T3jet_angle"]               = "#theta_{min}"
     AllVars["tau21_WTA"]                 = "#tau_{21}"
     AllVars["tnsub_beta10to20_tau21_vol"]= "T(#tau_{2}^{wta}, #beta=[1.0,2.0])"
     AllVars["C2"]= "C_{2}"
     AllVars["D2"]= "D_{2}"
-    AllVars["v32"] = "T_{3}/T_{2}"
+    AllVars["v32"] = "v_{32}"
+    AllVars["v21"] = "v_{21}"
     AllVars["Wmass"] = "M_{W}"
     AllVars["WmassVolatility"] = "v_{W}"
+    AllVars["Ttrimming"]                 = "v_{trim}"
+    AllVars["Tpruning"]                  = "v_{prune}"
     
-    if var not in AllVars.keys():
-        print "This var is not in your list: ",var," EXITTING ..."
-        sys.exit()
-        
-    varout=AllVars[var]
+    if var in AllVars.keys():
+        varout=AllVars[var]
+    else:
+        print "This var is not in your list: ",var
+        varout=var
 
     return varout
+
+def GetRange(var):
+    if var == "T2jet": return 0.5
+    elif var == "T3jet": return 0.2
+    elif var == "v32": return 1 
+    else: return 0
 
 def MakeReferenceGraph( roctype ):
     '''Make reference graph for plotting'''
@@ -122,8 +131,8 @@ def MakeReferenceGraph( roctype ):
         graph.SetMinimum(0.0)
         graph.SetMaximum(1.0)
     elif roctype==1:
-        graph.GetXaxis().SetTitle("Signal Efficiency")
-        graph.GetYaxis().SetTitle("Background Efficiency")
+        graph.GetXaxis().SetTitle(Form("#font[132]{Signal Efficiency}"))
+        graph.GetYaxis().SetTitle(Form("#font[132]{Background Efficiency}"))
         graph.SetMinimum(0.0)
         graph.SetMaximum(1.0)
     elif roctype==2:
