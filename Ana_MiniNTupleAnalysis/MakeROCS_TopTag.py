@@ -36,9 +36,9 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     #Get signal and background histograms
     histname = alg+"_"+variable
     if variable == "v32":
-        histname = "TruthRawTrim_T3jet / TruthRawTrim_T2jet"
-    if variable == "play":
-        histname = "TruthRawTrim_T2jet / TruthRawTrim_T1jet"
+        histname = alg+"_T3jet / "+alg+"_T2jet"
+    if variable == "v21":
+        histname = alg+"_T2jet / "+alg+"_T1jet"
 
     hsig = GetHist1D(InputDir+sigFile, "JetTree", histname, range, weight)#+"*("+alg+"_flavor==3)")
     hbkg = GetHist1D(InputDir+bkgFile, "JetTree", histname, range, weight)#+"*("+alg+"_flavor==0)")
@@ -1391,8 +1391,8 @@ outputdir4 = MakeNewDir(outputdir4)
 
 #ALGORITHMS
 algs=[]
-#algs.append("TruthRawTrim")
-algs.append("CaloTrim")
+algs.append("TruthRawTrim")
+#algs.append("CaloTrim")
 #algs.append("TruthRaw")
 #algs.append("CaloRaw")
 
@@ -1483,14 +1483,14 @@ for alg in algs:
                 tmvacommand += " "+alg+" "
                 tmvacommand += alg+"_pt,"+alg+"_m"
                 tmvacommand += " \"pt>"+str(pt1)+",pt<"+str(pt2)+","+alg+"_m>"+str(m1)+","+alg+"_m<"+str(m2)+"\" "
-                tmvacommand +=  " \"" + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T3jet_Wmass\" "
-                #tmvacommand +=  " \"" + alg + "_T3jet_WmassVolatility, " + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T2jet_angle, " + alg + "_T3jet_minAngle, " + alg + "_T3jet_Wmass\" "
+                #tmvacommand +=  " \"" + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T3jet_Wmass\" "
+                tmvacommand +=  " \"" + alg + "_T3jet_WmassVolatility, " + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T2jet_angle, " + alg + "_T3jet_minAngle, " + alg + "_T3jet_Wmass\" "
                 tmvacommand += " "+mvatypes+" "
                 tmvacommand += " " + InputDir + sigFile + " "
                 tmvacommand += " " + InputDir + bkgFile + " " 
 
-                outfilename=outputdir3+"Top_TMVAOutput__"+alg+"__BDTMinimal__pt"+pt1+pt2+".root"
-                #outfilename=outputdir3+"Top_TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+".root"
+                #outfilename=outputdir3+"Top_TMVAOutput__"+alg+"__BDTMinimal__pt"+pt1+pt2+".root"
+                outfilename=outputdir3+"Top_TMVAOutput__"+alg+"__BDTAllTjet__pt"+pt1+pt2+".root"
                 print "Running TMVA: ",tmvacommand
                 os.system(tmvacommand)
  

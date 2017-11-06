@@ -279,13 +279,13 @@ def OverlayGroomingROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,Var
         f9   = TFile(path)
         roc9 = f9.Get("ROC_L")
         roc9.SetLineColor(4)
-        roc9.SetLineStyle(1)
+        roc9.SetLineStyle(2)
 
         path = outputdir1+"W_ROC_TruthRaw_Ttrimming_pt"+pt1+pt2+".root"
         f11   = TFile(path)
         roc11 = f11.Get("ROC_L")
         roc11.SetLineColor(2)
-        roc11.SetLineStyle(1)
+        roc11.SetLineStyle(4)
 
         gr.Draw("ACX") #ACE3
 
@@ -303,8 +303,8 @@ def OverlayGroomingROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,Var
         myText(       0.20,0.78,1,0.04, "#font[132]{"+pt1+" GeV < p_{T} < "+pt2+" GeV}")
         myText(       0.20,0.73,1,0.04, "#font[132]{"+m1+" GeV < m < "+m2+" GeV}")
         rocbox3=myLineBoxText(0.30,  0.68, 1, 1, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("T3jet")+"}")
-        rocbox9=myLineBoxText(0.30,  0.63, 4, 1, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Tpruning")+"}")
-        rocbox11=myLineBoxText(0.30, 0.58, 2, 1, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Ttrimming")+"}")
+        rocbox9=myLineBoxText(0.30,  0.63, 4, 2, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Tpruning")+"}")
+        rocbox11=myLineBoxText(0.30, 0.58, 2, 4, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Ttrimming")+"}")
 
     cgr.SaveAs(outputdir4+"W_"+"truthROC_v3_Ttrim_Tprun.eps")
 
@@ -364,7 +364,7 @@ def OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,V
         path = outputdir3+"W_TMVAOutput__"+algs[0]+"__BDTAllTjet__pt"+pt1+pt2+"_ROCSBDT.root"
         f7   = TFile(path)
         roc7 = f7.Get("ROC_L")
-        roc7.SetLineColor(8)
+        roc7.SetLineColor(4)
         roc7.SetLineStyle(4)
         
         path = outputdir1+"W_ROC_TruthRaw_Tpruning_pt"+pt1+pt2+".root"
@@ -383,14 +383,14 @@ def OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,V
         #path = outputdir1+"W_ROC_"+algs[0]+"_v21_pt"+pt1+pt2+".root"
         f13   = TFile(path)
         roc13 = f13.Get("ROC_L")
-        roc13.SetLineColor(95)
+        roc13.SetLineColor(617)
         roc13.SetLineStyle(2)
 
 
         gr.Draw("ACX") #ACE3
 
         #roc9.Draw("CXsame")
-        roc11.Draw("CXsame")
+        #roc11.Draw("CXsame")
         roc7.Draw("CXsame")
         roc13.Draw("CXsame")
         roc3.Draw("CXsame")
@@ -408,11 +408,11 @@ def OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,V
         #myText(       0.20,0.83,1,0.04, "#font[132]{#sqrt{s} = 13 TeV}, |#eta|<1.2")
         rocbox5= myLineBoxText(0.30, 0.68, 1, 1, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Tau21")+"}")
         rocbox3= myLineBoxText(0.30, 0.63, 2, 1, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("T3jet")+"}")
-        rocbox13=myLineBoxText(0.30, 0.58, 95, 2, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("T2jet")+"}")
+        rocbox13=myLineBoxText(0.30, 0.58, 617, 2, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("T2jet")+"}")
         #rocbox13=myLineBoxText(0.30, 0.58, 95, 2, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("v21")+"}")
-        rocbox7= myLineBoxText(0.30, 0.53, 8, 4, 1, 0, 0.15, 0.08, "#font[132]{BDT(3)}")
+        rocbox7= myLineBoxText(0.30, 0.53, 4, 4, 1, 0, 0.15, 0.08, "#font[132]{BDT(3)}")
         #rocbox9= myLineBoxText(0.30, 0.48, 8, 3, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Tpruning")+"}")
-        rocbox11=myLineBoxText(0.30, 0.48, 617, 3, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Ttrimming")+"}")
+        #rocbox11=myLineBoxText(0.30, 0.48, 617, 3, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Ttrimming")+"}")
 
     pt1="800"; pt2="1000";  m1="70"; m2="90"; p3.cd();
 
@@ -425,7 +425,7 @@ def OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,V
     path = outputdir1+"W_ROC_"+algs[1]+"_T3jet_pt"+pt1+pt2+".root"
     f4   = TFile(path)
     roc4 = f4.Get("ROC_L")
-    roc4.SetLineColor(95)
+    roc4.SetLineColor(2)#95
     roc4.SetLineStyle(2)
 
     path = outputdir1+"W_ROC_"+algs[0]+"_Tau21_pt"+pt1+pt2+".root"
@@ -437,7 +437,7 @@ def OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,V
     path = outputdir1+"W_ROC_"+algs[1]+"_Tau21_pt"+pt1+pt2+".root"
     f6   = TFile(path)
     roc6 = f6.Get("ROC_L")
-    roc6.SetLineColor(923)
+    roc6.SetLineColor(1)#923
     roc6.SetLineStyle(2)
 
     gr.Draw("ACX") #ACE3
@@ -456,12 +456,13 @@ def OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,V
     #myText(       0.20,0.83,1,0.04, "#font[132]{#sqrt{s} = 13 TeV}, |#eta|<1.2")
     #myText(       0.20,0.73,1,0.04, "#font[132]{"+m1+" < m < "+m2+" GeV}")
     rocbox5=myLineBoxText(0.30, 0.68, 1, 1, 1, 0, 0.15, 0.08,   "#font[132]{"+TranslateVar("Tau21")+" (truth)}")
-    rocbox6=myLineBoxText(0.30, 0.63, 923, 2, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Tau21")+" (cell)}")
+    rocbox6=myLineBoxText(0.30, 0.63, 1, 2, 1, 0, 0.15, 0.08, "#font[132]{"+TranslateVar("Tau21")+" (cell)}")
     rocbox3=myLineBoxText(0.30, 0.58, 2, 1, 1, 0, 0.15, 0.08,  "#font[132]{"+TranslateVar("T3jet")+" (truth)}")
-    rocbox4=myLineBoxText(0.30, 0.53, 95, 2, 1, 0, 0.15, 0.08,"#font[132]{"+TranslateVar("T3jet")+" (cell)}")
+    rocbox4=myLineBoxText(0.30, 0.53, 2, 2, 1, 0, 0.15, 0.08,"#font[132]{"+TranslateVar("T3jet")+" (cell)}")
 
     #cgr.SaveAs(outputdir4+"W_"+"tripartROC_tau21_v3_v21_Ttrim.eps")
-    cgr.SaveAs(outputdir4+"W_"+"tripartROC_tau21_v3_v2_Ttrim_BDT.eps")
+    #cgr.SaveAs(outputdir4+"W_"+"tripartROC_tau21_v3_v2_Ttrim_BDT.eps")
+    cgr.SaveAs(outputdir4+"W_"+"tripartROC_tau21_v3_v2_BDT.eps")
     #cgr.SaveAs(outputdir4+"W_"+"tripartROC_tau21_v3_v2_Ttrim_BDT_grayscale.eps")
     #cgr.SaveAs(outputdir4+"W_"+"tripartROC_tau21_v3_v21_Tprun_BDT.eps")
 
@@ -534,5 +535,5 @@ mvatypes="BDT"
 #Overlay all ROC curves relevant here
 #OverlayTruthROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,VarsAndRanges) 
 #OverlayCaloROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,VarsAndRanges) 
-#OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,VarsAndRanges) 
+OverlayThreePanelROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,VarsAndRanges) 
 OverlayGroomingROCS(outputdir1,outputdir2,outputdir3,outputdir4,mvatypes,VarsAndRanges) 
