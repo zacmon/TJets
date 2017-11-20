@@ -94,6 +94,8 @@ def TranslateVar(var):
     AllVars["C2"]= "C_{2}"
     AllVars["D2"]= "D_{2}"
     AllVars["v32"] = "v_{32}"
+    AllVars["v42"] = "v_{42}"
+    AllVars["v52"] = "v_{52}"
     AllVars["v21"] = "v_{21}"
     AllVars["Wmass"] = "M_{W}"
     AllVars["WmassVolatility"] = "v_{W}"

@@ -7,8 +7,10 @@ from AtlasStyle import *
 SetAtlasStyle();
 gStyle.SetPalette(1)
 
-sigFile="ntuple_ttLo.root"
-bkgFile="ntuple_dijetLo.root"
+#sigFile="ntuple_ttLo.root"
+#bkgFile="ntuple_dijetLo.root"
+sigFile="ntuple_ttHi.root"
+bkgFile="ntuple_dijetHi.root"
 #sigFile="ntuple_ttHi.v2.root"
 #bkgFile="ntuple_dijetHi.v2.root"
 
@@ -35,6 +37,10 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     
     #Get signal and background histograms
     histname = alg+"_"+variable
+    if variable == "v52":
+        histname = alg+"_T5jet / "+alg+"_T2jet"
+    if variable == "v42":
+        histname = alg+"_T4jet / "+alg+"_T2jet"
     if variable == "v32":
         histname = alg+"_T3jet / "+alg+"_T2jet"
     if variable == "v21":
@@ -1370,7 +1376,8 @@ flag_rocoverlay      = False
 #==========================
 #InputDir="~/Downloads/
 #InputDir="../Ana_EventGeneration/"
-InputDir="/afs/cern.ch/work/a/aemerman/TJets2017/gen_20171024/"
+InputDir="/afs/cern.ch/work/a/aemerman/TJets2017/gen_20171117/"
+#InputDir="/afs/cern.ch/work/a/aemerman/TJets2017/gen_20171024/"
 #InputDir="/afs/cern.ch/work/a/aemerman/TJets2017/gen_20171011/"
 
 outputdir1 = "OutputSingleVariable/"
@@ -1407,7 +1414,10 @@ VarsAndRanges["T3jet"] = [0, "100, 0, 0.25", "100, 0, 0.22","L"]
 VarsAndRanges["T3jet_Wmass"] = [0, "100,40,120", "100,40,120","L"]
 VarsAndRanges["T3jet_WmassVolatility"] = [0, "100, 0, 0.35", "100, 0, 0.25","L"]
 VarsAndRanges["T3jet_minAngle"]  = [0, "100, 0, 0.9", "100, 0, 0.45","R"]
+VarsAndRanges["T4jet"] = [0, "100, 0, 0.25", "100, 0, 0.22","L"]
 VarsAndRanges["v32"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
+VarsAndRanges["v42"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
+VarsAndRanges["v52"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
 VarsAndRanges["Ttrimming"] = [0, "100,0,1.5", "100,0,1.5", "L"]
 VarsAndRanges["Tpruning"] = [0, "100,0,1.5", "100,0,1.5", "R"]
 #VarsAndRanges["play"] = [0, "100,0,5", "100,0,5", "100,0,1.2","L"]
@@ -1427,8 +1437,8 @@ for alg in algs:
 
     print "\n\nGetting mass optimization"
     CutRegions=[]
-    CutRegions.append("1")
-    #CutRegions.append("2")
+    #CutRegions.append("1")
+    CutRegions.append("2")
 
     for CutRegion in CutRegions:
 
@@ -1484,7 +1494,7 @@ for alg in algs:
                 tmvacommand += alg+"_pt,"+alg+"_m"
                 tmvacommand += " \"pt>"+str(pt1)+",pt<"+str(pt2)+","+alg+"_m>"+str(m1)+","+alg+"_m<"+str(m2)+"\" "
                 #tmvacommand +=  " \"" + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T3jet_Wmass\" "
-                tmvacommand +=  " \"" + alg + "_T3jet_WmassVolatility, " + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T2jet_angle, " + alg + "_T3jet_minAngle, " + alg + "_T3jet_Wmass\" "
+                tmvacommand +=  " \"" + alg + "_T3jet_WmassVolatility, " + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T4jet, " + alg + "_T2jet_angle, " + alg + "_T3jet_minAngle, " + alg + "_T3jet_Wmass\" "
                 tmvacommand += " "+mvatypes+" "
                 tmvacommand += " " + InputDir + sigFile + " "
                 tmvacommand += " " + InputDir + bkgFile + " " 
