@@ -7,12 +7,14 @@ from AtlasStyle import *
 SetAtlasStyle();
 gStyle.SetPalette(1)
 
+sigFile="ttLinear.root"
+bkgFile="dijetLinear.root"
 #sigFile="GenNTuple/20171015/ntuple_ttLowPt_0.root"
 #bkgFile="GenNTuple/20171015/ntuple_dijetLowPt_0.root"
-sigFile="GenNTuple/20171016/ntuple_tt_0.root"
-bkgFile="GenNTuple/20171016/ntuple_dijet_0.root"
-#sigFile="optimizeHighTop.root"
-#bkgFile="optimizeHighDijet.root"
+#sigFile="GenNTuple/20171111/ntuple_tt_0.root"
+#bkgFile="GenNTuple/20171111/ntuple_dijet_0.root"
+#sigFile="TJets2017/ntuple_ttHi.v2.root"
+#bkgFile="TJets2017/ntuple_dijetHi.v2.root"
 
 def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, outputdir):
     '''Implementation of simple signal and background comparison'''
@@ -35,9 +37,27 @@ def SignalBGCompare1D(InputDir, alg, variable, range, logy, pt1, pt2, m1, m2, ou
     histname = alg+"_"+variable
     if variable == "v32":
         histname = alg + "_T3jet / " + alg + "_T2jet"
+    if variable == "v42":
+        histname = alg + "_T4jet / " + alg + "_T2jet"
+    if variable == "v52":
+        histname = alg + "_T5jet / " + alg + "_T2jet"
+    if variable == "v53":
+        histname = alg + "_T5jet / " + alg + "_T3jet"
+    if variable == "v43":
+        histname = alg + "_T4jet / " + alg + "_T3jet"
+    if variable == "pt32":
+        histname = alg + "_T3jet_pt / " + alg + "_T2jet_pt"
+    if variable == "pt42":
+        histname = alg + "_T4jet_pt / " + alg + "_T2jet_pt"
+    if variable == "pt52":
+        histname = alg + "_T5jet_pt / " + alg + "_T2jet_pt"
+    if variable == "pt53":
+        histname = alg + "_T5jet_pt / " + alg + "_T3jet_pt"
+    if variable == "pt43":
+        histname = alg + "_T4jet_pt / " + alg + "_T3jet_pt"
     if variable == "play":
         histname = "TruthRawTrim_T2jet / TruthRawTrim_T1jet"
-
+        
     hsig = GetHist1D(InputDir+sigFile, "JetTree", histname, range, weight)#+"*("+alg+"_flavor==3)")
     hbkg = GetHist1D(InputDir+bkgFile, "JetTree", histname, range, weight)#+"*("+alg+"_flavor==0)")
 
@@ -1264,23 +1284,23 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     roc1.SetLineColor(2)
     roc1.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_Tau21_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_v52_pt"+pt1+pt2+".root"
     f2   = TFile(path)
-    roc2 = f2.Get("ROC_SoverB")
-    roc2.SetFillColor(9)
-    roc2.SetLineColor(9)
+    roc2 = f2.Get("ROC_L")
+    roc2.SetFillColor(5)
+    roc2.SetLineColor(5)
     roc2.SetFillStyle(3001)
     
-    path = outputdir1+"ROC_"+alg+"_T2jet_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_v42_pt"+pt1+pt2+".root"
     f3   = TFile(path)
-    roc3 = f3.Get("ROC_R")
+    roc3 = f3.Get("ROC_L")
     roc3.SetFillColor(4)
     roc3.SetLineColor(4)
     roc3.SetFillStyle(3001)
 
-    path = outputdir1+"ROC_"+alg+"_T3jet_pt"+pt1+pt2+".root"
+    path = outputdir1+"ROC_"+alg+"_T3jet_minAngle_pt"+pt1+pt2+".root"
     f4   = TFile(path)
-    roc4 = f4.Get("ROC_L")
+    roc4 = f4.Get("ROC_R")
     roc4.SetFillColor(1)
     roc4.SetLineColor(1)
     roc4.SetFillStyle(3001)
@@ -1314,9 +1334,9 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     myText(       0.20,0.85,1,0.03, alg)
     myText(       0.20,0.80,1,0.03, TranslateRegion(pt1,pt2,m1,m2))
     rocbox1=myLineBoxText(0.26, 0.75, 2, 1, 2, 0, 0.1, 0.08, "#tau_{32}")
-    rocbox2=myLineBoxText(0.26, 0.70, 9, 1, 1, 0, 0.1, 0.08, "#tau_{21}")
-    rocbox3=myLineBoxText(0.26, 0.65, 4, 1, 4, 0, 0.1, 0.08, "v_{2}")
-    rocbox4=myLineBoxText(0.26, 0.60, 1, 1, 1, 0, 0.1, 0.08, "v_{3}")
+    rocbox2=myLineBoxText(0.26, 0.70, 5, 1, 1, 0, 0.1, 0.08, "v_{52}")
+    rocbox3=myLineBoxText(0.26, 0.65, 4, 1, 4, 0, 0.1, 0.08, "v_{42}")
+    rocbox4=myLineBoxText(0.26, 0.60, 1, 1, 1, 0, 0.1, 0.08, "#theta_{min}")
     rocbox5=myLineBoxText(0.26, 0.55, 7, 1, 1, 0, 0.1, 0.08, "v_{32}")
     rocbox6=myLineBoxText(0.26, 0.50, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
 
@@ -1364,14 +1384,22 @@ algs.append("CaloTrim")
 VarsAndRanges={}
 VarsAndRanges["Tau21"] = [0, "100, 0, 0.8", "100, 0, 0.8" ,"R"]
 VarsAndRanges["Tau32"] = [0, "100, 0.1, 1", "100, 0.1, 1.0" ,"L"]
-VarsAndRanges["T1jet"] = [0, "100, 0.3, 1.4", "100, 0.2, 1.0","R"]
-VarsAndRanges["T2jet"] = [0, "100, 0, 0.45", "100, 0, 0.5","R"]
 VarsAndRanges["T2jet_angle"]  = [0, "100, 0.275 , 1.15", "100, 0.075 , 1.0","L"]
-VarsAndRanges["T3jet"] = [0, "100, 0, 0.25", "100, 0, 0.22","L"]
-VarsAndRanges["T3jet_Wmass"] = [0, "100,40,120", "100,40,120","L"]
-VarsAndRanges["T3jet_WmassVolatility"] = [0, "100, 0, 0.35", "100, 0, 0.25","L"]
 VarsAndRanges["T3jet_minAngle"]  = [0, "100, 0, 0.9", "100, 0, 0.45","R"]
-VarsAndRanges["v32"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
+VarsAndRanges["T2jet"] = [0, "100, 0, 0.25", "100, 0, 0.4","L"]
+VarsAndRanges["T3jet"] = [0, "100, 0, 0.25", "100, 0, 0.22","L"]
+VarsAndRanges["T4jet"] = [0, "100, 0, 0.25", "100, 0, 0.22","L"]
+VarsAndRanges["T5jet"] = [0, "100, 0, 0.25", "100, 0, 0.22","L"]
+VarsAndRanges["v32"] = [0, "100, 0.3, 1.4", "100, 0, 1.6","L"]
+VarsAndRanges["v42"] = [0, "100, 0, 0.45", "100, 0, 1.5","L"]
+VarsAndRanges["v52"] = [0, "100,0,1.05", "100,0,1.4","L"]
+VarsAndRanges["v43"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
+VarsAndRanges["v53"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
+VarsAndRanges["pt32"] = [0, "100, 0, 1.5", "100, 0, 1.5","L"]
+VarsAndRanges["pt42"] = [0, "100, 0, 1.5", "100, 0, 1.5","L"]
+VarsAndRanges["pt52"] = [0, "100, 0, 1.5", "100, 0, 1.5","L"]
+VarsAndRanges["pt53"] = [0, "100, 0, 1.5", "100, 0, 1.05","L"]
+VarsAndRanges["pt43"] = [0, "100, 0, 1.5", "100, 0, 1.05","L"]
 
 #################################
 # Loop over algorithms
@@ -1418,14 +1446,14 @@ for alg in algs:
 
             print var0,var1
 
-            if flag_2variable_hand:
+            #if flag_2variable_hand:
                 #######################
                 #Get basic 2D correlation plots
-                GetCorrelationAndSeparationSigBG(InputDir, alg, var0, var1, VarsAndRanges[var0][int(CutRegion)], VarsAndRanges[var1][int(CutRegion)], pt1, pt2, m1, m2, outputdir2)    
+                #GetCorrelationAndSeparationSigBG(InputDir, alg, var0, var1, VarsAndRanges[var0][int(CutRegion)], VarsAndRanges[var1][int(CutRegion)], pt1, pt2, m1, m2, outputdir2)    
             
                 #######################
                 #Do simple likelihood combination
-                SignalBGCompare2D(InputDir, alg, var0, VarsAndRanges[var0][3], var1, VarsAndRanges[var1][3], VarsAndRanges[var0][int(CutRegion)], VarsAndRanges[var1][int(CutRegion)], pt1, pt2, m1, m2, outputdir2)
+                #SignalBGCompare2D(InputDir, alg, var0, VarsAndRanges[var0][3], var1, VarsAndRanges[var1][3], VarsAndRanges[var0][int(CutRegion)], VarsAndRanges[var1][int(CutRegion)], pt1, pt2, m1, m2, outputdir2)
 
         if flag_AllTjet_tmva:
                 #######################
@@ -1437,8 +1465,9 @@ for alg in algs:
                 tmvacommand += " "+alg+" "
                 tmvacommand += alg+"_pt,"+alg+"_m"
                 tmvacommand += " \"pt>"+str(pt1)+",pt<"+str(pt2)+","+alg+"_m>"+str(m1)+","+alg+"_m<"+str(m2)+"\" "
-                #tmvacommand +=  " \"" + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T3jet_Wmass\" "
-                tmvacommand +=  " \"" + alg + "_T3jet_WmassVolatility, " + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T2jet_angle, " + alg + "_T3jet_minAngle, " + alg + "_T3jet_Wmass\" "
+                #tmvacommand +=  " \"" + alg + "_T2jet, " + alg + "_T3jet\" "
+                #tmvacommand +=  " \"" + alg + "_T2jet, " + alg + "_T4jet, " + alg + "_T3jet\" "
+                tmvacommand +=  " \"" + alg + "_T3jet_WmassVolatility, " + alg + "_T2jet, " + alg + "_T3jet, " + alg + "_T2jet_angle, " + alg + "_T3jet_minAngle, " + alg + "_T3jet_Wmass, " + alg + "_T4jet\" "
                 tmvacommand += " "+mvatypes+" "
                 tmvacommand += " " + InputDir + sigFile + " "
                 tmvacommand += " " + InputDir + bkgFile + " " 

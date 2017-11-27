@@ -163,6 +163,8 @@ int jetflavor;
 ///////////////////////////
 //output tree branches
 ///////////////////////////
+int event;
+
 int    NumberOfVertices;
 
 std::vector<int>    TruthRaw_flavor;
@@ -193,10 +195,6 @@ std::vector<double> TruthRaw_Tpruning;
 std::vector<double> TruthRaw_Ttrimming;
 std::vector<double> TruthRaw_Taktreclustering;
 std::vector<double> TruthRaw_Tktreclustering;
-
-std::vector<std::vector<double>> TruthRaw_T1Volatility;
-std::vector<std::vector<double>> TruthRaw_T2Volatility;
-std::vector<std::vector<double>> TruthRaw_T3Volatility;
 
 std::vector<std::vector<double>> TruthRaw_T1masses;
 std::vector<std::vector<double>> TruthRaw_T2masses;
@@ -234,13 +232,15 @@ std::vector<double> TruthRawTrim_Ttrimming;
 std::vector<double> TruthRawTrim_Taktreclustering;
 std::vector<double> TruthRawTrim_Tktreclustering;
 
-std::vector<std::vector<double>> TruthRawTrim_T1Volatility;
-std::vector<std::vector<double>> TruthRawTrim_T2Volatility;
-std::vector<std::vector<double>> TruthRawTrim_T3Volatility;
-
 std::vector<std::vector<double>> TruthRawTrim_T1masses;
 std::vector<std::vector<double>> TruthRawTrim_T2masses;
 std::vector<std::vector<double>> TruthRawTrim_T3masses;
+
+std::vector<double> TruthRawTrim_T1jet_pt;
+std::vector<double> TruthRawTrim_T2jet_pt;
+std::vector<double> TruthRawTrim_T3jet_pt;
+std::vector<double> TruthRawTrim_T4jet_pt;
+std::vector<double> TruthRawTrim_T5jet_pt;
 
 std::vector<double> TruthRawTrim_T2jet_massW;
 std::vector<double> TruthRawTrim_T2jet_volatilityW;
@@ -303,6 +303,12 @@ std::vector<double> CaloTrim_Ttrimming;
 std::vector<double> CaloTrim_Taktreclustering;
 std::vector<double> CaloTrim_Tktreclustering;
 
+std::vector<double> CaloTrim_T1jet_pt;
+std::vector<double> CaloTrim_T2jet_pt;
+std::vector<double> CaloTrim_T3jet_pt;
+std::vector<double> CaloTrim_T4jet_pt;
+std::vector<double> CaloTrim_T5jet_pt;
+
 ///////////////////////////
 //extra functions
 ///////////////////////////
@@ -334,37 +340,38 @@ double T_EnergyCorrelator_C3(fastjet::PseudoJet& input, double beta_min, double 
 
 struct TSub {
     double minAngle = -1;
-    double volatility = -1;
-    std::vector<double> volVec;
+    double massVolatility = -1;
+    double pTVolatility = -1;
     std::vector<double> masses;
 };
 
 struct T2Sub {
     double minAngle = -1;
-    double volatility = -1;
-    std::vector<double> volVec;
+    double massVolatility = -1;
+    double pTVolatility = -1;
     std::vector<double> masses;
 
-    double massW = -1;
-    double volatilityW = -1;
+    double wMass = -1;
+    double wMassVolatility = -1;
 };
     
 struct T3Sub {
     double minAngle = -1;
-    double volatility = -1;
-    std::vector<double> volVec;
+    double massVolatility = -1;
+    double pTVolatility = -1;
     std::vector<double> masses;
 
     double midAngle = -1;
     double maxAngle = -1;
 
-    double massW = -1;
-    double volatilityW = -1;
+    double wMass = -1;
+    double wMassVolatility = -1;
+    double wPTVolatility = -1;
 };
 
-TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadius, double maxRadius, int numRadii);
-T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii);
-T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii);
+TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadius, double maxRadius, int numRadii, int stepScale);
+T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii, int stepScale);
+T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii, int stepScale);
 double T_Pruning(fastjet::PseudoJet& input, double dcut_min, double dcut_max, int N_dcut);
 double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, int N_fcut);
 double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double R_min, double R_max, int N_R);

@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------
 
-TITLE : NTupler.cc
+Title : NTupler.cc
 
 DESCRIPTION : Takes input final state particle ntuple from Ana_EventGeneration
 and outputs a flat ntuple that contains jet properties created via fastjet
@@ -22,7 +22,6 @@ output : Anything you want - but being logical
 #include "NTupler.h"
 
 int main (int argc, char* argv[]) {
-
   //exit if you dont pass a run card
   if (argc < 4) {
     std::cout << "You need to specify more arguments" << std::endl;
@@ -106,7 +105,7 @@ int main (int argc, char* argv[]) {
   fileout = new TFile( OutputFile.c_str() ,"RECREATE");
 
   treeout = new TTree("JetTree","JetTree");
-
+  
   treeout->Branch("NumberOfVertices",    &NumberOfVertices);
 
   treeout->Branch("TruthRaw_flavor",        &TruthRaw_flavor);
@@ -114,28 +113,9 @@ int main (int argc, char* argv[]) {
   treeout->Branch("TruthRaw_eta",           &TruthRaw_eta);
   treeout->Branch("TruthRaw_phi",           &TruthRaw_phi);
   treeout->Branch("TruthRaw_m",             &TruthRaw_m);
-  treeout->Branch("TruthRaw_Tau21",         &TruthRaw_Tau21);
-  treeout->Branch("TruthRaw_Tau32",         &TruthRaw_Tau32);
-  treeout->Branch("TruthRaw_D2",            &TruthRaw_D2);
-  treeout->Branch("TruthRaw_T1jet_angle",   &TruthRaw_T1jet_angle);
-  treeout->Branch("TruthRaw_T1jet",         &TruthRaw_T1jet);
-  treeout->Branch("TruthRaw_T2jet_angle",   &TruthRaw_T2jet_angle);
-  treeout->Branch("TruthRaw_T2jet",         &TruthRaw_T2jet);
-  treeout->Branch("TruthRaw_T3jet_minAngle",   &TruthRaw_T3jet_angle);
-  treeout->Branch("TruthRaw_T3jet",         &TruthRaw_T3jet);
-  treeout->Branch("TruthRaw_T3jet_Wmass",       &TruthRaw_T3jet_W);
-  treeout->Branch("TruthRaw_T3jet_WmassVolatility",      &TruthRaw_T3jet_mW);
-  treeout->Branch("TruthRaw_T4jet_angle",   &TruthRaw_T4jet_angle);
-  treeout->Branch("TruthRaw_T4jet",         &TruthRaw_T4jet);
-  treeout->Branch("TruthRaw_T5jet_angle",   &TruthRaw_T5jet_angle);
-  treeout->Branch("TruthRaw_T5jet",         &TruthRaw_T5jet);
   treeout->Branch("TruthRaw_Tpruning",      &TruthRaw_Tpruning);
   treeout->Branch("TruthRaw_Ttrimming",     &TruthRaw_Ttrimming);
-  treeout->Branch("TruthRaw_Taktreclustering",	&TruthRaw_Taktreclustering);
-  treeout->Branch("TruthRaw_Tktreclustering",	&TruthRaw_Tktreclustering);
-  treeout->Branch("TruthRaw_TJet_m1",       &TruthRaw_TJet_m1);
-  treeout->Branch("TruthRaw_TJet_m2",       &TruthRaw_TJet_m2);
-
+ 
   treeout->Branch("TruthRawTrim_flavor",        &TruthRawTrim_flavor);
   treeout->Branch("TruthRawTrim_pt",            &TruthRawTrim_pt);
   treeout->Branch("TruthRawTrim_eta",           &TruthRawTrim_eta);
@@ -156,44 +136,25 @@ int main (int argc, char* argv[]) {
   treeout->Branch("TruthRawTrim_T4jet",         &TruthRawTrim_T4jet);
   treeout->Branch("TruthRawTrim_T5jet_angle",   &TruthRawTrim_T5jet_angle);
   treeout->Branch("TruthRawTrim_T5jet",         &TruthRawTrim_T5jet);
-  treeout->Branch("TruthRawTrim_Tpruning",      &TruthRawTrim_Tpruning);
-  treeout->Branch("TruthRawTrim_Ttrimming",     &TruthRawTrim_Ttrimming);
-  treeout->Branch("TruthRawTrim_Taktreclustering",	&TruthRawTrim_Taktreclustering);
-  treeout->Branch("TruthRawTrim_Tktreclustering",	&TruthRawTrim_Tktreclustering);
-  treeout->Branch("TruthRawTrim_TJet_m1",       &TruthRawTrim_TJet_m1);
-  treeout->Branch("TruthRawTrim_TJet_m2",       &TruthRawTrim_TJet_m2);
 
+  treeout->Branch("TruthRawTrim_T1jet_pt", &TruthRawTrim_T1jet_pt);
+  treeout->Branch("TruthRawTrim_T2jet_pt", &TruthRawTrim_T2jet_pt);
+  treeout->Branch("TruthRawTrim_T3jet_pt", &TruthRawTrim_T3jet_pt);
+  treeout->Branch("TruthRawTrim_T4jet_pt", &TruthRawTrim_T4jet_pt);
+  treeout->Branch("TruthRawTrim_T5jet_pt", &TruthRawTrim_T5jet_pt);
+  
   treeout->Branch("TruthRawTrim_T1masses", &TruthRawTrim_T1masses);
   treeout->Branch("TruthRawTrim_T2masses", &TruthRawTrim_T2masses);
   treeout->Branch("TruthRawTrim_T3masses", &TruthRawTrim_T3masses);
-
+  
   treeout->Branch("CaloRaw_flavor",        &CaloRaw_flavor);
   treeout->Branch("CaloRaw_pt",            &CaloRaw_pt);
   treeout->Branch("CaloRaw_eta",           &CaloRaw_eta);
   treeout->Branch("CaloRaw_phi",           &CaloRaw_phi);
   treeout->Branch("CaloRaw_m",             &CaloRaw_m);
-  treeout->Branch("CaloRaw_Tau21",         &CaloRaw_Tau21);
-  treeout->Branch("CaloRaw_Tau32",         &CaloRaw_Tau32);
-  treeout->Branch("CaloRaw_D2",            &CaloRaw_D2);
-  treeout->Branch("CaloRaw_T1jet_angle",   &CaloRaw_T1jet_angle);
-  treeout->Branch("CaloRaw_T1jet",         &CaloRaw_T1jet);
-  treeout->Branch("CaloRaw_T2jet_angle",   &CaloRaw_T2jet_angle);
-  treeout->Branch("CaloRaw_T2jet",         &CaloRaw_T2jet);
-  treeout->Branch("CaloRaw_T3jet_minAngle",   &CaloRaw_T3jet_angle);
-  treeout->Branch("CaloRaw_T3jet",         &CaloRaw_T3jet);
-  treeout->Branch("CaloRaw_T3jet_Wmass",       &CaloRaw_T3jet_W);
-  treeout->Branch("CaloRaw_T3jet_WmassVolatility",      &CaloRaw_T3jet_mW);
-  treeout->Branch("CaloRaw_T4jet_angle",   &CaloRaw_T4jet_angle);
-  treeout->Branch("CaloRaw_T4jet",         &CaloRaw_T4jet);
-  treeout->Branch("CaloRaw_T5jet_angle",   &CaloRaw_T5jet_angle);
-  treeout->Branch("CaloRaw_T5jet",         &CaloRaw_T5jet);
   treeout->Branch("CaloRaw_Tpruning",      &CaloRaw_Tpruning);
   treeout->Branch("CaloRaw_Ttrimming",     &CaloRaw_Ttrimming);
-  treeout->Branch("CaloRaw_Taktreclustering",	&CaloRaw_Taktreclustering);
-  treeout->Branch("CaloRaw_Tktreclustering",	&CaloRaw_Tktreclustering);
-  treeout->Branch("CaloRaw_TJet_m1",       &CaloRaw_TJet_m1);
-  treeout->Branch("CaloRaw_TJet_m2",       &CaloRaw_TJet_m2);
-  
+    
   treeout->Branch("CaloTrim_flavor",        &CaloTrim_flavor);
   treeout->Branch("CaloTrim_pt",            &CaloTrim_pt);
   treeout->Branch("CaloTrim_eta",           &CaloTrim_eta);
@@ -214,12 +175,12 @@ int main (int argc, char* argv[]) {
   treeout->Branch("CaloTrim_T4jet",         &CaloTrim_T4jet);
   treeout->Branch("CaloTrim_T5jet_angle",   &CaloTrim_T5jet_angle);
   treeout->Branch("CaloTrim_T5jet",         &CaloTrim_T5jet);
-  treeout->Branch("CaloTrim_Tpruning",      &CaloTrim_Tpruning);
-  treeout->Branch("CaloTrim_Ttrimming",     &CaloTrim_Ttrimming);
-  treeout->Branch("CaloTrim_Taktreclustering",	&CaloTrim_Taktreclustering);
-  treeout->Branch("CaloTrim_Tktreclustering",	&CaloTrim_Tktreclustering);
-  treeout->Branch("CaloTrim_TJet_m1",       &CaloTrim_TJet_m1);
-  treeout->Branch("CaloTrim_TJet_m2",       &CaloTrim_TJet_m2);
+
+  treeout->Branch("CaloTrim_T1jet_pt", &CaloTrim_T1jet_pt);
+  treeout->Branch("CaloTrim_T2jet_pt", &CaloTrim_T2jet_pt);
+  treeout->Branch("CaloTrim_T3jet_pt", &CaloTrim_T3jet_pt);
+  treeout->Branch("CaloTrim_T4jet_pt", &CaloTrim_T4jet_pt);
+  treeout->Branch("CaloTrim_T5jet_pt", &CaloTrim_T5jet_pt);
   
   //////////////////////////////////////////////
   //random number generator for pileup
@@ -230,7 +191,7 @@ int main (int argc, char* argv[]) {
   //main event loop
   //////////////////////////////////////////////
   nEvents = treein->GetEntries();
-  
+
   std::cout << "Number of events: " << nEvents << std::endl;
 
   fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 1.0);
@@ -239,17 +200,17 @@ int main (int argc, char* argv[]) {
   fastjet::contrib::EnergyCorrelatorC2 ecfC2(1);
   fastjet::contrib::EnergyCorrelatorD2 ecfD2(1);
   fastjet::contrib::EnergyCorrelatorDoubleRatio ecfC3(2, 1);
-  
+
   //  Filtering with a pt cut as for trimming (arXiv:0912.1342)
   double Rfilt0 = 0.3;
   double fcut0 = 0.05;
   fastjet::Transformer *trimmer = new fastjet::Filter(fastjet::JetDefinition(fastjet::kt_algorithm, Rfilt0), fastjet::SelectorPtFractionMin(fcut0) );
   const fastjet::Transformer &f = *trimmer;
   
-  for (Long64_t jentry=0; jentry<nEvents; jentry++) {
+  for (Long64_t jentry=0; jentry < nEvents; jentry++) {
       
       if (jentry % 1000 == 0) std::cout << jentry << " processed." << std::endl;
-
+      event = jentry;
       filein->cd();
       treein->GetEntry(jentry);
       
@@ -318,7 +279,8 @@ int main (int argc, char* argv[]) {
     double minR = 0.1;
     double maxR = 1.0;
     int numRadii = 36;
-    
+    int stepScale = 0; //  0 for linear. 1 for log.
+    if (stepScale == 1) numRadii = 32;
     for (unsigned int ijet = 0; ijet < jetsTruthRaw.size(); ijet++) {
 
 	/////////////////////////////
@@ -358,13 +320,14 @@ int main (int argc, char* argv[]) {
 	// TruthRaw_T3jet_W.push_back(T3TruthRaw.massW);
 	// TruthRaw_T3jet_mW.push_back(T3TruthRaw.volatilityW);
 
-	if (jetflavor <= 1) {
-	    double TruthRawTPruning = T_Pruning(jetsTruthRaw[ijet], 0.1, 2.0, 20);
-	    TruthRaw_Tpruning.push_back(TruthRawTPruning);
+	// if (jetflavor <= 1) {
+	//     double TruthRawTPruning = T_Pruning(jetsTruthRaw[ijet], 0.1, 2.0, 20);
+	//     TruthRaw_Tpruning.push_back(TruthRawTPruning);
 	    
-	    double TruthRawTTrimming =	T_Trimming(jetsTruthRaw[ijet], 0.0, 0.1, 20);
-	    TruthRaw_Ttrimming.push_back(TruthRawTTrimming);
-	}
+	//     double TruthRawTTrimming =	T_Trimming(jetsTruthRaw[ijet], 0.0, 0.1, 20);
+	//     TruthRaw_Ttrimming.push_back(TruthRawTTrimming);
+	// }
+
 	/////////////////////////////
 	//TruthRawTrim
 	/////////////////////////////
@@ -386,9 +349,11 @@ int main (int argc, char* argv[]) {
 	/////////////////////////////////
 	//Fill variables that will go into ntuple
 	/////////////////////////////////
-	TSub  T1SubOutputTrim  = TNSubjet(groomedJet, 1, minR, maxR, numRadii);
-	T2Sub  T2SubOutputTrim  = T2Subjet(groomedJet, minR, maxR, numRadii);
-	T3Sub  T3SubOutputTrim = T3Subjet(groomedJet, minR, maxR, numRadii);
+	TSub  T1SubOutputTrim  = TNSubjet(groomedJet, 1, minR, maxR, numRadii, stepScale);
+	T2Sub  T2SubOutputTrim  = T2Subjet(groomedJet, minR, maxR, numRadii, stepScale);
+	T3Sub  T3SubOutputTrim = T3Subjet(groomedJet, minR, maxR, numRadii, stepScale);
+	TSub T4SubOutputTrim = TNSubjet(groomedJet, 4, minR, maxR, numRadii, stepScale);
+	TSub T5SubOutputTrim = TNSubjet(groomedJet, 5, minR, maxR, numRadii, stepScale);
 	
 	TruthRawTrim_flavor.push_back(jetflavor);
 	
@@ -401,18 +366,27 @@ int main (int argc, char* argv[]) {
 	TruthRawTrim_Tau32.push_back(GetTau32(groomedJet));
 	
 	TruthRawTrim_T1jet_angle.push_back(T1SubOutputTrim.minAngle);
-	TruthRawTrim_T1jet.push_back(T1SubOutputTrim.volatility);
+	TruthRawTrim_T1jet.push_back(T1SubOutputTrim.massVolatility);
 	TruthRawTrim_T1masses.push_back(T1SubOutputTrim.masses);
+	TruthRawTrim_T1jet_pt.push_back(T1SubOutputTrim.pTVolatility);
 	
 	TruthRawTrim_T2jet_angle.push_back(T2SubOutputTrim.minAngle);
-	TruthRawTrim_T2jet.push_back(T2SubOutputTrim.volatility);
+	TruthRawTrim_T2jet.push_back(T2SubOutputTrim.massVolatility);
 	TruthRawTrim_T2masses.push_back(T2SubOutputTrim.masses);
+	TruthRawTrim_T2jet_pt.push_back(T2SubOutputTrim.pTVolatility);
 	
 	TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.minAngle);
-	TruthRawTrim_T3jet.push_back(T3SubOutputTrim.volatility);
-	TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.massW);
-	TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.volatilityW);
+	TruthRawTrim_T3jet.push_back(T3SubOutputTrim.massVolatility);
+	TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.wMass);
+	TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.wMassVolatility);
 	TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
+	TruthRawTrim_T3jet_pt.push_back(T3SubOutputTrim.pTVolatility);
+
+	TruthRawTrim_T4jet.push_back(T4SubOutputTrim.massVolatility);
+	TruthRawTrim_T4jet_pt.push_back(T4SubOutputTrim.pTVolatility);
+	TruthRawTrim_T5jet.push_back(T5SubOutputTrim.massVolatility);
+	TruthRawTrim_T5jet_pt.push_back(T5SubOutputTrim.pTVolatility);
+
     }
 
     std::vector<fastjet::PseudoJet> caloClusters = ToyCalorimeter(input_particles);
@@ -430,9 +404,9 @@ int main (int argc, char* argv[]) {
 	jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
 	if (jetflavor == -1) continue;
 
-	// TSub T1CaloJetRaw = TNSubjet(caloJets[i], 1, minR, maxR, numRadii);
-	// TSub T2CaloJetRaw = TNSubjet(caloJets[i], 2, minR, maxR, numRadii);
-	// T3Sub T3CaloJetRaw = T3Subjet(caloJets[i], minR, maxR, numRadii);
+	// TSub T1CaloJetRaw = TNSubjet(caloJets[i], 1, minR, maxR, numRadii, 1);
+	// TSub T2CaloJetRaw = TNSubjet(caloJets[i], 2, minR, maxR, numRadii, 1);
+	// T3Sub T3CaloJetRaw = T3Subjet(caloJets[i], minR, maxR, numRadii, 1);
 
 	CaloRaw_flavor.push_back(jetflavor);
 
@@ -445,22 +419,22 @@ int main (int argc, char* argv[]) {
 	// CaloRaw_Tau32.push_back(GetTau32(caloJets[i]));
 	
 	// CaloRaw_T1jet_angle.push_back(T1CaloJetRaw.minAngle);
-	// CaloRaw_T1jet.push_back(T1CaloJetRaw.volatility);
+	// CaloRaw_T1jet.push_back(T1CaloJetRaw.massVolatility);
 	
 	// CaloRaw_T2jet_angle.push_back(T2CaloJetRaw.minAngle);
-	// CaloRaw_T2jet.push_back(T2CaloJetRaw.volatility);
+	// CaloRaw_T2jet.push_back(T2CaloJetRaw.massVolatility);
 	
 	// CaloRaw_T3jet_angle.push_back(T3CaloJetRaw.minAngle);
-	// CaloRaw_T3jet.push_back(T3CaloJetRaw.volatility);
+	// CaloRaw_T3jet.push_back(T3CaloJetRaw.massVolatility);
 	// CaloRaw_T3jet_W.push_back(T3CaloJetRaw.massW);
-	// CaloRaw_T3jet_mW.push_back(T3CaloJetRaw.volatilityW);
-	if (jetflavor <= 1) {
-	    double CaloRawTPruning = T_Pruning(caloJets[i], 0.1, 2.0, 20);
-	    CaloRaw_Tpruning.push_back(CaloRawTPruning);
+	// CaloRaw_T3jet_mW.push_back(T3CaloJetRaw.massVolatilityW);
+	// if (jetflavor <= 1) {
+	//     double CaloRawTPruning = T_Pruning(caloJets[i], 0.1, 2.0, 20);
+	//     CaloRaw_Tpruning.push_back(CaloRawTPruning);
 	    
-	    double CaloRawTTrimming =	T_Trimming(caloJets[i], 0.0, 0.1, 20);
-	    CaloRaw_Ttrimming.push_back(CaloRawTTrimming);
-	}
+	//     double CaloRawTTrimming =	T_Trimming(caloJets[i], 0.0, 0.1, 20);
+	//     CaloRaw_Ttrimming.push_back(CaloRawTTrimming);
+	// }
 	//  Trimmed calo jet.
 	fastjet::PseudoJet groomedCaloJet = f(caloJets[i]);
 	
@@ -472,10 +446,12 @@ int main (int argc, char* argv[]) {
 	jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
 	if (jetflavor == -1) continue;
 
-	TSub T1CaloJetTrim = TNSubjet(groomedCaloJet, 1, minR, maxR, numRadii);
-	TSub T2CaloJetTrim = TNSubjet(groomedCaloJet, 2, minR, maxR, numRadii);
-	T3Sub T3CaloJetTrim = T3Subjet(groomedCaloJet, minR, maxR, numRadii);
-
+	TSub T1CaloJetTrim = TNSubjet(groomedCaloJet, 1, minR, maxR, numRadii, stepScale);
+	TSub T2CaloJetTrim = TNSubjet(groomedCaloJet, 2, minR, maxR, numRadii, stepScale);
+	T3Sub T3CaloJetTrim = T3Subjet(groomedCaloJet, minR, maxR, numRadii, stepScale);
+	TSub T4CaloJetTrim = TNSubjet(groomedCaloJet, 4, minR, maxR, numRadii, stepScale);
+	TSub T5CaloJetTrim = TNSubjet(groomedCaloJet, 5, minR, maxR, numRadii, stepScale);
+	
 	CaloTrim_flavor.push_back(jetflavor);
 
 	CaloTrim_pt.push_back(tempJet.Pt());
@@ -487,21 +463,23 @@ int main (int argc, char* argv[]) {
 	CaloTrim_Tau32.push_back(GetTau32(groomedCaloJet));
 	
 	CaloTrim_T1jet_angle.push_back(T1CaloJetTrim.minAngle);
-	CaloTrim_T1jet.push_back(T1CaloJetTrim.volatility);
+	CaloTrim_T1jet.push_back(T1CaloJetTrim.massVolatility);
+	CaloTrim_T1jet.push_back(T1CaloJetTrim.pTVolatility);
 	
 	CaloTrim_T2jet_angle.push_back(T2CaloJetTrim.minAngle);
-	CaloTrim_T2jet.push_back(T2CaloJetTrim.volatility);
+	CaloTrim_T2jet.push_back(T2CaloJetTrim.massVolatility);
+	CaloTrim_T2jet_pt.push_back(T2CaloJetTrim.pTVolatility);
 	
 	CaloTrim_T3jet_angle.push_back(T3CaloJetTrim.minAngle);
-	CaloTrim_T3jet.push_back(T3CaloJetTrim.volatility);
-	CaloTrim_T3jet_W.push_back(T3CaloJetTrim.massW);
-	CaloTrim_T3jet_mW.push_back(T3CaloJetTrim.volatilityW);
+	CaloTrim_T3jet.push_back(T3CaloJetTrim.massVolatility);
+	CaloTrim_T3jet_W.push_back(T3CaloJetTrim.wMass);
+	CaloTrim_T3jet_mW.push_back(T3CaloJetTrim.wMassVolatility);
+	CaloTrim_T3jet_pt.push_back(T3CaloJetTrim.pTVolatility);
 
-	double CaloTrimTPruning = T_Pruning(groomedCaloJet, 0.1, 2.0, 20);
-	CaloTrim_Tpruning.push_back(CaloTrimTPruning);
-	
-	double CaloTrimTTrimming =	T_Trimming(groomedCaloJet, 0.0, 0.1, 20);
-	CaloTrim_Ttrimming.push_back(CaloTrimTTrimming);
+	CaloTrim_T4jet.push_back(T4CaloJetTrim.massVolatility);
+	CaloTrim_T4jet_pt.push_back(T4CaloJetTrim.pTVolatility);
+	CaloTrim_T5jet.push_back(T5CaloJetTrim.massVolatility);
+	CaloTrim_T5jet_pt.push_back(T5CaloJetTrim.pTVolatility);
     }
     
     if(debug) std::cout<<"Filling Tree"<< std::endl;
@@ -528,29 +506,7 @@ void ResetBranches(){
   TruthRaw_eta.clear();
   TruthRaw_phi.clear();
   TruthRaw_m.clear();
-  TruthRaw_Tau21.clear();
-  TruthRaw_Tau32.clear();
-  TruthRaw_D2.clear();
-  TruthRaw_T1jet_angle.clear();
-  TruthRaw_T1jet.clear();
-  TruthRaw_T2jet_angle.clear();
-  TruthRaw_T2jet.clear();
-  TruthRaw_T3jet_angle.clear();
-  TruthRaw_T3jet_angle1.clear();
-  TruthRaw_T3jet_angle2.clear();
-  TruthRaw_T3jet.clear();
-  TruthRaw_T3jet_W.clear();
-  TruthRaw_T3jet_mW.clear();
-  TruthRaw_T4jet_angle.clear();
-  TruthRaw_T4jet.clear();
-  TruthRaw_T5jet_angle.clear();
-  TruthRaw_T5jet.clear();
-  TruthRaw_Tpruning.clear();
   TruthRaw_Ttrimming.clear();
-  TruthRaw_Taktreclustering.clear();
-  TruthRaw_Tktreclustering.clear();
-  TruthRaw_TJet_m1.clear();
-  TruthRaw_TJet_m2.clear();
 
   TruthRawTrim_flavor.clear();
   TruthRawTrim_pt.clear();
@@ -574,17 +530,14 @@ void ResetBranches(){
   TruthRawTrim_T4jet.clear();
   TruthRawTrim_T5jet_angle.clear();
   TruthRawTrim_T5jet.clear();
-  TruthRawTrim_Tpruning.clear();
-  TruthRawTrim_Ttrimming.clear();
-  TruthRawTrim_Taktreclustering.clear();
-  TruthRawTrim_Tktreclustering.clear();
-  TruthRawTrim_TJet_m1.clear();
-  TruthRawTrim_TJet_m2.clear();
-
-  TruthRawTrim_T1Volatility.clear();
-  TruthRawTrim_T2Volatility.clear();
-  TruthRawTrim_T3Volatility.clear();
-
+  
+  TruthRawTrim_T1jet_pt.clear();
+  TruthRawTrim_T2jet_pt.clear();
+  TruthRawTrim_T3jet_pt.clear();
+  TruthRawTrim_T4jet_pt.clear();
+  TruthRawTrim_T5jet_pt.clear();
+  
+  
   TruthRawTrim_T1masses.clear();
   TruthRawTrim_T2masses.clear();
   TruthRawTrim_T3masses.clear();
@@ -597,30 +550,9 @@ void ResetBranches(){
   CaloRaw_eta.clear();
   CaloRaw_phi.clear();
   CaloRaw_m.clear();
-  CaloRaw_Tau21.clear();
-  CaloRaw_Tau32.clear();
-  CaloRaw_D2.clear();
-  CaloRaw_T1jet_angle.clear();
-  CaloRaw_T1jet.clear();
-  CaloRaw_T2jet_angle.clear();
-  CaloRaw_T2jet.clear();
-  CaloRaw_T3jet_angle.clear();
-  CaloRaw_T3jet_angle1.clear();
-  CaloRaw_T3jet_angle2.clear();
-  CaloRaw_T3jet.clear();
-  CaloRaw_T3jet_W.clear();
-  CaloRaw_T3jet_mW.clear();
-  CaloRaw_T4jet_angle.clear();
-  CaloRaw_T4jet.clear();
-  CaloRaw_T5jet_angle.clear();
-  CaloRaw_T5jet.clear();
   CaloRaw_Tpruning.clear();
   CaloRaw_Ttrimming.clear();
-  CaloRaw_Taktreclustering.clear();
-  CaloRaw_Tktreclustering.clear();
-  CaloRaw_TJet_m1.clear();
-  CaloRaw_TJet_m2.clear();
-  
+    
   CaloTrim_flavor.clear();
   CaloTrim_pt.clear();
   CaloTrim_eta.clear();
@@ -649,6 +581,12 @@ void ResetBranches(){
   CaloTrim_Tktreclustering.clear();
   CaloTrim_TJet_m1.clear();
   CaloTrim_TJet_m2.clear();
+
+  CaloTrim_T1jet_pt.clear();
+  CaloTrim_T2jet_pt.clear();
+  CaloTrim_T3jet_pt.clear();
+  CaloTrim_T4jet_pt.clear();
+  CaloTrim_T5jet_pt.clear();
 }
 
 ///=========================================
@@ -725,9 +663,8 @@ double T_Pruning(fastjet::PseudoJet& input, double minDCut, double maxDCut, int 
 /// Telescoping Trimming
 ///=========================================
 double T_Trimming(fastjet::PseudoJet& input, double minFCut, double maxFCut, int numFCuts) {
-    double Rfilt = 0.2; // single choice of Rfilt. can be further telescoped.
-    //  Use Rfilt = 0.1 for higher pT jets, Rfilt = 0.2 for lower pT jets.
-    if (input.pt() > 500) Rfilt = 0.1;
+    double Rfilt = 0.1; 
+    if (input.pt() > 500) Rfilt = 0.05;
     
     std::vector<double> telescopingMasses;
     
@@ -792,13 +729,13 @@ double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double minRadius
 ///=========================================
 /// Telescoping Subjet
 ///=========================================
-TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadius, double maxRadius, int numRadii) {
+TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadius, double maxRadius, int numRadii, int stepScale) {
     TSub result;
     
     double beta = 1.0;    
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
-    fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
-    //fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
+    //fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
+    fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
 
     double tauN = nSubjettiness.result(input);
     std::vector<fastjet::PseudoJet> tauAxes = nSubjettiness.currentAxes();
@@ -844,21 +781,26 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
     
     std::vector<TLorentzVector> TSubjets(numSubjets);
     std::vector<double> telescopingMasses;
+    std::vector<double> telescopingPT;
 
-    double deltaR = (maxRadius - minRadius) / (numRadii);
-    
-    for (double r = minRadius; r < maxRadius + deltaR; r += deltaR) {
-	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
-	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
+    double deltaR = -999;
+    if (stepScale == 0) deltaR = (maxRadius - minRadius) / (numRadii);
+    else if (stepScale == 1) deltaR = (log10(maxRadius) - log10(minRadius)) / (numRadii);
+    for (int i = 0; i <= numRadii; ++i) {
+	double r = -999;
+	if (stepScale == 0) r = minRadius + i * deltaR;
+	else if (stepScale == 1) r = pow(10, log10(minRadius) + i * deltaR);
+
+	for (unsigned int j = 0; j < sortedConstituents.size(); ++j) {
+	    for (auto it = sortedConstituents[j].begin(); it != sortedConstituents[j].end(); ++it) {
 		if (it->second <= r) {
-		    TSubjets[i] += it->first;
-		    sortedConstituents[i].erase(it);
+		    TSubjets[j] += it->first;
+		    sortedConstituents[j].erase(it);
 		    --it;
 		}
 		else break;
 	    }
 	}
-	
 	TLorentzVector sumTSubjet;
 	for (auto const &TSubjet : TSubjets) {
 	    sumTSubjet += TSubjet;
@@ -866,12 +808,13 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 	
 	if (sumTSubjet.M() > M0) {
 	    telescopingMasses.push_back(sumTSubjet.M());
-	    result.volVec.push_back(getVolatility(telescopingMasses));
+	    telescopingPT.push_back(sumTSubjet.Pt());
 	}
     }
 
     if (!telescopingMasses.empty()) {
-	result.volatility = getVolatility(telescopingMasses);
+	result.massVolatility = getVolatility(telescopingMasses);
+	result.pTVolatility = getVolatility(telescopingPT);
 	result.masses = telescopingMasses;
     }
     else {
@@ -885,13 +828,13 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 }
 
 
-T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii) {
+T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii, int stepScale) {
     T2Sub result;
     
     double beta = 1.0;
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
-    fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
-    //fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
+    //fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
+    fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
 
     double tau2 = nSubjettiness.result(input);
     std::vector<fastjet::PseudoJet> tau2axes = nSubjettiness.currentAxes();
@@ -930,9 +873,14 @@ T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     
     std::vector<TLorentzVector> TSubjets(2);
     std::vector<std::vector<double>> telescopingMasses(3);
+    std::vector<std::vector<double>> telescopingPTs(3);
     std::vector<double> masses(3);
+    std::vector<double> pTs(3);
 
-    double deltaR = (maxRadius - minRadius) / (numRadii);
+    double deltaR = -999;
+    if (stepScale == 0) deltaR = (maxRadius - minRadius) / (numRadii);
+    else if (stepScale == 1) deltaR = (log10(maxRadius) - log10(minRadius)) / (numRadii);
+
     for (double r = minRadius; r < maxRadius + deltaR; r += deltaR) {
 	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
 	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
@@ -949,14 +897,19 @@ T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 	masses[1] = TSubjets[0].M();
 	masses[2] = TSubjets[1].M();
 
+	pTs[0] = (TSubjets[0] + TSubjets[1]).Pt();
+	pTs[1] = TSubjets[0].Pt();
+	pTs[2] = TSubjets[1].Pt();
+
 	for (unsigned int i = 0; i < masses.size(); ++i) {
 	    telescopingMasses[i].push_back(masses[i]);
-	    if (i == 0) result.volVec.push_back(getVolatility(telescopingMasses[i]));
+	    telescopingPTs[i].push_back(pTs[i]);
 	}
     }
     
     if (!telescopingMasses[0].empty() && !telescopingMasses[1].empty() && !telescopingMasses[2].empty()) {
-	result.volatility = getVolatility(telescopingMasses[0]);
+	result.massVolatility = getVolatility(telescopingMasses[0]);
+	result.pTVolatility = getVolatility(telescopingPTs[0]);
 	result.masses = telescopingMasses[0];
 
 	std::vector<double> residualWMass = masses;
@@ -969,8 +922,8 @@ T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 	auto wMassPredictionIt = std::min_element(residualWMass.cbegin() + 1, residualWMass.cend());
 	unsigned int wMassPredictionIndex = std::distance(residualWMass.cbegin(), wMassPredictionIt);
 
-	result.massW = masses[wMassPredictionIndex];
-	result.volatilityW = getVolatility(telescopingMasses[wMassPredictionIndex]);
+	result.wMass = masses[wMassPredictionIndex];
+	result.wMassVolatility = getVolatility(telescopingMasses[wMassPredictionIndex]);
     }
 
     else {
@@ -982,13 +935,13 @@ T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
     return result;
 }
 
-T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii) {
+T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii, int stepScale) {
     T3Sub result;
 
     double beta = 1.0;
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
-    fastjet::contrib::Nsubjettiness nSubjettiness(3, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
-    //fastjet::contrib::Nsubjettiness nSubjettiness(2, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
+    //fastjet::contrib::Nsubjettiness nSubjettiness(3, fastjet::contrib::OnePass_KT_Axes(), nSubMeasure);
+    fastjet::contrib::Nsubjettiness nSubjettiness(3, fastjet::contrib::WTA_KT_Axes(), nSubMeasure);
     double tau3 = nSubjettiness.result(input);
     std::vector<fastjet::PseudoJet> tau3axes = nSubjettiness.currentAxes();
 
@@ -1037,15 +990,24 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 
     std::vector<TLorentzVector> TSubjets(3);
     std::vector<std::vector<double>> telescopingMasses(4);
+    std::vector<std::vector<double>> telescopingPTs(4);
     std::vector<double> masses(4);
+    std::vector<double> pTs(4);
 
-    double deltaR = (maxRadius - minRadius) / (numRadii);
-    for (double r = minRadius; r < maxRadius + deltaR; r += deltaR) {
-	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
-	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
+    double deltaR = -999;
+    if (stepScale == 0) deltaR = (maxRadius - minRadius) / (numRadii);
+    else if (stepScale == 1) deltaR = (log10(maxRadius) - log10(minRadius)) / (numRadii);
+    
+    for (int i = 0; i <= numRadii; ++i) {
+	double r = -999;
+	if (stepScale == 0) r = minRadius + i * deltaR;
+	else if (stepScale == 1) r = pow(10, log10(minRadius) + i * deltaR);
+
+	for (unsigned int j = 0; j < sortedConstituents.size(); ++j) {
+	    for (auto it = sortedConstituents[j].begin(); it != sortedConstituents[j].end(); ++it) {
 		if (it->second <= r) {
-		    TSubjets[i] += it->first;
-		    sortedConstituents[i].erase(it);
+		    TSubjets[j] += it->first;
+		    sortedConstituents[j].erase(it);
 		    --it;
 		}
 		else break;
@@ -1057,14 +1019,21 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 	masses[2] = (TSubjets[0] + TSubjets[2]).M();
 	masses[3] = (TSubjets[1] + TSubjets[2]).M();
 
+	pTs[0] = (TSubjets[0] + TSubjets[1] + TSubjets[2]).Pt();
+	pTs[1] = (TSubjets[0] + TSubjets[1]).Pt();
+	pTs[2] = (TSubjets[0] + TSubjets[2]).Pt();
+	pTs[3] = (TSubjets[1] + TSubjets[2]).Pt();
+
+
 	for (unsigned int i = 0; i < masses.size(); ++i) {
 	    telescopingMasses[i].push_back(masses[i]);
-	    if (i == 0) result.volVec.push_back(getVolatility(telescopingMasses[i]));
+	    telescopingPTs[i].push_back(pTs[i]);
 	}
     }
     
     if (!telescopingMasses[0].empty() && !telescopingMasses[1].empty() && !telescopingMasses[2].empty() && !telescopingMasses[3].empty()) {
-        result.volatility = getVolatility(telescopingMasses[0]);
+        result.massVolatility = getVolatility(telescopingMasses[0]);
+	result.pTVolatility = getVolatility(telescopingPTs[0]);
 	result.masses = telescopingMasses[0];
 
 	//  TODO
@@ -1079,8 +1048,9 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 	auto wMassPredictionIt = std::min_element(residualWMass.cbegin() + 1, residualWMass.cend());
 	unsigned int wMassPredictionIndex = std::distance(residualWMass.cbegin(), wMassPredictionIt);
 
-	result.massW = masses[wMassPredictionIndex];
-	result.volatilityW = getVolatility(telescopingMasses[wMassPredictionIndex]);
+	result.wMass = masses[wMassPredictionIndex];
+	result.wMassVolatility = getVolatility(telescopingMasses[wMassPredictionIndex]);
+	result.wPTVolatility = getVolatility(telescopingPTs[wMassPredictionIndex]);
     }
 
     else {

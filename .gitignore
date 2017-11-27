@@ -52,3 +52,11 @@ Ana_EventGeneration/.#NTupler.cc
 *.exe
 
 *.C#
+
+Ana_EventGeneration/NTupler_old.cc
+
+Ana_EventGeneration/NTupler_new.h
+
+Ana_EventGeneration/ntupleW.log
+
+Ana_EventGeneration/ntupleW.log
