@@ -35,13 +35,19 @@ int main (int argc, char* argv[]) {
   std::string ProcessType = argv[1];
   std::string InputFile = argv[2];
   std::string OutputFile = argv[3];
+  std::string SetScale = argv[4];
 
+  if (SetScale != "log" && SetScale != "linear" && SetScale != "study" && SetScale != "study2") {
+      std::cout << "Please use \"log\" or \"linear\" as your fourth input." << std::endl;
+      return 1;
+  }
+  
   //debug flag
   bool debug = false;
-  if (argc >= 5) {
-      std::string argdebug = argv[4];
-      if (argdebug == "debug") debug=true;
-  }
+  // if (argc >= 5) {
+  //     std::string argdebug = argv[4];
+  //     if (argdebug == "debug") debug=true;
+  // }
   
   //print out the input arguments
   std::cout << "ProcessType: " << ProcessType << "\tInputFile: " << InputFile << "\tOutputFile: " << OutputFile << "\tDebug: " << debug << std::endl;
@@ -278,9 +284,25 @@ int main (int argc, char* argv[]) {
 
     double minR = 0.1;
     double maxR = 1.0;
-    int numRadii = 36;
-    int stepScale = 0; //  0 for linear. 1 for log.
-    if (stepScale == 1) numRadii = 32;
+    int numRadii = -999;
+    int stepScale = -999;
+
+    if (SetScale.compare("linear") == 0) {
+	stepScale = 0;
+	numRadii = 36;
+    }
+    else if (SetScale.compare("log") == 0) {
+	stepScale = 1;
+	numRadii = 32;
+    }
+    else if (SetScale.compare("study") == 0) {
+	stepScale = 0;
+	numRadii = 100;
+    }
+    else if (SetScale.compare("study2") == 0) {
+	stepScale = 1;
+	numRadii = 100;
+    }
     for (unsigned int ijet = 0; ijet < jetsTruthRaw.size(); ijet++) {
 
 	/////////////////////////////
@@ -350,7 +372,7 @@ int main (int argc, char* argv[]) {
 	//Fill variables that will go into ntuple
 	/////////////////////////////////
 	TSub  T1SubOutputTrim  = TNSubjet(groomedJet, 1, minR, maxR, numRadii, stepScale);
-	T2Sub  T2SubOutputTrim  = T2Subjet(groomedJet, minR, maxR, numRadii, stepScale);
+	TSub  T2SubOutputTrim  = TNSubjet(groomedJet, 2, minR, maxR, numRadii, stepScale);
 	T3Sub  T3SubOutputTrim = T3Subjet(groomedJet, minR, maxR, numRadii, stepScale);
 	TSub T4SubOutputTrim = TNSubjet(groomedJet, 4, minR, maxR, numRadii, stepScale);
 	TSub T5SubOutputTrim = TNSubjet(groomedJet, 5, minR, maxR, numRadii, stepScale);
@@ -785,11 +807,12 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 
     double deltaR = -999;
     if (stepScale == 0) deltaR = (maxRadius - minRadius) / (numRadii);
-    else if (stepScale == 1) deltaR = (log10(maxRadius) - log10(minRadius)) / (numRadii);
+    else if (stepScale == 1) deltaR = log10(maxRadius / minRadius) / (numRadii);
+
     for (int i = 0; i <= numRadii; ++i) {
 	double r = -999;
 	if (stepScale == 0) r = minRadius + i * deltaR;
-	else if (stepScale == 1) r = pow(10, log10(minRadius) + i * deltaR);
+	else if (stepScale == 1) r = minRadius * pow(10, i * deltaR);
 
 	for (unsigned int j = 0; j < sortedConstituents.size(); ++j) {
 	    for (auto it = sortedConstituents[j].begin(); it != sortedConstituents[j].end(); ++it) {
@@ -801,6 +824,7 @@ TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadi
 		else break;
 	    }
 	}
+	
 	TLorentzVector sumTSubjet;
 	for (auto const &TSubjet : TSubjets) {
 	    sumTSubjet += TSubjet;
@@ -879,20 +903,23 @@ T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 
     double deltaR = -999;
     if (stepScale == 0) deltaR = (maxRadius - minRadius) / (numRadii);
-    else if (stepScale == 1) deltaR = (log10(maxRadius) - log10(minRadius)) / (numRadii);
+    else if (stepScale == 1) deltaR = log10(maxRadius / minRadius) / (numRadii);
 
-    for (double r = minRadius; r < maxRadius + deltaR; r += deltaR) {
-	for (unsigned int i = 0; i < sortedConstituents.size(); ++i) {
-	    for (auto it = sortedConstituents[i].begin(); it != sortedConstituents[i].end(); ++it) {
+    for (int i = 0; i <= numRadii; ++i) {
+	double r = -999;
+	if (stepScale == 0) r = minRadius + i * deltaR;
+	else if (stepScale == 1) r = minRadius * pow(10, i * deltaR);
+
+	for (unsigned int j = 0; j < sortedConstituents.size(); ++j) {
+	    for (auto it = sortedConstituents[j].begin(); it != sortedConstituents[j].end(); ++it) {
 		if (it->second <= r) {
-		    TSubjets[i] += it->first;
-		    sortedConstituents[i].erase(it);
+		    TSubjets[j] += it->first;
+		    sortedConstituents[j].erase(it);
 		    --it;
 		}
 		else break;
 	    }
 	}
-    
 	masses[0] = (TSubjets[0] + TSubjets[1]).M();
 	masses[1] = TSubjets[0].M();
 	masses[2] = TSubjets[1].M();
@@ -996,12 +1023,12 @@ T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, in
 
     double deltaR = -999;
     if (stepScale == 0) deltaR = (maxRadius - minRadius) / (numRadii);
-    else if (stepScale == 1) deltaR = (log10(maxRadius) - log10(minRadius)) / (numRadii);
+    else if (stepScale == 1) deltaR = log10(maxRadius / minRadius) / (numRadii);
     
     for (int i = 0; i <= numRadii; ++i) {
 	double r = -999;
 	if (stepScale == 0) r = minRadius + i * deltaR;
-	else if (stepScale == 1) r = pow(10, log10(minRadius) + i * deltaR);
+	else if (stepScale == 1) r = minRadius * pow(10, i * deltaR);
 
 	for (unsigned int j = 0; j < sortedConstituents.size(); ++j) {
 	    for (auto it = sortedConstituents[j].begin(); it != sortedConstituents[j].end(); ++it) {
