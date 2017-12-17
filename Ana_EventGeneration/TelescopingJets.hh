@@ -1,108 +1,99 @@
 //  Telescoping Jets Package
 //
-//  Alexander Emerman, Yang-Ting Chien, Shih-Chieh Hsu
+//  Alexander Emerman, Yang-Ting Chien, Shih-Chieh Hsu, Zachary Montague
 //
 
 #ifndef __TELESCOPINGJETS_HH__
 #define __TELESCOPINGJETS_HH__
 
 //#include "fastjet/contrib/AxesFinder.hh"
-#include "fastjet/contrib/AxesDefinition.hh"
-#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
 #include "fastjet/FunctionOfPseudoJet.hh"
+#include "fastjet/JetDefintion.hh"
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/Selector.hh"
+
+#include "fastjet/tools/Filter.hh"
+#include "fastjet/tools/Pruner.hh"
+
+#include "fastjet/contrib/AxesDefinition.hh"
+#include "fastjet/contrib/Nsubjettiness.hh"
+#include "fastjet/contrib/EnergyCorrelator.hh"
 
 #include <cmath>
 #include <vector>
 #include <stdexcept>
 
-// useful math functions in case the user just wants a final
-// number rather than dealing with vectors of PseudoJets
+struct tSub {
+    double minAngle = -1;
+    double massVolatility = -1;
+    double pTVolatility = -1;
+    std::vector<double> masses;
+    std::vector<double> pTs;
+
+    double targetMass = -1;
+    double targetMassVolatility = -1;
+    double targetPTVolatility = -1;
+};
+
+struct t2Sub {
+    double minAngle = -1;
+    double massVolatility = -1;
+    double pTVolatility = -1;
+    std::vector<double> masses;
+
+    double wMass = -1;
+    double wMassVolatility = -1;
+};
+    
+struct t3Sub {
+    double minAngle = -1;
+    double massVolatility = -1;
+    double pTVolatility = -1;
+    std::vector<double> masses;
+
+    double midAngle = -1;
+    double maxAngle = -1;
+
+    double wMass = -1;
+    double wMassVolatility = -1;
+    double wPTVolatility = -1;
+};
+
+//  Functions to calculate volatility.
 double getVolatility(const std::vector<double>& values);
 double getAverage(const std::vector<double>& values);
 double getRMS(const std::vector<double>& values);
 
-//------------------------------------------------------------------------
-/// \class TelescopingJets
-//
 class TelescopingJets {
+
 public:
-  // Main Constructor
-  TelescopingJets(const fastjet::contrib::AxesDefinition& axes_def, const std::vector<double> r_values)
-  : _r_values(r_values), _axes_def(axes_def.create()) {
-    // Don't use AxesDefinitions that require MeasureFunctions
-    fastjet::contrib::UnnormalizedMeasure measure(1.); // need a measure function to create the axes finder, it shouldn't be used though
-    //_axes_finder.reset(_axes_def->createStartingAxesFinder(measure));
-  }
-  // Constructor from user axes
-//  TelescopingJets(const std::vector<fastjet::PseudoJet> myAxes,
-//                  const std::vector<double> r_values)
-//  : _r_values(r_values), _axes_def(NULL), _axes_finder(NULL) {
-//    setAxes(myAxes);
-//  }
+    TelescopingJets(const fastjet::PseudoJet& input);
+    ~TelescopingJets();
+    
+    double tPruning(double minDCut, double maxDCut, int numDCuts);
+    double tTrimming(double minFCut, double maxFCut, int numFCuts);
 
-  std::string description() const { return "Telescoping jets calculator"; }
+    double tReclustering(int algorithm, double minRadius, double maxRadius, int numRadii);
 
-  // Methods that do the calculation and return values
-    // Returns the mass volatility for N axes
-  double result(int N, const fastjet::PseudoJet& jet) const;
-  double operator() (int N, const fastjet::PseudoJet& jet) const {
-    return result(N,jet);
-  }
-    // Returns N subjets per R value
-    // note: subjets and t-jets should have valid constituent information
-  std::vector<std::vector<fastjet::PseudoJet> > getSubjets(int N, const fastjet::PseudoJet& jet) const;
-    // Returns the sum of the subjets at each R value
-    // TODO: allow different recombination schemes
-  std::vector<fastjet::PseudoJet> getTjets(int N, const fastjet::PseudoJet& jet) const;
-    // Return the invariant mass of the subjets at each R value
-  std::vector<double> getTjetMasses(int N, const fastjet::PseudoJet& jet) const;
+    tSub tNSubjet(unsigned int numSubjets, double minRadius, double maxRadius, int numRadii, int stepScale);
+    t2Sub t2Subjet(double minRadius, double maxRadius, int numRadii, int stepScale);
+    t3Sub t3Subjet(double minRadius, double maxRadius, int numRadii, int stepScale);
 
+    double tNsubjettiness(int numSubjets, double minBeta, double maxBeta, int numBetas);
+    double tNsubjettinessRatio(int nNumerator, int nDemoninator, double minBeta, double maxBeta, int numBetas);
 
-  // Methods that return previously calculated values
-  std::vector<std::vector<fastjet::PseudoJet> > getCurrentSubjets() const {
-    if (_current_subjets.size() == 0) throw std::logic_error("Subjets asked for but not set.\n");
-    return _current_subjets;
-  }
-  std::vector<fastjet::PseudoJet> getCurrentTjets() const {
-    if (_current_tjets.size() == 0) throw std::logic_error("Tjets asked for but not set.\n");
-    return _current_tjets;
-  }
-  std::vector<double> getCurrentTjetMasses() const {
-    if (_current_tjet_masses.size() == 0) throw std::logic_error("Tjet masses asked for but not set.\n");
-    return _current_tjet_masses;
-  }
-  std::vector<std::vector<fastjet::PseudoJet> > getCurrentRejected() const {
-    if (_current_rejected.size() == 0) throw std::logic_error("Rejected pieces asked for but not set.\n");
-    return _current_rejected;
-  }
-
-  void setAxes(const std::vector<fastjet::PseudoJet>& myAxes);
+    double T_EnergyCorrelator_C2(double minBeta, double maxBeta, int numBetas);
+    double T_EnergyCorrelator_D2(double minBeta, double maxBeta, int numBetas);
+    double T_EnergyCorrelator_C3(double minBeta, double maxBeta, int numBetas);
 
 private:
+    fastjet::PseduoJet& input;
 
-  std::vector<double> _r_values;
-  fastjet::SharedPtr<const fastjet::contrib::AxesDefinition> _axes_def;
-//  fastjet::SharedPtr<const fastjet::contrib::AxesFinder> _axes_finder;
-
-  // the calculation methods can only change these values
-  mutable unsigned int _N; // current number of axes
-  mutable std::vector<fastjet::PseudoJet> _current_axes;
-  mutable bool _axes_are_set;
-  mutable std::vector<std::vector<fastjet::PseudoJet> > _current_subjets;
-  mutable std::vector<std::vector<fastjet::PseudoJet> > _current_rejected;
-  mutable std::vector<fastjet::PseudoJet> _current_tjets;
-  mutable std::vector<double> _current_tjet_masses;
-
-  // functions that do the actual work. not user accessible
-  void _setAxes(int N, const std::vector<fastjet::PseudoJet>& particles) const;
-
-  void _setSubjets(int N, const fastjet::PseudoJet& jet) const;
-  void _setSubjets(const fastjet::PseudoJet& jet) const;
-  void _setTjets(int N, const fastjet::PseudoJet& jet) const;
-  void _setTjets(const fastjet::PseudoJet& jet) const;
-  void _setTjetMasses(int N, const fastjet::PseudoJet& jet) const;
-  void _setTjetMasses(const fastjet::PseudoJet& jet) const;
-  void _partitionJet(const std::vector<fastjet::PseudoJet>& particles, double R, std::vector<std::vector<fastjet::PseudoJet> >& jet_partition) const;
+    std::vector<TLorentzVector> convertPsuedoJet2TLV(std::vector<PseudoJet> pseudoJet);
+    std::vector<double> getAnglesBetweenTauAxes(std::vector<TLorentzVector> pTauAxes)
+    std::vector<std::vector<TLorentzVector>> sortConstituents(std::vector<TLorentzVector> pTauAxes);
+    
 
 };
 
