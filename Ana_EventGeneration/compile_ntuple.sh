@@ -1,3 +1,5 @@
+#!user/bin/env bash
+
 export FJINSTALL=/Users/zacmon/Research/fastjet-3.3.0
 
 echo

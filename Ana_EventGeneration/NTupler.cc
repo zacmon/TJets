@@ -230,7 +230,7 @@ int main (int argc, char* argv[]) {
 
 	//  Convert all final-state particles TLorentzVectors to
 	//  PseudoJet four-vectors.
-	for (int i = 0; i < numFinalStateParticles; ++i++) {
+	for (int i = 0; i < numFinalStateParticles; ++i) {
 	    
 	    if (debug) {
 		std::cout << finalStateParticles_id->at(i) << " "
@@ -323,16 +323,6 @@ int main (int argc, char* argv[]) {
 	    TruthRaw_phi.push_back(tempJet.Phi());
 	    TruthRaw_m.push_back(tempJet.M());
 
-	    //  Telescoping pruning.
-	    // if (jetflavor <= 1) {
-	    //     double TruthRawTPruning = T_Pruning(jetsTruthRaw[iJet], 0.1, 2.0, 20);
-	    //     TruthRaw_Tpruning.push_back(TruthRawTPruning);
-	    
-	    //     double TruthRawTTrimming =	T_Trimming(jetsTruthRaw[iJet], 0.0, 0.1, 20);
-	    //     TruthRaw_Ttrimming.push_back(TruthRawTTrimming);
-	    // }
-
-	    
 	    //  Trimmed truth jets.
 	    fastjet::PseudoJet groomedJet = f(jetsTruthRaw[iJet]);
 
@@ -347,13 +337,15 @@ int main (int argc, char* argv[]) {
 	    if (debug) std::cout << "FillingJet Trimmed: flav=" << jetflavor << "  pt=" <<tempJet.Pt() << "  m=" << tempJet.M() << std::endl;
 	    
 	    if (jetflavor == -1) continue;
+            
+            TelescopingJets* telescopeTruthGroomedJet = new TelescopingJets(groomedJet);
 
 	    //  Run telescoping subjet algorithm with trimmed truth jet.
-	    TSub  T1SubOutputTrim  = TNSubjet(groomedJet, 1, minR, maxR, numRadii, stepScale);
-	    TSub  T2SubOutputTrim  = TNSubjet(groomedJet, 2, minR, maxR, numRadii, stepScale);
-	    T3Sub  T3SubOutputTrim = T3Subjet(groomedJet, minR, maxR, numRadii, stepScale);
-	    TSub T4SubOutputTrim = TNSubjet(groomedJet, 4, minR, maxR, numRadii, stepScale);
-	    TSub T5SubOutputTrim = TNSubjet(groomedJet, 5, minR, maxR, numRadii, stepScale);
+	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T2SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(2, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, stepScale, 0, 80.4);
+	    tSub T4SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(4, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T5SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(5, minR, maxR, numRadii, stepScale, 0, 0.0);
 
 	    //  Fill output variables.
 	    TruthRawTrim_flavor.push_back(jetflavor);
@@ -378,8 +370,8 @@ int main (int argc, char* argv[]) {
 	    
 	    TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.minAngle);
 	    TruthRawTrim_T3jet.push_back(T3SubOutputTrim.massVolatility);
-	    TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.wMass);
-	    TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.wMassVolatility);
+	    TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.targetMass);
+	    TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.targetMassVolatility);
 	    TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
 	    TruthRawTrim_T3jet_pt.push_back(T3SubOutputTrim.pTVolatility);
 	    
@@ -428,13 +420,15 @@ int main (int argc, char* argv[]) {
 	    jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
 	    if (jetflavor == -1) continue;
 
+            TelescopingJets* telescopeCaloGroomedJet = new TelescopingJets(groomedCaloJet);
+
 	    //  Run telescoping subjet algorithm with trimmed
 	    //  calorimeter jet.
-	    TSub T1CaloJetTrim = TNSubjet(groomedCaloJet, 1, minR, maxR, numRadii, stepScale);
-	    TSub T2CaloJetTrim = TNSubjet(groomedCaloJet, 2, minR, maxR, numRadii, stepScale);
-	    T3Sub T3CaloJetTrim = T3Subjet(groomedCaloJet, minR, maxR, numRadii, stepScale);
-	    TSub T4CaloJetTrim = TNSubjet(groomedCaloJet, 4, minR, maxR, numRadii, stepScale);
-	    TSub T5CaloJetTrim = TNSubjet(groomedCaloJet, 5, minR, maxR, numRadii, stepScale);
+	    tSub T1CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(1, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T2CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(2, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T3CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(3, minR, maxR, numRadii, stepScale, 0, 80.4);
+	    tSub T4CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(4, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T5CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(5, minR, maxR, numRadii, stepScale, 0, 0.0);
 
 	    //  Fill output variables.
 	    CaloTrim_flavor.push_back(jetflavor);
@@ -457,8 +451,8 @@ int main (int argc, char* argv[]) {
 	    
 	    CaloTrim_T3jet_angle.push_back(T3CaloJetTrim.minAngle);
 	    CaloTrim_T3jet.push_back(T3CaloJetTrim.massVolatility);
-	    CaloTrim_T3jet_W.push_back(T3CaloJetTrim.wMass);
-	    CaloTrim_T3jet_mW.push_back(T3CaloJetTrim.wMassVolatility);
+	    CaloTrim_T3jet_W.push_back(T3CaloJetTrim.targetMass);
+	    CaloTrim_T3jet_mW.push_back(T3CaloJetTrim.targetMassVolatility);
 	    CaloTrim_T3jet_pt.push_back(T3CaloJetTrim.pTVolatility);
 	    
 	    CaloTrim_T4jet.push_back(T4CaloJetTrim.massVolatility);

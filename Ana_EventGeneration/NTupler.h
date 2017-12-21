@@ -18,21 +18,8 @@
 #include <vector>
 #include <string>
 #include <cstdio>
-#include <algorithm>
-#include <iterator>
 
 #include "TelescopingJets.hh"
-
-#include <fastjet/PseudoJet.hh>
-#include <fastjet/ClusterSequence.hh>
-#include <fastjet/Selector.hh>
-
-#include "fastjet/tools/Filter.hh"
-#include "fastjet/tools/Pruner.hh"
-
-#include "fastjet/contrib/Nsubjettiness.hh"
-#include "fastjet/contrib/EnergyCorrelator.hh"
-
 
 ///////////////////////////
 //input file and tree
@@ -83,13 +70,11 @@ double truth_H_eta;
 double truth_H_phi;
 double truth_H_m;
 
-std::vector<int>*    fspart_id;
-std::vector<double>* fspart_pt;
-std::vector<double>* fspart_eta;
-std::vector<double>* fspart_phi;
-std::vector<double>* fspart_m;
-
-
+std::vector<int>*    finalStateParticles_id;
+std::vector<double>* finalStateParticles_pt;
+std::vector<double>* finalStateParticles_eta;
+std::vector<double>* finalStateParticles_phi;
+std::vector<double>* finalStateParticles_m;
 
 ///////////////////////////
 //output file and tree
@@ -110,17 +95,6 @@ TLorentzVector truth_t2;
 TLorentzVector truth_W1;
 TLorentzVector truth_W2;
 TLorentzVector truth_H;
-
-TLorentzVector tau_axis1;
-TLorentzVector tau_axis2;
-TLorentzVector tau_axis3;
-TLorentzVector tau_axis4;
-TLorentzVector tau_axis5;
-TLorentzVector Tsubjet1;
-TLorentzVector Tsubjet2;
-TLorentzVector Tsubjet3;
-TLorentzVector Tsubjet4;
-TLorentzVector Tsubjet5;
 
 TLorentzVector particle;
 TLorentzVector truth;
@@ -326,54 +300,5 @@ std::vector<fastjet::PseudoJet> ToyCalorimeter(std::vector<fastjet::PseudoJet> t
 
 double GetTau21(fastjet::PseudoJet& input);
 double GetTau32(fastjet::PseudoJet& input);
-
-double T_Nsubjettiness(int N, fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
-double T_NsubjettinessRatio(int N_num, int N_den, fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
-
-double T_EnergyCorrelator_C2(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
-double T_EnergyCorrelator_D2(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
-double T_EnergyCorrelator_C3(fastjet::PseudoJet& input, double beta_min, double beta_max, int N_beta);
-
-///=========================================
-/// Telescoping Subjet
-///=========================================
-
-struct TSub {
-    double minAngle = -1;
-    double massVolatility = -1;
-    double pTVolatility = -1;
-    std::vector<double> masses;
-};
-
-struct T2Sub {
-    double minAngle = -1;
-    double massVolatility = -1;
-    double pTVolatility = -1;
-    std::vector<double> masses;
-
-    double wMass = -1;
-    double wMassVolatility = -1;
-};
-    
-struct T3Sub {
-    double minAngle = -1;
-    double massVolatility = -1;
-    double pTVolatility = -1;
-    std::vector<double> masses;
-
-    double midAngle = -1;
-    double maxAngle = -1;
-
-    double wMass = -1;
-    double wMassVolatility = -1;
-    double wPTVolatility = -1;
-};
-
-TSub TNSubjet(fastjet::PseudoJet& input, unsigned int numSubjets, double minRadius, double maxRadius, int numRadii, int stepScale);
-T2Sub T2Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii, int stepScale);
-T3Sub T3Subjet(fastjet::PseudoJet& input, double minRadius, double maxRadius, int numRadii, int stepScale);
-double T_Pruning(fastjet::PseudoJet& input, double dcut_min, double dcut_max, int N_dcut);
-double T_Trimming(fastjet::PseudoJet& input, double fcut_min, double fcut_max, int N_fcut);
-double T_Reclustering(fastjet::PseudoJet& input, int algorithm, double R_min, double R_max, int N_R);
 
 #endif
