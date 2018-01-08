@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <memory> 
 
 #include <TROOT.h>
 #include "TLorentzVector.h"
@@ -34,8 +35,10 @@ struct tSub {
     double minAngle = -1;
     double massVolatility = -1;
     double pTVolatility = -1;
-    std::vector<double> masses;
-    std::vector<double> pTs;
+    
+    std::vector<std::vector<double>> masses;
+    std::vector<std::vector<double>> pTs;
+    std::vector<TLorentzVector> tauAxes;
 
     double targetMass = -1;
     double targetMassVolatility = -1;
@@ -46,42 +49,45 @@ struct tSub {
 double getVolatility(const std::vector<double>& values);
 double getAverage(const std::vector<double>& values);
 double getRMS(const std::vector<double>& values);
-unsigned long long getChoose(unsigned long long n, unsigned long long k);
+unsigned int getChoose(unsigned int n, unsigned int k);
 
 class TelescopingJets {
 
 public:
     TelescopingJets(const fastjet::PseudoJet& pseudoJet);
+    TelescopingJets(const fastjet::PseudoJet& pseudoJet, int axesType);
+    TelescopingJets(const fastjet::PseudoJet& pseudoJet, int axesType, int scale);
     ~TelescopingJets();
 
+    std::vector<double> getTelescopingParameterSet(double minParameter, double maxParameter, unsigned int stepSize);  
 
-    std::vector<double> getTelescopingParameterSet(double minParameter, double maxParameter, int numParameter, int stepScale);  
-
-    double tPruning(double minDCut, double maxDCut, int numDCuts);
-    double tTrimming(double minFCut, double maxFCut, int numFCuts);
+    double tPruning(double minDCut, double maxDCut, unsigned int numDCuts);
+    double tTrimming(double minFCut, double maxFCut, unsigned int numFCuts);
         
-    double tReclustering(int algorithm, double minRadius, double maxRadius, int numRadii, int stepScale);
+    double tReclustering(int algorithm, double minRadius, double maxRadius, unsigned int numRadii);
 
-    tSub tNSubjet(unsigned int numSubjets, double minRadius, double maxRadius, int numRadii, int stepScale, int axesType, double targetMass);
+    tSub tNSubjet(unsigned int numSubjets, double minRadius, double maxRadius, unsigned int numRadii, double targetMass);
 
-    double tNsubjettiness(int numSubjets, double minBeta, double maxBeta, int numBetas, int axesType);
-    double tNsubjettinessRatio(int nNumerator, int nDemoninator, double minBeta, double maxBeta, int numBetasi, int axesType);
+    double tNsubjettiness(int numSubjets, double minBeta, double maxBeta, unsigned int numBetas);
+    double tNsubjettinessRatio(int nNumerator, int nDemoninator, double minBeta, double maxBeta, unsigned int numBetas);
 
-    double tEnergyCorrelator_C2(double minBeta, double maxBeta, int numBetas);
-    double tEnergyCorrelator_D2(double minBeta, double maxBeta, int numBetas);
-    double tEnergyCorrelator_C3(double minBeta, double maxBeta, int numBetas);
+    double tEnergyCorrelator_C2(double minBeta, double maxBeta, unsigned int numBetas);
+    double tEnergyCorrelator_D2(double minBeta, double maxBeta, unsigned int numBetas);
+    double tEnergyCorrelator_C3(double minBeta, double maxBeta, unsigned int numBetas);
 
 private:
     const fastjet::PseudoJet& input;
+    fastjet::contrib::AxesDefinition* axesDefinition;
+    const int stepScale;
 
-    std::vector<TLorentzVector> convertPseudoJet2TLV(std::vector<fastjet::PseudoJet> pseudoJet);
+    TLorentzVector convertPseudoJet2TLV(fastjet::PseudoJet pseudoJet);
 
-    const fastjet::contrib::AxesDefinition* getAxesDefinition(int axesType);
-    std::vector<TLorentzVector> getTauAxes(unsigned int numSubjets, double beta, int axesType);
+    fastjet::contrib::AxesDefinition* getAxesDefinition(int axesType);
+    std::vector<TLorentzVector> getTauAxes(unsigned int numSubjets, double beta);
     std::vector<double> getAnglesBetweenTauAxes(unsigned int numSubjets, std::vector<TLorentzVector> pTauAxes);    
     std::vector<std::vector<std::pair<TLorentzVector, double>>> sortConstituents(unsigned int numSubjets, std::vector<TLorentzVector> pTauAxes);
 
-    bool emptyTelescopingMasses(std::vector<std::vector<double>> telescopingMasses);
+    bool emptyTelescopingMasses(std::vector<double> telescopingMasses, std::vector<std::vector<double>> combinedTelescopingMasses);
 
     tSub telescopeSubjets(unsigned int numSubjets, tSub result, std::vector<double> subjetRadii, std::vector<std::vector<std::pair<TLorentzVector, double>>> constituents);
     tSub telescopeSubjets(unsigned int numSubjets, tSub result, std::vector<double> subjetRadii, std::vector<std::vector<std::pair<TLorentzVector, double>>> constituents, double targetMass); 

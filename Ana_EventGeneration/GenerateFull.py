@@ -22,7 +22,7 @@ arg_jobend    = args.jobend
 arg_recompile = args.recompile
 arg_pythia    = args.pythia
 arg_ntuple    = args.ntuple
-arg_debug = "false"
+arg_debug = ""
 if args.debug:
     arg_debug  = "true"
 

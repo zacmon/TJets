@@ -70,7 +70,6 @@ int main (int argc, char* argv[]) {
     filein = new TFile( InputFile.c_str() );
     treein = (TTree*)filein->Get( "tree" );
     if(debug) treein->Print();
-    
     //set up branch linking to addresses
     treein->SetBranchAddress("fspart_id", &finalStateParticles_id);
     treein->SetBranchAddress("fspart_pt", &finalStateParticles_pt);
@@ -102,7 +101,7 @@ int main (int argc, char* argv[]) {
     treein->SetBranchAddress("truth_W1_eta", &truth_W1_eta);
     treein->SetBranchAddress("truth_W1_phi", &truth_W1_phi);
     treein->SetBranchAddress("truth_W1_m",   &truth_W1_m);
-    
+
     treein->SetBranchAddress("truth_W2_pt",  &truth_W2_pt);
     treein->SetBranchAddress("truth_W2_eta", &truth_W2_eta);
     treein->SetBranchAddress("truth_W2_phi", &truth_W2_phi);
@@ -112,7 +111,6 @@ int main (int argc, char* argv[]) {
     treein->SetBranchAddress("truth_H_eta", &truth_H_eta);
     treein->SetBranchAddress("truth_H_phi", &truth_H_phi);
     treein->SetBranchAddress("truth_H_m",   &truth_H_m);
-    
     //////////////////////////////////////////////
     //OUTPUT
     //////////////////////////////////////////////
@@ -195,19 +193,16 @@ int main (int argc, char* argv[]) {
     treeout->Branch("CaloTrim_T3jet_pt", &CaloTrim_T3jet_pt);
     treeout->Branch("CaloTrim_T4jet_pt", &CaloTrim_T4jet_pt);
     treeout->Branch("CaloTrim_T5jet_pt", &CaloTrim_T5jet_pt);
-    
     //  Prepare to analyze events.
     nEvents = treein->GetEntries();
-    std::cout << "Number of events: " << nEvents << std::endl;
 
     //  Establish definition of jet.
     fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 1.0);
-    
     //  Energy correlation functions
     fastjet::contrib::EnergyCorrelatorC2 ecfC2(1);
     fastjet::contrib::EnergyCorrelatorD2 ecfD2(1);
     fastjet::contrib::EnergyCorrelatorDoubleRatio ecfC3(2, 1);
-    
+
     //  Create objects for trimming. (arXiv:0912.1342)
     double Rfilt0 = 0.3;
     double fcut0 = 0.05;
@@ -337,15 +332,23 @@ int main (int argc, char* argv[]) {
 	    if (debug) std::cout << "FillingJet Trimmed: flav=" << jetflavor << "  pt=" <<tempJet.Pt() << "  m=" << tempJet.M() << std::endl;
 	    
 	    if (jetflavor == -1) continue;
-            
+            std::cout << "first instantiation of telescoping jets" << std::endl;
             TelescopingJets* telescopeTruthGroomedJet = new TelescopingJets(groomedJet);
 
 	    //  Run telescoping subjet algorithm with trimmed truth jet.
-	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, stepScale, 0, 0.0);
-	    tSub T2SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(2, minR, maxR, numRadii, stepScale, 0, 0.0);
-	    tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, stepScale, 0, 80.4);
-	    tSub T4SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(4, minR, maxR, numRadii, stepScale, 0, 0.0);
-	    tSub T5SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(5, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
+	    
+            std::cout << "t2" << std::endl;
+            tSub T2SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
+	    
+            std::cout << "t3" << std::endl;
+            tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
+            std::cout << "WE DID IT" << std::endl;  
+            std::cout << "t4" << std::endl;
+            tSub T4SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
+	    
+            std::cout << "t5" << std::endl;
+            tSub T5SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
 
 	    //  Fill output variables.
 	    TruthRawTrim_flavor.push_back(jetflavor);
@@ -424,11 +427,11 @@ int main (int argc, char* argv[]) {
 
 	    //  Run telescoping subjet algorithm with trimmed
 	    //  calorimeter jet.
-	    tSub T1CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(1, minR, maxR, numRadii, stepScale, 0, 0.0);
-	    tSub T2CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(2, minR, maxR, numRadii, stepScale, 0, 0.0);
-	    tSub T3CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(3, minR, maxR, numRadii, stepScale, 0, 80.4);
-	    tSub T4CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(4, minR, maxR, numRadii, stepScale, 0, 0.0);
-	    tSub T5CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(5, minR, maxR, numRadii, stepScale, 0, 0.0);
+	    tSub T1CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
+	    tSub T2CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
+	    tSub T3CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
+	    tSub T4CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
+	    tSub T5CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
 
 	    //  Fill output variables.
 	    CaloTrim_flavor.push_back(jetflavor);
