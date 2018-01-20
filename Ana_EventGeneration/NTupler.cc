@@ -143,7 +143,7 @@ int main (int argc, char* argv[]) {
     treeout->Branch("TruthRawTrim_T3jet_minAngle",   &TruthRawTrim_T3jet_angle);
     treeout->Branch("TruthRawTrim_T3jet",         &TruthRawTrim_T3jet);
     treeout->Branch("TruthRawTrim_T3jet_Wmass",       &TruthRawTrim_T3jet_W);
-    treeout->Branch("TruthRawTrim_T3jet_WmassVolatility",      &TruthRawTrim_T3jet_mW);
+    treeout->Branch("TruthRawTrim_T3jet_WmassVariability",      &TruthRawTrim_T3jet_mW);
     treeout->Branch("TruthRawTrim_T4jet_angle",   &TruthRawTrim_T4jet_angle);
     treeout->Branch("TruthRawTrim_T4jet",         &TruthRawTrim_T4jet);
     treeout->Branch("TruthRawTrim_T5jet_angle",   &TruthRawTrim_T5jet_angle);
@@ -155,9 +155,9 @@ int main (int argc, char* argv[]) {
     treeout->Branch("TruthRawTrim_T4jet_pt", &TruthRawTrim_T4jet_pt);
     treeout->Branch("TruthRawTrim_T5jet_pt", &TruthRawTrim_T5jet_pt);
     
-    treeout->Branch("TruthRawTrim_T1masses", &TruthRawTrim_T1masses);
-    treeout->Branch("TruthRawTrim_T2masses", &TruthRawTrim_T2masses);
-    treeout->Branch("TruthRawTrim_T3masses", &TruthRawTrim_T3masses);
+    //treeout->Branch("TruthRawTrim_T1masses", &TruthRawTrim_T1masses);
+    //treeout->Branch("TruthRawTrim_T2masses", &TruthRawTrim_T2masses);
+    //treeout->Branch("TruthRawTrim_T3masses", &TruthRawTrim_T3masses);
     
     treeout->Branch("CaloRaw_flavor",        &CaloRaw_flavor);
     treeout->Branch("CaloRaw_pt",            &CaloRaw_pt);
@@ -182,7 +182,7 @@ int main (int argc, char* argv[]) {
     treeout->Branch("CaloTrim_T3jet_minAngle",   &CaloTrim_T3jet_angle);
     treeout->Branch("CaloTrim_T3jet",         &CaloTrim_T3jet);
     treeout->Branch("CaloTrim_T3jet_Wmass",       &CaloTrim_T3jet_W);
-    treeout->Branch("CaloTrim_T3jet_WmassVolatility",      &CaloTrim_T3jet_mW);
+    treeout->Branch("CaloTrim_T3jet_WmassVariability",      &CaloTrim_T3jet_mW);
     treeout->Branch("CaloTrim_T4jet_angle",   &CaloTrim_T4jet_angle);
     treeout->Branch("CaloTrim_T4jet",         &CaloTrim_T4jet);
     treeout->Branch("CaloTrim_T5jet_angle",   &CaloTrim_T5jet_angle);
@@ -332,22 +332,13 @@ int main (int argc, char* argv[]) {
 	    if (debug) std::cout << "FillingJet Trimmed: flav=" << jetflavor << "  pt=" <<tempJet.Pt() << "  m=" << tempJet.M() << std::endl;
 	    
 	    if (jetflavor == -1) continue;
-            std::cout << "first instantiation of telescoping jets" << std::endl;
             TelescopingJets* telescopeTruthGroomedJet = new TelescopingJets(groomedJet);
 
 	    //  Run telescoping subjet algorithm with trimmed truth jet.
 	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
-	    
-            std::cout << "t2" << std::endl;
             tSub T2SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
-	    
-            std::cout << "t3" << std::endl;
             tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
-            std::cout << "WE DID IT" << std::endl;  
-            std::cout << "t4" << std::endl;
             tSub T4SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
-	    
-            std::cout << "t5" << std::endl;
             tSub T5SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
 
 	    //  Fill output variables.
@@ -362,26 +353,26 @@ int main (int argc, char* argv[]) {
 	    TruthRawTrim_Tau32.push_back(GetTau32(groomedJet));
 	    
 	    TruthRawTrim_T1jet_angle.push_back(T1SubOutputTrim.minAngle);
-	    TruthRawTrim_T1jet.push_back(T1SubOutputTrim.massVolatility);
-	    TruthRawTrim_T1masses.push_back(T1SubOutputTrim.masses);
-	    TruthRawTrim_T1jet_pt.push_back(T1SubOutputTrim.pTVolatility);
+	    TruthRawTrim_T1jet.push_back(T1SubOutputTrim.massVariability);
+	    //TruthRawTrim_T1masses.push_back(T1SubOutputTrim.masses);
+	    TruthRawTrim_T1jet_pt.push_back(T1SubOutputTrim.pTVariability);
 	    
 	    TruthRawTrim_T2jet_angle.push_back(T2SubOutputTrim.minAngle);
-	    TruthRawTrim_T2jet.push_back(T2SubOutputTrim.massVolatility);
-	    TruthRawTrim_T2masses.push_back(T2SubOutputTrim.masses);
-	    TruthRawTrim_T2jet_pt.push_back(T2SubOutputTrim.pTVolatility);
+	    TruthRawTrim_T2jet.push_back(T2SubOutputTrim.massVariability);
+	    //TruthRawTrim_T2masses.push_back(T2SubOutputTrim.masses);
+	    TruthRawTrim_T2jet_pt.push_back(T2SubOutputTrim.pTVariability);
 	    
 	    TruthRawTrim_T3jet_angle.push_back(T3SubOutputTrim.minAngle);
-	    TruthRawTrim_T3jet.push_back(T3SubOutputTrim.massVolatility);
+	    TruthRawTrim_T3jet.push_back(T3SubOutputTrim.massVariability);
 	    TruthRawTrim_T3jet_W.push_back(T3SubOutputTrim.targetMass);
-	    TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.targetMassVolatility);
-	    TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
-	    TruthRawTrim_T3jet_pt.push_back(T3SubOutputTrim.pTVolatility);
+	    TruthRawTrim_T3jet_mW.push_back(T3SubOutputTrim.targetMassVariability);
+	    //TruthRawTrim_T3masses.push_back(T3SubOutputTrim.masses);
+	    TruthRawTrim_T3jet_pt.push_back(T3SubOutputTrim.pTVariability);
 	    
-	    TruthRawTrim_T4jet.push_back(T4SubOutputTrim.massVolatility);
-	    TruthRawTrim_T4jet_pt.push_back(T4SubOutputTrim.pTVolatility);
-	    TruthRawTrim_T5jet.push_back(T5SubOutputTrim.massVolatility);
-	    TruthRawTrim_T5jet_pt.push_back(T5SubOutputTrim.pTVolatility);
+	    TruthRawTrim_T4jet.push_back(T4SubOutputTrim.massVariability);
+	    TruthRawTrim_T4jet_pt.push_back(T4SubOutputTrim.pTVariability);
+	    TruthRawTrim_T5jet.push_back(T5SubOutputTrim.massVariability);
+	    TruthRawTrim_T5jet_pt.push_back(T5SubOutputTrim.pTVariability);
 	    
 	}
 
@@ -445,23 +436,23 @@ int main (int argc, char* argv[]) {
 	    CaloTrim_Tau32.push_back(GetTau32(groomedCaloJet));
 	    
 	    CaloTrim_T1jet_angle.push_back(T1CaloJetTrim.minAngle);
-	    CaloTrim_T1jet.push_back(T1CaloJetTrim.massVolatility);
-	    CaloTrim_T1jet.push_back(T1CaloJetTrim.pTVolatility);
+	    CaloTrim_T1jet.push_back(T1CaloJetTrim.massVariability);
+	    CaloTrim_T1jet.push_back(T1CaloJetTrim.pTVariability);
 	    
 	    CaloTrim_T2jet_angle.push_back(T2CaloJetTrim.minAngle);
-	    CaloTrim_T2jet.push_back(T2CaloJetTrim.massVolatility);
-	    CaloTrim_T2jet_pt.push_back(T2CaloJetTrim.pTVolatility);
+	    CaloTrim_T2jet.push_back(T2CaloJetTrim.massVariability);
+	    CaloTrim_T2jet_pt.push_back(T2CaloJetTrim.pTVariability);
 	    
 	    CaloTrim_T3jet_angle.push_back(T3CaloJetTrim.minAngle);
-	    CaloTrim_T3jet.push_back(T3CaloJetTrim.massVolatility);
+	    CaloTrim_T3jet.push_back(T3CaloJetTrim.massVariability);
 	    CaloTrim_T3jet_W.push_back(T3CaloJetTrim.targetMass);
-	    CaloTrim_T3jet_mW.push_back(T3CaloJetTrim.targetMassVolatility);
-	    CaloTrim_T3jet_pt.push_back(T3CaloJetTrim.pTVolatility);
+	    CaloTrim_T3jet_mW.push_back(T3CaloJetTrim.targetMassVariability);
+	    CaloTrim_T3jet_pt.push_back(T3CaloJetTrim.pTVariability);
 	    
-	    CaloTrim_T4jet.push_back(T4CaloJetTrim.massVolatility);
-	    CaloTrim_T4jet_pt.push_back(T4CaloJetTrim.pTVolatility);
-	    CaloTrim_T5jet.push_back(T5CaloJetTrim.massVolatility);
-	    CaloTrim_T5jet_pt.push_back(T5CaloJetTrim.pTVolatility);
+	    CaloTrim_T4jet.push_back(T4CaloJetTrim.massVariability);
+	    CaloTrim_T4jet_pt.push_back(T4CaloJetTrim.pTVariability);
+	    CaloTrim_T5jet.push_back(T5CaloJetTrim.massVariability);
+	    CaloTrim_T5jet_pt.push_back(T5CaloJetTrim.pTVariability);
 	}
 	
 	if(debug) std::cout<<"Filling Tree"<< std::endl;
@@ -522,7 +513,7 @@ void ResetBranches(){
     TruthRawTrim_T3masses.clear();
     
     TruthRawTrim_T2jet_massW.clear();
-    TruthRawTrim_T2jet_volatilityW.clear();
+    TruthRawTrim_T2jet_variabilityW.clear();
     
     CaloRaw_flavor.clear();
     CaloRaw_pt.clear();

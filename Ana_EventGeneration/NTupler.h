@@ -118,7 +118,7 @@ double pruned_mjet, pruned_ptjet, pruned_etajet;
 double trimmed_mjet, trimmed_ptjet, trimmed_etajet;
 double mjet, ptjet, etajet;
 double mjetR, ptjetR, etajetR;
-double Tprun_volatility, Ttrim_volatility, TakTrecl_volatility, TkTrecl_volatility, Tsubj_volatility, Ttau2_volatility;
+double Tprun_variability, Ttrim_variability, TakTrecl_variability, TkTrecl_variability, Tsubj_variability, Ttau2_variability;
 double Tsubj_angle;
 
 const double M0 = 0.1;
@@ -170,12 +170,12 @@ std::vector<double> TruthRaw_Ttrimming;
 std::vector<double> TruthRaw_Taktreclustering;
 std::vector<double> TruthRaw_Tktreclustering;
 
-std::vector<std::vector<double>> TruthRaw_T1masses;
-std::vector<std::vector<double>> TruthRaw_T2masses;
-std::vector<std::vector<double>> TruthRaw_T3masses;
+std::vector<std::vector<std::vector<double>>> TruthRaw_T1masses;
+std::vector<std::vector<std::vector<double>>> TruthRaw_T2masses;
+std::vector<std::vector<std::vector<double>>> TruthRaw_T3masses;
 
 std::vector<double> TruthRaw_T2jet_massW;
-std::vector<double> TruthRaw_T2jet_volatilityW;
+std::vector<double> TruthRaw_T2jet_variabilityW;
 
 std::vector<int>    TruthRawTrim_flavor;
 std::vector<double> TruthRawTrim_pt;
@@ -206,9 +206,9 @@ std::vector<double> TruthRawTrim_Ttrimming;
 std::vector<double> TruthRawTrim_Taktreclustering;
 std::vector<double> TruthRawTrim_Tktreclustering;
 
-std::vector<std::vector<double>> TruthRawTrim_T1masses;
-std::vector<std::vector<double>> TruthRawTrim_T2masses;
-std::vector<std::vector<double>> TruthRawTrim_T3masses;
+std::vector<std::vector<std::vector<double>>> TruthRawTrim_T1masses;
+std::vector<std::vector<std::vector<double>>> TruthRawTrim_T2masses;
+std::vector<std::vector<std::vector<double>>> TruthRawTrim_T3masses;
 
 std::vector<double> TruthRawTrim_T1jet_pt;
 std::vector<double> TruthRawTrim_T2jet_pt;
@@ -217,7 +217,7 @@ std::vector<double> TruthRawTrim_T4jet_pt;
 std::vector<double> TruthRawTrim_T5jet_pt;
 
 std::vector<double> TruthRawTrim_T2jet_massW;
-std::vector<double> TruthRawTrim_T2jet_volatilityW;
+std::vector<double> TruthRawTrim_T2jet_variabilityW;
 
 std::vector<int>    CaloRaw_flavor;
 std::vector<double> CaloRaw_pt;

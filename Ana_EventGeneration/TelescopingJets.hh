@@ -33,23 +33,23 @@
 
 struct tSub {
     double minAngle = -1;
-    double massVolatility = -1;
-    double pTVolatility = -1;
+    double massVariability = -1;
+    double pTVariability = -1;
     
     std::vector<std::vector<double>> masses;
     std::vector<std::vector<double>> pTs;
     std::vector<TLorentzVector> tauAxes;
 
     double targetMass = -1;
-    double targetMassVolatility = -1;
-    double targetPTVolatility = -1;
+    double targetMassVariability = -1;
+    double targetPTVariability = -1;
 };
 
-//  Helper functions for calculation volatilities.
-double getVolatility(const std::vector<double>& values);
+double getVariability(const std::vector<double>& values);
 double getAverage(const std::vector<double>& values);
 double getRMS(const std::vector<double>& values);
-unsigned int getChoose(unsigned int n, unsigned int k);
+unsigned int choose(unsigned int n, unsigned int k);
+TLorentzVector convertPseudoJet2TLV(fastjet::PseudoJet pseudoJet);
 
 class TelescopingJets {
 
@@ -80,8 +80,6 @@ private:
     fastjet::contrib::AxesDefinition* axesDefinition;
     const int stepScale;
 
-    TLorentzVector convertPseudoJet2TLV(fastjet::PseudoJet pseudoJet);
-
     fastjet::contrib::AxesDefinition* getAxesDefinition(int axesType);
     std::vector<TLorentzVector> getTauAxes(unsigned int numSubjets, double beta);
     std::vector<double> getAnglesBetweenTauAxes(unsigned int numSubjets, std::vector<TLorentzVector> pTauAxes);    
@@ -92,6 +90,7 @@ private:
     tSub telescopeSubjets(unsigned int numSubjets, tSub result, std::vector<double> subjetRadii, std::vector<std::vector<std::pair<TLorentzVector, double>>> constituents);
     tSub telescopeSubjets(unsigned int numSubjets, tSub result, std::vector<double> subjetRadii, std::vector<std::vector<std::pair<TLorentzVector, double>>> constituents, double targetMass); 
 
+    unsigned int getCandidateIndex(int targetMass, std::vector<std::vector<double>> telescopingMasses);
 };
 
 #endif  // __TELESCOPINGJETS_HH__
