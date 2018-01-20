@@ -83,11 +83,11 @@ double truth_H_eta;
 double truth_H_phi;
 double truth_H_m;
 
-std::vector<int>*    fspart_id;
-std::vector<double>* fspart_pt;
-std::vector<double>* fspart_eta;
-std::vector<double>* fspart_phi;
-std::vector<double>* fspart_m;
+std::vector<int>*    finalStateParticles_id;
+std::vector<double>* finalStateParticles_pt;
+std::vector<double>* finalStateParticles_eta;
+std::vector<double>* finalStateParticles_phi;
+std::vector<double>* finalStateParticles_m;
 
 
 

@@ -230,7 +230,7 @@ int main (int argc, char* argv[]) {
 
 	//  Convert all final-state particles TLorentzVectors to
 	//  PseudoJet four-vectors.
-	for (int i = 0; i < numFinalStateParticles; ++i++) {
+	for (int i = 0; i < numFinalStateParticles; ++i) {
 	    
 	    if (debug) {
 		std::cout << finalStateParticles_id->at(i) << " "
