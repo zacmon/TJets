@@ -337,7 +337,7 @@ int main (int argc, char* argv[]) {
 	    //  Run telescoping subjet algorithm with trimmed truth jet.
 	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
             tSub T2SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
-            tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
+            tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, 0.0);
             tSub T4SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
             tSub T5SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
 
@@ -351,7 +351,8 @@ int main (int argc, char* argv[]) {
 	    
 	    TruthRawTrim_Tau21.push_back(GetTau21(groomedJet));
 	    TruthRawTrim_Tau32.push_back(GetTau32(groomedJet));
-	    
+	    TruthRawTrim_D2.push_back(ecfD2(groomedJet));
+
 	    TruthRawTrim_T1jet_angle.push_back(T1SubOutputTrim.minAngle);
 	    TruthRawTrim_T1jet.push_back(T1SubOutputTrim.massVariability);
 	    //TruthRawTrim_T1masses.push_back(T1SubOutputTrim.masses);
@@ -420,7 +421,7 @@ int main (int argc, char* argv[]) {
 	    //  calorimeter jet.
 	    tSub T1CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
 	    tSub T2CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
-	    tSub T3CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
+	    tSub T3CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(3, minR, maxR, numRadii, 0.0);
 	    tSub T4CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
 	    tSub T5CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
 
@@ -434,7 +435,8 @@ int main (int argc, char* argv[]) {
 	    
 	    CaloTrim_Tau21.push_back(GetTau21(groomedCaloJet));
 	    CaloTrim_Tau32.push_back(GetTau32(groomedCaloJet));
-	    
+	    CaloTrim_D2.push_back(ecfD2(groomedCaloJet));
+ 
 	    CaloTrim_T1jet_angle.push_back(T1CaloJetTrim.minAngle);
 	    CaloTrim_T1jet.push_back(T1CaloJetTrim.massVariability);
 	    CaloTrim_T1jet.push_back(T1CaloJetTrim.pTVariability);
