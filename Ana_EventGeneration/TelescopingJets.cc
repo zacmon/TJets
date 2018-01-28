@@ -197,8 +197,6 @@ fastjet::contrib::AxesDefinition* TelescopingJets::getAxesDefinition(int axesTyp
 std::vector<TLorentzVector> TelescopingJets::getTauAxes(unsigned int numSubjets, double beta) {   
     //  Create nSubjettiness object.
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
-
-    //  TODO WARNING IS THE NSUBMEASURE BEING OBTAINED CORRECTLY?
     fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, *axesDefinition, nSubMeasure);
 
     //  Get tau axes.
@@ -300,7 +298,6 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
                 if (k == 0) {
                     telescopingMasses[k][i] = totalJetMomentum.M();
 	            telescopingPTs[k][i] = totalJetMomentum.Pt();
-                    std::cout << "total mass for radius " << subjetRadii[i] << ": " << totalJetMomentum.M() << std::endl;
                 }
                 //  Store the subjet mass and pT.
                 else {
@@ -387,7 +384,6 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
 
         //  Compute total jet momentum.
         TLorentzVector totalJetMomentum = std::accumulate(TSubjets.begin(), TSubjets.end(), TLorentzVector(0.0, 0.0, 0.0, 0.0));
-
         //  Set an arbitrary threshold of 0.01 so only
         //  meaningful masses are reconstructed.
         if (totalJetMomentum.M() > 0.01) {
@@ -395,15 +391,13 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
                 //  Store the total jet mass and pT.
                 if (k == 0) {
                     telescopingMasses[k][i] = totalJetMomentum.M();
-                    telescopingMasses[k][i] = totalJetMomentum.Pt();
-                    std::cout << "total mass for radius " << subjetRadii[i] << ": " << totalJetMomentum.M() << std::endl;
+                    telescopingPTs[k][i] = totalJetMomentum.Pt();
                 }
                 //  Store the subjet mass and pT.
                 else {
                     telescopingMasses[k][i] = TSubjets[k - 1].M();
                     telescopingPTs[k][i] = TSubjets[k - 1].Pt();
                 }
-               std::cout << "Mass of subjet " << k << " for radius: " << subjetRadii[i] << ": " << telescopingMasses[k][i] << std::endl;
             }
             
             //  Calculate combinations of masses and pTs.

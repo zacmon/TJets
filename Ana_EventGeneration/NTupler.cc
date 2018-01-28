@@ -336,8 +336,10 @@ int main (int argc, char* argv[]) {
 
 	    //  Run telescoping subjet algorithm with trimmed truth jet.
 	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
-            tSub T2SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
-            tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, 0.0);
+            std::cout << "T3Subjet without mass" << std::endl;
+            tSub T2SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, 0.0);
+            std::cout << "T3Subjet with mass" << std::endl;
+            tSub T3SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
             tSub T4SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
             tSub T5SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
 
