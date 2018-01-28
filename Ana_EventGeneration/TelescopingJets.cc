@@ -274,7 +274,6 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
     if (numSubjets == 1) totalNumJets = 1;
     std::vector<std::vector<double>> telescopingMasses(totalNumJets, std::vector<double>(subjetRadii.size()));
     std::vector<std::vector<double>> telescopingPTs(totalNumJets, std::vector<double>(subjetRadii.size()));
-    std::cout << "SIZE OF TELESCOPING MASSES: " << telescopingMasses.size() << std::endl;
 
     //  Telescope through the radii.
     for (unsigned int i = 0; i < subjetRadii.size(); ++i) {
@@ -301,13 +300,13 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
                 if (k == 0) {
                     telescopingMasses[k][i] = totalJetMomentum.M();
 	            telescopingPTs[k][i] = totalJetMomentum.Pt();
+                    std::cout << "total mass for radius " << subjetRadii[i] << ": " << totalJetMomentum.M() << std::endl;
                 }
                 //  Store the subjet mass and pT.
                 else {
                     telescopingMasses[k][i]  = TSubjets[k - 1].M();
                     telescopingPTs[k][i] = TSubjets[k - 1].Pt();
                 }
-                std::cout << "Mass of subjet " << k << " for radius: " << subjetRadii[i] << ": " << telescopingMasses[k][i] << std::endl;
             }
         }
     }
@@ -397,6 +396,7 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
                 if (k == 0) {
                     telescopingMasses[k][i] = totalJetMomentum.M();
                     telescopingMasses[k][i] = totalJetMomentum.Pt();
+                    std::cout << "total mass for radius " << subjetRadii[i] << ": " << totalJetMomentum.M() << std::endl;
                 }
                 //  Store the subjet mass and pT.
                 else {
