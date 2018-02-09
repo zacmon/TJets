@@ -332,7 +332,7 @@ int main (int argc, char* argv[]) {
 	    if (debug) std::cout << "FillingJet Trimmed: flav=" << jetflavor << "  pt=" <<tempJet.Pt() << "  m=" << tempJet.M() << std::endl;
 	    
 	    if (jetflavor == -1) continue;
-            TelescopingJets* telescopeTruthGroomedJet = new TelescopingJets(groomedJet);
+            TelescopingJets* telescopeTruthGroomedJet = new TelescopingJets(groomedJet, TelescopingJets::StepType::Log);
 
 	    //  Run telescoping subjet algorithm with trimmed truth jet.
 	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
@@ -414,8 +414,7 @@ int main (int argc, char* argv[]) {
 	    
 	    jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
 	    if (jetflavor == -1) continue;
-
-            TelescopingJets* telescopeCaloGroomedJet = new TelescopingJets(groomedCaloJet);
+            TelescopingJets* telescopeCaloGroomedJet = new TelescopingJets(groomedCaloJet, fastjet::contrib::OnePass_KT_Axes());
 
 	    //  Run telescoping subjet algorithm with trimmed
 	    //  calorimeter jet.

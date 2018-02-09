@@ -5,6 +5,8 @@
 
 #include "TelescopingJets.hh"
 
+const fastjet::contrib::AxesDefinition* defaultAxes = new fastjet::contrib::OnePass_KT_Axes();
+
 //  Calculate average of values in a vector.
 double getAverage(const std::vector<double>& values) {
     if (values.empty()) throw std::length_error("Asking for average of empty vector.\n");
@@ -54,33 +56,50 @@ TLorentzVector convertPseudoJet2TLV(fastjet::PseudoJet pseudoJet) {
     return tLorentzVector;
 }
 
-TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet) : input(pseudoJet), axesDefinition(getAxesDefinition(0)), stepScale(0) {
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet) : input(pseudoJet), stepType(StepType::Linear), axesDefinition(*defaultAxes) {
 }
 
-TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, int axesType) : input(pseudoJet), axesDefinition(getAxesDefinition(axesType)), stepScale(0) {
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, StepType inStepType) : input(pseudoJet), stepType(inStepType), axesDefinition(*defaultAxes) {
 }
 
-TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, int axesType, int scale) : input(pseudoJet), axesDefinition(getAxesDefinition(axesType)), stepScale(scale) {
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, const fastjet::contrib::AxesDefinition& axesDef) : input(pseudoJet), stepType(TelescopingJets::StepType::Linear), axesDefinition(axesDef) {
+}
+
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, StepType inStepType, const fastjet::contrib::AxesDefinition& axesDef) : input(pseudoJet), axesDefinition(axesDef), stepType(inStepType) {
 }
 
 TelescopingJets::~TelescopingJets() {
-    delete axesDefinition;
+    //delete axesDefinition;
 }
 
 std::vector<double> TelescopingJets::getTelescopingParameterSet(double minParameter, double maxParameter, unsigned int numSteps) {
     double stepSize = -999;
-    //  Set the step for linear (0) or log (1).
+    //  Set step size based on the step type.
     //  TODO Add other options? Exponential? Square?
-    if (stepScale == 0) stepSize = (maxParameter - minParameter) / (numSteps);
-    else if (stepScale == 1) stepSize = log10(maxParameter / minParameter) / (numSteps);
-    
+    switch (stepType) {
+        case TelescopingJets::StepType::Linear:
+            stepSize = (maxParameter - minParameter) / (numSteps);
+            break;
+        case TelescopingJets::StepType::Log:
+            stepSize = log10(maxParameter / minParameter) / (numSteps);
+            break;
+    }
+
     std::vector<double> parameterSet(numSteps + 1);
    
     //  Add values to the set.
     for (unsigned int i = 0; i <= numSteps; ++i) {
-	if (stepScale == 0) parameterSet[i] = minParameter + i * stepSize;
-	else if (stepScale == 1) parameterSet[i] = minParameter * pow(10, i * stepSize);
+	switch(stepType) {
+            case TelescopingJets::StepType::Linear:
+                parameterSet[i] = minParameter + i * stepSize;
+	        break;
+            case TelescopingJets::StepType::Log:
+                parameterSet[i] = minParameter * pow(10, i * stepSize);
+                break;
+        }
     }
+
+    if (parameterSet.empty()) throw std::length_error("Parameter set empty and will not telescope.\n");
 
     return parameterSet;
 }
@@ -186,18 +205,10 @@ double TelescopingJets::tReclustering(int algorithm, double minRadius, double ma
 ///=========================================
 /// Telescoping Subjet
 ///=========================================
-fastjet::contrib::AxesDefinition* TelescopingJets::getAxesDefinition(int axesType) { 
-    fastjet::contrib::AxesDefinition* axesDefinition = nullptr;
-    if (axesType == 0) axesDefinition = new fastjet::contrib::OnePass_KT_Axes();
-    else if (axesType == 1) axesDefinition = new fastjet::contrib::WTA_KT_Axes();
-    else std::cout << "Error! Invalid axesType entered. Please enter \"0\" for OnePass_KT_Axes or \"1\" for WTA_KT_Axes." << std::endl;
-    return axesDefinition;
-}
-
 std::vector<TLorentzVector> TelescopingJets::getTauAxes(unsigned int numSubjets, double beta) {   
     //  Create nSubjettiness object.
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
-    fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, *axesDefinition, nSubMeasure);
+    fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, axesDefinition, nSubMeasure);
 
     //  Get tau axes.
     double tauN = nSubjettiness.result(input);
@@ -474,7 +485,7 @@ double TelescopingJets::tNsubjettiness(int numSubjets, double minBeta, double ma
 
     for (unsigned int i = 0; i < betas.size(); ++i) {
         fastjet::contrib::UnnormalizedMeasure nSubMeasure(betas[i]);
-        fastjet::contrib::Nsubjettiness nSub(numSubjets, *axesDefinition, nSubMeasure);
+        fastjet::contrib::Nsubjettiness nSub(numSubjets, axesDefinition, nSubMeasure);
         telescopingTaus[i] = nSub(input);
     }
 
@@ -492,8 +503,8 @@ double TelescopingJets::tNsubjettinessRatio(int nNumerator, int nDemoninator, do
 
     for (unsigned int i = 0; i < betas.size(); ++i) {
         fastjet::contrib::UnnormalizedMeasure nsubMeasure(betas[i]);
-        fastjet::contrib::Nsubjettiness nSubNumerator(nNumerator, *axesDefinition, nsubMeasure);
-        fastjet::contrib::Nsubjettiness nSubDenominator(nDemoninator, *axesDefinition, nsubMeasure);
+        fastjet::contrib::Nsubjettiness nSubNumerator(nNumerator, axesDefinition, nsubMeasure);
+        fastjet::contrib::Nsubjettiness nSubDenominator(nDemoninator, axesDefinition, nsubMeasure);
       
         double numerator = nSubNumerator(input);
         double denominator = nSubDenominator(input);

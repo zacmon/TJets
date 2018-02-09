@@ -54,9 +54,15 @@ TLorentzVector convertPseudoJet2TLV(fastjet::PseudoJet pseudoJet);
 class TelescopingJets {
 
 public:
+    enum class StepType {
+        Linear,
+        Log
+    };
+    
     TelescopingJets(const fastjet::PseudoJet& pseudoJet);
-    TelescopingJets(const fastjet::PseudoJet& pseudoJet, int axesType);
-    TelescopingJets(const fastjet::PseudoJet& pseudoJet, int axesType, int scale);
+    TelescopingJets(const fastjet::PseudoJet& pseudoJet, StepType stepType);
+    TelescopingJets(const fastjet::PseudoJet& pseudoJet, const fastjet::contrib::AxesDefinition& axesDef);
+    TelescopingJets(const fastjet::PseudoJet& pseudoJet, StepType stepType, const fastjet::contrib::AxesDefinition& axesDef);
     ~TelescopingJets();
 
     std::vector<double> getTelescopingParameterSet(double minParameter, double maxParameter, unsigned int stepSize);  
@@ -77,10 +83,9 @@ public:
 
 private:
     const fastjet::PseudoJet& input;
-    fastjet::contrib::AxesDefinition* axesDefinition;
-    const int stepScale;
+    const fastjet::contrib::AxesDefinition& axesDefinition;
+    StepType stepType;
 
-    fastjet::contrib::AxesDefinition* getAxesDefinition(int axesType);
     std::vector<TLorentzVector> getTauAxes(unsigned int numSubjets, double beta);
     std::vector<double> getAnglesBetweenTauAxes(unsigned int numSubjets, std::vector<TLorentzVector> pTauAxes);    
     std::vector<std::vector<std::pair<TLorentzVector, double>>> sortConstituents(unsigned int numSubjets, std::vector<TLorentzVector> pTauAxes);
