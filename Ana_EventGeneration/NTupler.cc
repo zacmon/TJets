@@ -332,7 +332,7 @@ int main (int argc, char* argv[]) {
 	    if (debug) std::cout << "FillingJet Trimmed: flav=" << jetflavor << "  pt=" <<tempJet.Pt() << "  m=" << tempJet.M() << std::endl;
 	    
 	    if (jetflavor == -1) continue;
-            TelescopingJets* telescopeTruthGroomedJet = new TelescopingJets(groomedJet, TelescopingJets::StepType::Log);
+            TelescopingJets* telescopeTruthGroomedJet = new TelescopingJets(groomedJet, TelescopingJets::StepType::Log, fastjet::contrib::KT_Axes());
 
 	    //  Run telescoping subjet algorithm with trimmed truth jet.
 	    tSub T1SubOutputTrim = telescopeTruthGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
@@ -414,15 +414,25 @@ int main (int argc, char* argv[]) {
 	    
 	    jetflavor = GetJetTruthFlavor(tempJet, truth_t1, truth_t2, truth_W1, truth_W2, truth_H, debug);
 	    if (jetflavor == -1) continue;
-            TelescopingJets* telescopeCaloGroomedJet = new TelescopingJets(groomedCaloJet, fastjet::contrib::OnePass_KT_Axes());
-
+            std::cout << "Calorimeter jet" << std::endl;
+            TelescopingJets* telescopeCaloGroomedJet = new TelescopingJets(groomedCaloJet, TelescopingJets::StepType::Log, fastjet::contrib::WTA_KT_Axes());
+            std::cout << "WORKED!" << std::endl;
 	    //  Run telescoping subjet algorithm with trimmed
 	    //  calorimeter jet.
-	    tSub T1CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
-	    tSub T2CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
-	    tSub T3CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
-	    tSub T4CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
-	    tSub T5CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
+           
+            tSub T1CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(1, minR, maxR, numRadii, 0.0);
+	    std::cout << "1 worked" << std::endl;
+            tSub T2CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(2, minR, maxR, numRadii, 0.0);
+	    std::cout << "2 worked" << std::endl;
+	    
+            tSub T3CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(3, minR, maxR, numRadii, 80.4);
+	    std::cout << "3 worked" << std::endl;
+	    
+            tSub T4CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(4, minR, maxR, numRadii, 0.0);
+	    std::cout << "4 worked" << std::endl;
+	    
+            tSub T5CaloJetTrim = telescopeCaloGroomedJet->tNSubjet(5, minR, maxR, numRadii, 0.0);
+	    std::cout << "5 worked" << std::endl;
 
 	    //  Fill output variables.
 	    CaloTrim_flavor.push_back(jetflavor);

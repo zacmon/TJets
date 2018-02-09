@@ -99,7 +99,7 @@ std::vector<double> TelescopingJets::getTelescopingParameterSet(double minParame
         }
     }
 
-    if (parameterSet.empty()) throw std::length_error("Parameter set empty and will not telescope.\n");
+    if (parameterSet.empty()) throw std::length_error("Parameter set is empty and will not telescope.\n");
 
     return parameterSet;
 }
@@ -164,15 +164,14 @@ double TelescopingJets::tTrimming(double minFCut, double maxFCut, unsigned int n
 
 ///=========================================
 /// Telescoping reclustering
-/// for kt, set algorithm = 0
 /// for antikt, set algorithm = 2
 ///=========================================
-double TelescopingJets::tReclustering(int algorithm, double minRadius, double maxRadius, unsigned numRadii) {
+double TelescopingJets::tReclustering(fastjet::JetAlgorithm& algorithm, double minRadius, double maxRadius, unsigned numRadii) {
     std::vector<double> subjetRadii = getTelescopingParameterSet(minRadius, maxRadius, numRadii);
     std::vector<double> telescopingMass(subjetRadii.size());
 
     for (unsigned int i = 0; i < subjetRadii.size(); ++i) {
-        fastjet::JetDefinition TjetDefinition(fastjet::JetAlgorithm(algorithm), subjetRadii[i]);
+        fastjet::JetDefinition TjetDefinition(algorithm, subjetRadii[i]);
         fastjet::ClusterSequence TClusterSequence(input.constituents(), TjetDefinition);
         std::vector<fastjet::PseudoJet> recoTJets = sorted_by_pt(TClusterSequence.inclusive_jets());
 	
@@ -194,8 +193,9 @@ double TelescopingJets::tReclustering(int algorithm, double minRadius, double ma
     }
     
     if (!telescopingMass.empty()) return getVariability(telescopingMass);
-    
-    std::cout << "WARNING: zero entries for T_reclustering!   Algorithm" << algorithm <<
+   
+    //  TODO Fix print statement to output algorithm
+    std::cout << "WARNING: zero entries for T_reclustering! " <<
 	"   minRadius: " << minRadius <<
 	"   maxRadius: " << maxRadius <<
 	"   numRadii: " << numRadii <<  std::endl;
@@ -206,14 +206,20 @@ double TelescopingJets::tReclustering(int algorithm, double minRadius, double ma
 /// Telescoping Subjet
 ///=========================================
 std::vector<TLorentzVector> TelescopingJets::getTauAxes(unsigned int numSubjets, double beta) {   
-    //  Create nSubjettiness object.
+    //  Create nSubjettiness object
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
+    fastjet::contrib::AxesDefinition* wta = new fastjet::contrib::WTA_KT_Axes();
+    
+    std::cout << wta->description() << std::endl;
+    std::cout << "Is the axesDefinition empty?" << std::endl;
+    std::cout << axesDefinition.description() << std::endl;
     fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, axesDefinition, nSubMeasure);
-
+    std::cout << "Defined nsubjettines." << std::endl;
     //  Get tau axes.
     double tauN = nSubjettiness.result(input);
+    std::cout << "Result function works." << std::endl;
     std::vector<fastjet::PseudoJet> tauAxes = nSubjettiness.currentAxes();
-
+    std::cout << "Size of tau axes: " << tauAxes.size() << std::endl;
     //  Convert vector of fastjet::PseudoJet to TLorentzVector
     std::vector<TLorentzVector> pTauAxes;
     std::transform(tauAxes.begin(), tauAxes.end(), std::back_inserter(pTauAxes), 
@@ -445,11 +451,12 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
 
 tSub TelescopingJets::tNSubjet(unsigned int numSubjets, double minRadius, double maxRadius, unsigned int numRadii, double targetMass = 0.0) {
     tSub result;
-
+    std::cout << "\nBeginning tNSubjet function." << std::endl;
     double beta = 1.0;
     std::vector<TLorentzVector> pTauAxes = getTauAxes(numSubjets, beta);
+    std::cout << "Got tau axes" << std::endl;
     std::vector<double> anglesBetweenTauAxes = getAnglesBetweenTauAxes(numSubjets, pTauAxes);
-
+    std::cout << "Got angles between axes" << std::endl;
     //  Store subjet axes.
     result.tauAxes = pTauAxes;
 
@@ -458,9 +465,9 @@ tSub TelescopingJets::tNSubjet(unsigned int numSubjets, double minRadius, double
 
     //  Get constituents sorted by subjet and in increasing distance from subjet center.
     std::vector<std::vector<std::pair<TLorentzVector, double>>> constituents = sortConstituents(numSubjets, pTauAxes);
-
+    std::cout << "Sorted constituents" << std::endl;
     std::vector<double> subjetRadii = getTelescopingParameterSet(minRadius, maxRadius, numRadii);
-    
+    std::cout << "Got telescoping parameter set" << std::endl;
     //  Telescope through the jet radius.
     if (targetMass == 0) result = telescopeSubjets(numSubjets, result, subjetRadii, constituents);
     else result = telescopeSubjets(numSubjets, result, subjetRadii, constituents, targetMass);

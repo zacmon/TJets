@@ -70,7 +70,7 @@ public:
     double tPruning(double minDCut, double maxDCut, unsigned int numDCuts);
     double tTrimming(double minFCut, double maxFCut, unsigned int numFCuts);
         
-    double tReclustering(int algorithm, double minRadius, double maxRadius, unsigned int numRadii);
+    double tReclustering(fastjet::JetAlgorithm& algorithm, double minRadius, double maxRadius, unsigned int numRadii);
 
     tSub tNSubjet(unsigned int numSubjets, double minRadius, double maxRadius, unsigned int numRadii, double targetMass);
 
