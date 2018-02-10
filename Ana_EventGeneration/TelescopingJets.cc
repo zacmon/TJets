@@ -208,18 +208,14 @@ double TelescopingJets::tReclustering(fastjet::JetAlgorithm& algorithm, double m
 std::vector<TLorentzVector> TelescopingJets::getTauAxes(unsigned int numSubjets, double beta) {   
     //  Create nSubjettiness object
     fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
-    fastjet::contrib::AxesDefinition* wta = new fastjet::contrib::WTA_KT_Axes();
-    
-    std::cout << wta->description() << std::endl;
     std::cout << "Is the axesDefinition empty?" << std::endl;
     std::cout << axesDefinition.description() << std::endl;
     fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, axesDefinition, nSubMeasure);
-    std::cout << "Defined nsubjettines." << std::endl;
+    
     //  Get tau axes.
     double tauN = nSubjettiness.result(input);
-    std::cout << "Result function works." << std::endl;
     std::vector<fastjet::PseudoJet> tauAxes = nSubjettiness.currentAxes();
-    std::cout << "Size of tau axes: " << tauAxes.size() << std::endl;
+    
     //  Convert vector of fastjet::PseudoJet to TLorentzVector
     std::vector<TLorentzVector> pTauAxes;
     std::transform(tauAxes.begin(), tauAxes.end(), std::back_inserter(pTauAxes), 
@@ -233,7 +229,7 @@ std::vector<double> TelescopingJets::getAnglesBetweenTauAxes(unsigned int numSub
 
     //  Calculate deltaR between each pair of tau axes.
     for (unsigned int i = 0; i < numSubjets; ++i) {
-	for (unsigned int j = i + 1; j < numSubjets; ++j) {
+        for (unsigned int j = i + 1; j < numSubjets; ++j) {
 	    angles.push_back(pTauAxes[i].DeltaR(pTauAxes[j]));
 	}
     }
@@ -451,12 +447,10 @@ tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std
 
 tSub TelescopingJets::tNSubjet(unsigned int numSubjets, double minRadius, double maxRadius, unsigned int numRadii, double targetMass = 0.0) {
     tSub result;
-    std::cout << "\nBeginning tNSubjet function." << std::endl;
     double beta = 1.0;
     std::vector<TLorentzVector> pTauAxes = getTauAxes(numSubjets, beta);
-    std::cout << "Got tau axes" << std::endl;
     std::vector<double> anglesBetweenTauAxes = getAnglesBetweenTauAxes(numSubjets, pTauAxes);
-    std::cout << "Got angles between axes" << std::endl;
+    
     //  Store subjet axes.
     result.tauAxes = pTauAxes;
 
@@ -465,9 +459,8 @@ tSub TelescopingJets::tNSubjet(unsigned int numSubjets, double minRadius, double
 
     //  Get constituents sorted by subjet and in increasing distance from subjet center.
     std::vector<std::vector<std::pair<TLorentzVector, double>>> constituents = sortConstituents(numSubjets, pTauAxes);
-    std::cout << "Sorted constituents" << std::endl;
     std::vector<double> subjetRadii = getTelescopingParameterSet(minRadius, maxRadius, numRadii);
-    std::cout << "Got telescoping parameter set" << std::endl;
+    
     //  Telescope through the jet radius.
     if (targetMass == 0) result = telescopeSubjets(numSubjets, result, subjetRadii, constituents);
     else result = telescopeSubjets(numSubjets, result, subjetRadii, constituents, targetMass);
