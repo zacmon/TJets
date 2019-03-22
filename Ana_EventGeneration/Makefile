@@ -41,14 +41,13 @@ MYLIBCXX  = $(subst .h,.cc,$(shell ls *.h))
 MYLIBS    = $(subst .cc,.o,$(shell ls $(MYLIBCXX)))
 ROOTSYS   = $(shell echo $ROOTSYS)
 # add pythia dependency; the binary and header files -- wesley
-PYTHIAPATH = /home/wuy45/Temp/pythia8240
-PYTHIALIBS = -L$(PYTHIAPATH)/lib/libpythia8.a
+# PYTHIAPATH and  FASTJETPATH are set at variables.sh
+PYTHIALIBS = -L${PYTHIAPATH}/lib/libpythia8.a
 PYTHIAFLAGS = -I$(PYTHIAPATH)/include
 
 # add fastjet dependency;
-FASTJETPATH = /home/wuy45/Temp/fastjet-install
-FASTJETFLAGS = $(shell $(FASTJETPATH)/bin/fastjet-config --cxxflags) -lNsubjettiness -lEnergyCorrelator
-FASTJETFLIBS = $(shell $(FASTJETPATH)/bin/fastjet-config --libs) -lNsubjettiness -lEnergyCorrelator
+FASTJETFLAGS = $(shell ${FASTJETPATH}/bin/fastjet-config --cxxflags) -lNsubjettiness -lEnergyCorrelator
+FASTJETFLIBS = $(shell ${FASTJETPATH}/bin/fastjet-config --libs) -lNsubjettiness -lEnergyCorrelator
 
 # -fPIC option needed only for compilation into a shared library
 CXXFLAGS = $(shell root-config --cflags) $(PYTHIAFLAGS) $(FASTJETFLAGS) -fPIC 
