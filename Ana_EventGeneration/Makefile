@@ -36,27 +36,23 @@
 # always start a target rule with a TAB
 #---------GENERAL SETTINGS--------------
 #PROGRAMS  = $(subst .cxx,.exe,$(shell ls run*.cxx))
-PROGRAMS  = MakeNTupleFromPythia.exe
-#NTupler.exe
-MYLIBCXX  = $(subst .h,.cc,$(shell ls *.h)) 
-MYLIBS    = $(subst .cc,.o,$(shell ls $(MYLIBCXX)))
+PROGRAMS  = MakeNTupleFromPythia.exe NTupler.exe
+
 ROOTSYS   = $(shell echo $ROOTSYS)
-# add pythia dependency; the binary and header files -- wesley
+
 # PYTHIAPATH and  FASTJETPATH are set at variables.sh
-PYTHIALIBS = -L${PYTHIAPATH}/lib
-PYTHIAFLAGS = -I$(PYTHIAPATH)/include
-PYTHIABINARY = -L${PYTHIAPATH}/lib/libpythia8.a
-
-# add fastjet dependency;
-FASTJETFLAGS = $(shell ${FASTJETPATH}/bin/fastjet-config --cxxflags) #-lNsubjettiness -lEnergyCorrelator
-FASTJETFLIBS = $(shell ${FASTJETPATH}/bin/fastjet-config --libs)
-
 # -fPIC option needed only for compilation into a shared library
-CXXFLAGS = $(shell root-config --cflags) $(PYTHIAFLAGS) #$(FASTJETFLAGS) -fPIC 
-ROOTLIBS = $(shell root-config --libs)
+CXXFLAGS = -fPIC #-Wl,--verbose
+ROOTFLAGS = $(shell root-config --cflags)
+FASTJETFLAGS = $(shell ${FASTJETPATH}/bin/fastjet-config --cxxflags)
+PYTHIAFLAGS = $(shell ${PYTHIAPATH}/bin/pythia8-config --cxxflags)
+
+ROOTLIBS = $(shell root-config --glibs) -lMinuit
+FASTJETLIBS = $(shell ${FASTJETPATH}/bin/fastjet-config --libs --plugins) -lNsubjettiness -lEnergyCorrelator
+PYTHIALIBS = $(shell ${PYTHIAPATH}/bin/pythia8-config --libs)
 
 # all libs
-LIBS     = $(ROOTLIBS) -lMinuit $(PYTHIALIBS) #$(FASTJETLIBS)
+# LIBS     = $(ROOTLIBS) -lMinuit $(PYTHIALIBS) #$(FASTJETLIBS)
 OPT      = -ggdb -Wshadow # for debug
 #OPT      = -ggdb -Wold-style-cast -Wshadow # for debug
 #OPT      = -O3   # optimized
@@ -65,18 +61,20 @@ SOFLAGS   = -shared
 SHAREDLIB = $(shell echo ${PWD})/ana_event_gen.so
 #---------DEFAULT ACTION-------------------------
 
-all: MakeNTupleFromPythia.exe
+all: $(PROGRAMS)
 
 # compiling the executable 
 MakeNTupleFromPythia.exe:  MakeNTupleFromPythia.cc MakeNTupleFromPythia.h 
 	echo creating the executable $@
-	$(GCC) $(OPT) $(CXXFLAGS) -L. -o $@ -c $< $(LIBS) 
+	$(GCC) $(OPT) $(CXXFLAGS) $(ROOTFLAGS) $(PYTHIAFLAGS) $<  -o $@ $(ROOTLIBS) $(PYTHIALIBS)
 
-
+NTupler.exe: NTupler.cc NTupler.h TelescopingJets.cc
+	echo creating the executable $@
+	$(GCC) $(OPT) $(CXXFLAGS) $(ROOTFLAGS) $(FASTJETFLAGS) $+ -o $@ $(ROOTLIBS) $(FASTJETLIBS)
 
 #----------CLEANUP------------------
 clean:
-	rm -f *.o *.so *.exe *~ $(PROGRAMS) $(SHAREDLIB)
+	rm -f *.o *.so *.exe *~ $(PROGRAMS)
 
 
 #--COMPILING if the shared library does not work for your operating system---
