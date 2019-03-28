@@ -19,6 +19,11 @@ In addition to this code, you will need to compile and install the following add
 - It is necessary to point the code to the fastjet install directory as shown in the install directions.  This is done via the `--fastjet-config=/path/to/fastjet-config` argument.  
 - If you installed fastjet in the directory above the fjcontrib directory, this means pointing it to the fastjet-config at ../fastjet-3.1.1/fastjet-config.  If you do this correctly, then you should see the /contrib directory housed in `/usr/local/include/fastjet` after running `make install`.
 
+## set path in variables.sh and 
+```
+source variables.sh
+```
+This Makefile uses those variables to find linked libraries.
 
 # Running EventGeneration : `Ana_EventGeneration`
 This is the first state of analysis in which the Pythia8 event generator is used to produce a set of events for any process you wish and perform the subsequent shower and hadronization to produce a set of final state particles that can then be used for analysis via jet building.
