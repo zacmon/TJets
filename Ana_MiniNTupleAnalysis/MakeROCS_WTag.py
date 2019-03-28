@@ -9,8 +9,8 @@ gStyle.SetPalette(1)
 
 #sigFile="GenNTuple/20171101/ntuple_ww_1.root"
 #bkgFile="GenNTuple/20171101/ntuple_dijet_0.root"
-sigFile="GenNTuple/20171111/ntuple_ww_0.root"
-bkgFile="GenNTuple/20171111/ntuple_dijet_0.root"
+sigFile="ntuple_ww_1.root"
+bkgFile="ntuple_dijet_1.root"
 #sigFile="TJets2017/ntuple_wwHi.v2.root"
 #bkgFile="TJets2017/ntuple_dijetHi.v2.root"
 #sigFile="TJets2017/ntuple_wwLo.root"
@@ -1293,7 +1293,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
         roc4.SetLineColor(7)
         roc4.SetFillStyle(3001)
     
-        path = outputdir1+"ROC_"+alg+"_T5jet_pt"+pt1+pt2+".root"
+        path = outputdir1+"ROC_"+alg+"_D2_pt"+pt1+pt2+".root"
         f5   = TFile(path)
         roc5 = f5.Get("ROC_L")
         roc5.SetFillColor(3)
@@ -1345,7 +1345,7 @@ def OverlayTJetROCS(outputdir1,outputdir2,outputdir3,outputdir4,alg,pt1,pt2,m1,m
     rocbox3=myLineBoxText(0.26, 0.65, 1, 1, 4, 0, 0.1, 0.08, "v_{3}")
     if "Trim" in alg:
         rocbox4=myLineBoxText(0.26, 0.60, 7, 1, 1, 0, 0.1, 0.08, "v_{4}")
-        rocbox5=myLineBoxText(0.26, 0.55, 3, 1, 1, 0, 0.1, 0.08, "v_{5}")
+        rocbox5=myLineBoxText(0.26, 0.55, 3, 1, 1, 0, 0.1, 0.08, "D_{2}")
         rocbox6=myLineBoxText(0.26, 0.50, 95, 1, 1, 0, 0.1, 0.08, "Boosted Decision Tree")
     if "Trim" not in alg:
         rocbox7=myLineBoxText(0.26, 0.45, 8, 1, 1, 0, 0.1, 0.08, TranslateVar("Tpruning"))
@@ -1370,8 +1370,8 @@ flag_rocoverlay      = True
 #==========================
 #Set output directory name
 #==========================
-#InputDir="~/Downloads/
-InputDir="../Ana_EventGeneration/"
+InputDir="~/Research/TelescopingJetsSample/"
+#InputDir="../Ana_EventGeneration/"
 
 outputdir1 = "OutputSingleVariable/"
 outputdir2 = "OutputTwoVariableByHand/"
@@ -1387,8 +1387,8 @@ outputdir4 = MakeNewDir(outputdir4)
 algs=[]
 algs.append("TruthRawTrim")
 algs.append("CaloTrim")
-algs.append("TruthRaw")
-algs.append("CaloRaw")
+#algs.append("TruthRaw")
+#algs.append("CaloRaw")
 
 # VARIABLES AND RANGES
 VarsAndRanges={}
@@ -1397,12 +1397,12 @@ VarsAndRanges["T1jet"] = [0, "100, 0.2, 0.9", "100, 0, 0.5","R"]
 VarsAndRanges["T2jet"] = [0, "100, 0, 0.45", "100, 0, 0.3","R"]
 VarsAndRanges["T2jet_angle"] = [0, "100, 0, 1.0", "100, 0, 0.45","L"]
 VarsAndRanges["T3jet"] = [0, "100, 0, 0.21", "100, 0, 0.25","L"]
-VarsAndRanges["T4jet"] = [0, "100,0,0.5", "100,0,0.5","L"]
-VarsAndRanges["T5jet"] = [0, "100, 0, 0.5", "100, 0, 0.5","L"]
+VarsAndRanges["T4jet"] = [0, "100,0,0.15", "100,0,0.15","L"]
+VarsAndRanges["D2"] = [0, "100, 0.3, 6.5", "100, 0.0, 6.25","L"]
 VarsAndRanges["T3jet_minAngle"] = [0, "100, 0, 0.4", "100, 0, 0.3","R"]
 VarsAndRanges["v21"] = [0, "100, 0, 1.05", "100, 0, 1.05","L"]
-VarsAndRanges["Ttrimming"] = [0, "100, 0, 1.4", "100, 0, 1.2", "L"]
-VarsAndRanges["Tpruning"] = [0, "100, 0, 1", "100, 0, 0.9", "L"]
+#VarsAndRanges["Ttrimming"] = [0, "100, 0, 1.4", "100, 0, 1.2", "L"]
+#VarsAndRanges["Tpruning"] = [0, "100, 0, 1", "100, 0, 0.9", "L"]
 VarsAndRanges["v31"] = [0, "100, 0, 1", "100, 0, 1","L"]
 
 #################################

@@ -1,184 +1,615 @@
 //  Telescoping Jets Package
 //
-//  Alexander Emerman, Yang-Ting Chien, Shih-Chieh Hsu
+//  Alexander Emerman, Yang-Ting Chien, Shih-Chieh Hsu, Zachary Montague
 //
 
 #include "TelescopingJets.hh"
 
-// Returns the mass volatility for N axes
-double TelescopingJets::result(int N, const fastjet::PseudoJet& jet) const {
-    
-    int nconst = jet.constituents().size();
-    //std::cout<<"Number of constits: "<<nconst<<std::endl;
-    if(nconst==1){
-	//std::cout<<"Only one constituent, can't calculate TJets("<<N<<")"<<std::endl;
-	return -1;
-    }
-    
-    std::vector<double> tjet_masses = getTjetMasses(N,jet);
-    return getVolatility(tjet_masses);
-}
+const fastjet::contrib::AxesDefinition* defaultAxes = new fastjet::contrib::OnePass_KT_Axes();
 
-// Returns N subjets per R value
-std::vector<std::vector<fastjet::PseudoJet> > TelescopingJets::getSubjets(int N, const fastjet::PseudoJet& jet) const {
-    _setSubjets(N, jet);
-    return _current_subjets;
-}
-
-// Returns the sum of the subjets at each R value
-std::vector<fastjet::PseudoJet> TelescopingJets::getTjets(int N, const fastjet::PseudoJet& jet) const {
-    _setTjets(N, jet);
-    return _current_tjets;
-}
-
-// Return the invariant mass of the subjets at each R value
-std::vector<double> TelescopingJets::getTjetMasses(int N, const fastjet::PseudoJet& jet) const {
-    _setTjetMasses(N, jet);
-    return _current_tjet_masses;
-}
-
-// Useful mathematical functions to find the average, rms and volatility
-// of a set of values
+//  Calculate average of values in a vector.
 double getAverage(const std::vector<double>& values) {
     if (values.empty()) throw std::length_error("Asking for average of empty vector.\n");
-    double v = 0;
-    for (unsigned int i=0; i < values.size(); i++) {
-	v += values.at(i);
-    }
-    return v/values.size();
+    
+    double total = std::accumulate(values.begin(), values.end(), 0.0);
+    return total / values.size();
 }
+
+//  Calculate root mean square of values in a vector.
 double getRMS(const std::vector<double>& values) {
     if (values.empty()) throw std::length_error("Asking for rms of empty vector.\n");
-    double v = getAverage(values);
-    double v2 = 0;
-    for(unsigned int i=0; i < values.size(); i++) {
-	v2 += (values.at(i) - v) * (values.at(i) - v);
+    
+    double mean = getAverage(values);
+    double squaredDistance = 0;
+
+    for (unsigned int i = 0; i < values.size(); ++i) {
+	squaredDistance += (values[i] - mean) * (values[i] - mean);
     }
-    double sqRMS = v2/values.size();
-    return std::sqrt(sqRMS);
-}
-double getVolatility(const std::vector<double>& values) {
-    if (values.empty()) throw std::length_error("Asking for volatility of empty vector.\n");
-    return getRMS(values)/getAverage(values);
+
+    double meanSquared = squaredDistance / values.size();
+    return std::sqrt(meanSquared);
 }
 
-// set user-defined axes
-// currently does nothing because axes are reset before every calculation
-// void TelescopingJets::setAxes(const std::vector<fastjet::PseudoJet>& my_axes) {
-//   _N = my_axes.size();
-//   _current_axes = my_axes;
-//   _axes_are_set = true;
-//   return;
-// }
-
-//**************************************
-// Private methods to do the actual work
-
-void TelescopingJets::_setSubjets(int N, const fastjet::PseudoJet& jet) const {
-    _setAxes(N, jet.constituents());
-    _setSubjets(jet);
-    return;
+//  Calculate the variability.
+double getVariability(const std::vector<double>& values) {
+    if (values.empty()) throw std::length_error("Asking for variability of empty vector.\n");
+    return getRMS(values) / getAverage(values);
 }
-void TelescopingJets::_setSubjets(const fastjet::PseudoJet& jet) const {
-    if (!_axes_are_set) throw std::runtime_error("axes not set");
-    // reset objects so that they can never hold information on a set of particles other than the current one
-    _current_tjet_masses.clear();
-    _current_tjets.clear();
-    _current_subjets.clear();
-    _current_rejected.clear();
+
+//  Compute number of combinations: n choose k.
+unsigned int choose(unsigned int n, unsigned int k) {
+   if (k > n) return 0;
+
+   unsigned int r = 1;
+   for (unsigned int d = 1; d <= k; ++d) {
+       r *= n--;
+       r /= d;
+   }
+   return r;
+}
+
+//  Convert object of type fastjet::PseudoJet to 
+//  object of type TLorentzVector.
+TLorentzVector convertPseudoJet2TLV(fastjet::PseudoJet pseudoJet) {
+    TLorentzVector tLorentzVector;
+    tLorentzVector.SetPxPyPzE(pseudoJet.px(), pseudoJet.py(), pseudoJet.pz(), pseudoJet.e());
+    return tLorentzVector;
+}
+
+//  Constructors.
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet) : input(pseudoJet), stepType(StepType::Linear), axesDefinition(*defaultAxes) {
+}
+
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, StepType inStepType) : input(pseudoJet), stepType(inStepType), axesDefinition(*defaultAxes) {
+}
+
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, const fastjet::contrib::AxesDefinition& axesDef) : input(pseudoJet), stepType(TelescopingJets::StepType::Linear), axesDefinition(axesDef) {
+}
+
+TelescopingJets::TelescopingJets(const fastjet::PseudoJet& pseudoJet, StepType inStepType, const fastjet::contrib::AxesDefinition& axesDef) : input(pseudoJet), axesDefinition(axesDef), stepType(inStepType) {
+}
+
+TelescopingJets::~TelescopingJets() {
+    //delete axesDefinition;
+}
+
+//  Generates a parameter set that will be used to telescope over.
+std::vector<double> TelescopingJets::getTelescopingParameterSet(double minParameter, double maxParameter, unsigned int numSteps) {
+    double stepSize = -999;
+    //  Set step size based on the step type.
+    //  TODO Add other options? Exponential? Square?
+    switch (stepType) {
+        case TelescopingJets::StepType::Linear:
+            stepSize = (maxParameter - minParameter) / (numSteps);
+            break;
+        case TelescopingJets::StepType::Log:
+            stepSize = log10(maxParameter / minParameter) / (numSteps);
+            break;
+    }
+
+    std::vector<double> parameterSet(numSteps + 1);
+   
+    //  Add values to the set.
+    for (unsigned int i = 0; i <= numSteps; ++i) {
+	switch(stepType) {
+            case TelescopingJets::StepType::Linear:
+                parameterSet[i] = minParameter + i * stepSize;
+	        break;
+            case TelescopingJets::StepType::Log:
+                parameterSet[i] = minParameter * pow(10, i * stepSize);
+                break;
+        }
+    }
+
+    if (parameterSet.empty()) throw std::length_error("Parameter set is empty and will not telescope.\n");
+
+    return parameterSet;
+}
+
+///=========================================
+/// Telescoping Pruning
+///=========================================
+double TelescopingJets::tPruning(double minDCut, double maxDCut, unsigned int numDCuts) {
+    //  Single choice of zcut but can be telescoped further.
+    double zCut = 0.1;
     
-    std::vector<fastjet::PseudoJet> particles = jet.constituents();
-    for (unsigned int i=0; i < _r_values.size(); i++) {
-	// partition particles by nearest axis
-	std::vector<std::vector<fastjet::PseudoJet> > jet_partition(_N+1);
-	_partitionJet(particles,_r_values.at(i),jet_partition);
+    std::vector<double> dCuts = getTelescopingParameterSet(minDCut, maxDCut, numDCuts);
+    std::vector<double> telescopingMasses(dCuts.size());
+    
+    //  Obtain a set of jet masses by stepping through the DCut
+    //  pruning parameter.
+    for (unsigned int i = 0; i < dCuts.size(); ++i) {
+        fastjet::Pruner pruner(fastjet::cambridge_algorithm, zCut, dCuts[i]);
+        fastjet::PseudoJet prunedJet = pruner(input);
+        double mass = prunedJet.m();
+        if (mass > 0.01) telescopingMasses[i] = mass;
+    }
+    
+    if (!telescopingMasses.empty()) return getVariability(telescopingMasses);
+    
+    std::cout << "WARNING zero entries for T_Pruning!   minDCut: " << minDCut <<
+	"   maxDCut: " << maxDCut <<
+	"   numDCuts: " << numDCuts <<
+	"   input mass: " << input.m() << std::endl;
+    return -1;
+}
+
+
+///=========================================
+/// Telescoping Trimming
+///=========================================
+double TelescopingJets::tTrimming(double minFCut, double maxFCut, unsigned int numFCuts) {
+    //  The subjet radius used should depend on the input jet's
+    //  pT: higher pT should have a smaller subjet radius.
+    double Rfilt = 0.1; 
+    if (input.pt() > 500) Rfilt = 0.05;
+    
+    std::vector<double> fCuts = getTelescopingParameterSet(minFCut, maxFCut, numFCuts);
+    std::vector<double> telescopingMasses(fCuts.size());
+
+    //  Obtain a set of jet masses by stepping through the f trimming parameter.
+    for (unsigned int i = 0; i < fCuts.size(); ++i) {
+        fastjet::Filter trimmer(Rfilt, fastjet::SelectorPtFractionMin(fCuts[i]));
+        fastjet::PseudoJet trimmedJet = trimmer(input);
+        double mass = trimmedJet.m();
+        if (mass > 0.01) telescopingMasses[i] = mass;
+    }
+
+    if (!telescopingMasses.empty()) return getVariability(telescopingMasses);
+    
+    std::cout << "WARNING zero entries for T_Trimming!   minFCut: "<< minFCut <<
+	"   maxFCut: "<< maxFCut <<
+	"   numFCuts: "<< numFCuts <<
+	"   input mass: " << input.m() << std::endl;
+    return -1;
+}
+
+///=========================================
+/// Telescoping reclustering
+/// for antikt, set algorithm = 2
+///=========================================
+double TelescopingJets::tReclustering(fastjet::JetAlgorithm& algorithm, double minRadius, double maxRadius, unsigned numRadii) {
+    std::vector<double> subjetRadii = getTelescopingParameterSet(minRadius, maxRadius, numRadii);
+    std::vector<double> telescopingMass(subjetRadii.size());
+
+    for (unsigned int i = 0; i < subjetRadii.size(); ++i) {
+        fastjet::JetDefinition TjetDefinition(algorithm, subjetRadii[i]);
+        fastjet::ClusterSequence TClusterSequence(input.constituents(), TjetDefinition);
+        std::vector<fastjet::PseudoJet> recoTJets = sorted_by_pt(TClusterSequence.inclusive_jets());
 	
-	std::vector<fastjet::PseudoJet> subjet_vec(_N, fastjet::PseudoJet(0.,0.,0.,0.));
-	for (unsigned int n=0; n < _N; n++) {
-	    // use the join method so that subjets have valid constituent structure
-	    subjet_vec.at(n) = join( jet_partition.at(n) );
-	} // end loop over axes
-	
-	_current_subjets.push_back(subjet_vec);
-	_current_rejected.push_back( jet_partition.at(_N) );
-    } // end loop over R values
-    return;
+        if (recoTJets.empty()) {
+            std::cout << "WARNING! Recluster number of subjets is " << recoTJets.size() << std::endl;
+            continue;
+        }
+        if (recoTJets.size() == 1) {
+            TLorentzVector Tsubjet1 = convertPseudoJet2TLV(recoTJets[0]); 
+            double mass = Tsubjet1.M();
+            if (mass > 0.01) telescopingMass[i] = mass;
+        }
+        else if (recoTJets.size() >= 2) {
+            TLorentzVector Tsubjet1 = convertPseudoJet2TLV(recoTJets[0]);
+            TLorentzVector Tsubjet2 = convertPseudoJet2TLV(recoTJets[1]);
+            double mass = (Tsubjet1 + Tsubjet2).M();
+            if (mass > 0.01) telescopingMass[i] = mass;
+        }
+    }
+    
+    if (!telescopingMass.empty()) return getVariability(telescopingMass);
+   
+    //  TODO Fix print statement to output algorithm
+    std::cout << "WARNING: zero entries for T_reclustering! " <<
+	"   minRadius: " << minRadius <<
+	"   maxRadius: " << maxRadius <<
+	"   numRadii: " << numRadii <<  std::endl;
+    return -1;
 }
 
-void TelescopingJets::_setTjets(int N, const fastjet::PseudoJet&  jet) const {
-    _setAxes(N, jet.constituents());
-    _setTjets(jet);
-    return;
-}
-void TelescopingJets::_setTjets(const fastjet::PseudoJet&  jet) const {
-    if (!_axes_are_set) throw std::runtime_error("axes not set");
-    _setSubjets(jet);
-    // reset objects so that they can never hold information on a set of particles other than the current one
-    _current_tjet_masses.clear();
-    _current_tjets.clear();
+///=========================================
+/// Telescoping Subjet
+///=========================================
+std::vector<TLorentzVector> TelescopingJets::getTauAxes(unsigned int numSubjets, double beta) {   
+    //  Create nSubjettiness object
+    fastjet::contrib::UnnormalizedMeasure nSubMeasure(beta);
+    std::cout << "Is the axesDefinition empty?" << std::endl;
+    std::cout << axesDefinition.description() << std::endl;
+    fastjet::contrib::Nsubjettiness nSubjettiness(numSubjets, axesDefinition, nSubMeasure);
     
-    for (unsigned int i=0; i < _r_values.size(); i++) {
-	std::vector<fastjet::PseudoJet> temp_vec;
-	for (unsigned int j=0; j < _N; j++) {
-	    temp_vec.push_back( (_current_subjets.at(i)).at(j) );
-	} // end loop over axes
-	// use the join method so that t-jets have valid constituent structure
-	_current_tjets.push_back(join(temp_vec));
-    } // end loop over R values
-    return;
-}
-
-void TelescopingJets::_setTjetMasses(int N, const fastjet::PseudoJet& jet) const {
-    _setAxes(N, jet.constituents());
-    _setTjetMasses(jet);
-    return;
-}
-void TelescopingJets::_setTjetMasses(const fastjet::PseudoJet& jet) const {
-    if (!_axes_are_set) throw std::runtime_error("axes not set");
-    _setTjets(jet);
-    // reset objects so that they can never hold information on a set of particles other than the current one
-    _current_tjet_masses.clear();
-    for (unsigned int i=0; i < _r_values.size(); i++) {
-	_current_tjet_masses.push_back( (_current_tjets.at(i)).m() );
-    } // end loop over R values
-    return;
+    //  Get tau axes.
+    double tauN = nSubjettiness.result(input);
+    std::vector<fastjet::PseudoJet> tauAxes = nSubjettiness.currentAxes();
+    
+    //  Convert vector of fastjet::PseudoJet to TLorentzVector
+    std::vector<TLorentzVector> pTauAxes;
+    std::transform(tauAxes.begin(), tauAxes.end(), std::back_inserter(pTauAxes), 
+            convertPseudoJet2TLV);
+    
+    return pTauAxes;
 }
 
-void TelescopingJets::_setAxes(int N, const std::vector<fastjet::PseudoJet>& particles) const {
-    _N = N;
-    
-    /* OLD CODE
-       std::vector<fastjet::PseudoJet> seed_axes;
-       seed_axes.resize(_N, fastjet::PseudoJet(0.,0.,0.,0.) );
-       _current_axes = _axes_finder->getAxes(_N, particles, seed_axes);
-       _axes_are_set = true;
-    */
-    
-    _current_axes = _axes_def->get_axes(_N, particles);
-    _axes_are_set = true;
-    
-    return;
-}
+std::vector<double> TelescopingJets::getAnglesBetweenTauAxes(unsigned int numSubjets, std::vector<TLorentzVector> pTauAxes) {
+    std::vector<double> angles;
 
-void TelescopingJets::_partitionJet(const std::vector<fastjet::PseudoJet>& particles, double R, std::vector<std::vector<fastjet::PseudoJet> >& jet_partition) const {
-    if (_current_axes.size() != _N) throw std::logic_error("Subjet axes uninitialized.\n");
-    if (jet_partition.size() != _N+1) throw std::logic_error("Partition uninitialized.\n");
-    
-    for (unsigned int i=0; i < particles.size(); i++) {
-	double delR, delR_min(999.);
-	int j_min(0);
-	for (unsigned int j=0; j < _N; j++) {
-	    delR = (_current_axes.at(j)).delta_R(particles.at(i));
-	    if (delR < delR_min) {
-		delR_min = delR;
-		j_min = j;
+    //  Calculate deltaR between each pair of tau axes.
+    for (unsigned int i = 0; i < numSubjets; ++i) {
+        for (unsigned int j = i + 1; j < numSubjets; ++j) {
+	        angles.push_back(pTauAxes[i].DeltaR(pTauAxes[j]));
 	    }
-	} // end loop over axes
-	if (delR_min < R) {
-	    (jet_partition.at(j_min)).push_back(particles.at(i));
-	} else {
-	    (jet_partition.at(_N)).push_back(particles.at(i)); // extra pieces
-	}
     }
-    return;
+
+    return angles;
+}
+
+std::vector<std::vector<std::pair<TLorentzVector, double>>> TelescopingJets::sortConstituents(unsigned int numSubjets, std::vector<TLorentzVector> pTauAxes) {
+    //  Get constituents of the input jet.
+    std::vector<fastjet::PseudoJet> constituents = input.constituents();
+
+    //  Initialize container that will hold constiuents sorted by
+    //  their distance to some tau axis in increasing order.
+    std::vector<std::vector<std::pair<TLorentzVector, double>>> sortedConstituents(numSubjets);
+    
+    //  Sort constituents by subjet.
+    for (auto const &constituent : constituents) {
+	    //  Convert PseudoJet four-vector to TLorentz four-vector.
+	    TLorentzVector pConstituent = convertPseudoJet2TLV(constituent);
+
+    	//  Get distances to different tau axes.
+    	std::vector<double> distanceToTauAxes(numSubjets);
+    	for (unsigned int i = 0; i < numSubjets; ++i) {
+    	    distanceToTauAxes[i] = pConstituent.DeltaR(pTauAxes[i]);
+    	}
+
+	    //  Identify tau axis associated with minimum distance.
+	    auto minDistanceToTauAxesIt = std::min_element(distanceToTauAxes.cbegin(), distanceToTauAxes.cend());
+	    double minDistanceToTauAxes = *minDistanceToTauAxesIt;
+	    unsigned int minDistanceToTauAxesIndex = std::distance(distanceToTauAxes.cbegin(), minDistanceToTauAxesIt);
+	
+	    sortedConstituents[minDistanceToTauAxesIndex].push_back({pConstituent, minDistanceToTauAxes});
+    }
+
+    //  Sort constituents by increasing distance for each subjet.
+    for (unsigned int i = 0; i < numSubjets; ++i) {
+        std::sort(sortedConstituents[i].begin(), sortedConstituents[i].end(),
+                  [](const std::pair<TLorentzVector, double> &pair1, const std::pair<TLorentzVector, double> &pair2) {
+		          return pair1.second < pair2.second;
+		  });
+    }
+    
+    return sortedConstituents;
+}
+
+//  The following method computes the variabilities
+//  of the masses and pTs for N subjets and also
+//  computes low-level pT and mass data for the 
+//  N subjets and total jet.
+tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std::vector<double> subjetRadii, std::vector<std::vector<std::pair<TLorentzVector, double>>> sortedConstituents) {
+    //  Vector of subjet masses for calculation purposes.
+    std::vector<TLorentzVector> TSubjets(numSubjets);
+
+    //  Vectors for mass and pT raw data for jet and subjets.
+    //  To be used for low-level variable analyses.
+    unsigned int totalNumJets = numSubjets + 1;
+    if (numSubjets == 1) totalNumJets = 1;
+    std::vector<std::vector<double>> telescopingMasses(totalNumJets, std::vector<double>(subjetRadii.size()));
+    std::vector<std::vector<double>> telescopingPTs(totalNumJets, std::vector<double>(subjetRadii.size()));
+
+    //  Telescope through the radii.
+    for (unsigned int i = 0; i < subjetRadii.size(); ++i) {
+        //  Loop over each subjet.
+        for (unsigned int subjetIndex = 0; j < sortedConstituents.size(); ++subjetIndex) {
+	        //  Each constituent can be accessed through an iterator.
+            //  The first entry is the constituent's 4-momentum.
+            //  The second is its distance to the enrgy core of the subjet.
+            for (auto it = sortedConstituents[j].cbegin(); it != sortedConstituents[j].cend(); ++it) {
+		        //  Add constituent 4-momentum to subjet 4-momentum if within range.
+		        if (it->second <= subjetRadii[i]) {
+		            TSubjets[j] += it->first;
+		            
+                    //  Remove the constiuent so it's not looped over again.
+                    sortedConstituents[j].erase(it);
+		            --it;
+		        }
+		        else break;
+	        }
+	    }
+
+	    //  Compute total jet momentum at this particular radius.
+	    TLorentzVector totalJetMomentum = std::accumulate(TSubjets.begin(),
+                                                          TSubjets.end(),
+                                                          TLorentzVector(0.0, 0.0, 0.0, 0.0));
+
+	    //  Set an arbitrary threshold of 0.01 so only
+        //  meaningful masses are reconstructed.
+	    if (totalJetMomentum.M() > 0.01) {
+            for (unsigned int k = 0; k < totalNumJets; ++k) {
+	        //  Store the total jet mass and pT.
+                if (k == 0) {
+                    telescopingMasses[k][i] = totalJetMomentum.M();
+	                telescopingPTs[k][i] = totalJetMomentum.Pt();
+                }
+                //  Store the subjet mass and pT.
+                else {
+                    telescopingMasses[k][i]  = TSubjets[k - 1].M();
+                    telescopingPTs[k][i] = TSubjets[k - 1].Pt();
+                }
+            }
+        }
+    }
+
+    //  Compute and store variabilities and raw data.
+    if (!telescopingMasses[0].empty()) {
+	    result.massVariability = getVariability(telescopingMasses[0]);
+	    result.pTVariability = getVariability(telescopingPTs[0]);
+	    result.masses = telescopingMasses;
+        result.pTs = telescopingPTs;
+    }
+
+    return result;
+}
+
+//  Determine if all vectors are empty.
+bool TelescopingJets::emptyTelescopingMasses(std::vector<double> totalTelescopingMass, std::vector<std::vector<double>> combinedTelescopingMasses) {
+    if (!totalTelescopingMass.empty()) return false;
+
+    for (auto const &massVectors : combinedTelescopingMasses) {
+        if (!massVectors.empty()) return false;
+    }
+    
+    return true;
+}
+
+//  Find a candidate jet for suspected decay particle.
+unsigned int TelescopingJets::getCandidateIndex(int targetMass, std::vector<std::vector<double>> telescopingMasses) {
+    std::vector<double> residualMass;
+
+    //  For each subjet, put the mass of the largest radii subjet--i.e. the final radius
+    //  of the telescoped subjet--as the initial value for the residual mass vector.
+    std::transform(telescopingMasses.cbegin(), telescopingMasses.cend(), std::back_inserter(residualMass),
+            [](std::vector<double> telescopingMass)->double { return telescopingMass.back(); });
+
+    //  Subtract the target mass from all elements in
+    //  the masses vector.
+    std::transform(residualMass.begin(), residualMass.end(), residualMass.begin(),
+            bind2nd(std::minus<double>(), targetMass));
+
+    //  Get the distance from the target mass by taking
+    //  the absolute value of the residualMass' elements.
+    std::transform(residualMass.begin(), residualMass.end(), residualMass.begin(),
+            static_cast<double (*)(double)>(&std::abs));
+    
+    //  Obtain the index of the element with the smallest
+    //  distance from the target mass. That subjet is then
+    //  most likely the subjet the candidate particle produced.
+    auto targetMassCandidateIt = std::min_element(residualMass.cbegin(), residualMass.cend());
+    return std::distance(residualMass.cbegin(), targetMassCandidateIt);
+}
+
+//  The following method computes the variabilities
+//  of the masses and pTs for N subjets and also
+//  computes low-level pT and mass data for the
+//  N subjets and total jet. It also attempts to
+//  identify a subjet (or subjets)  produced by a specific particle
+//  by specifying the target particle's mass
+//  and computing which subjet has a mass nearest
+//  that target particle's mass.
+tSub TelescopingJets::telescopeSubjets(unsigned int numSubjets, tSub result, std::vector<double> subjetRadii, std::vector<std::vector<std::pair<TLorentzVector, double>>> sortedConstituents, double targetMass) {
+    //  Vector of subjet masses for calculation purposes.
+    std::vector<TLorentzVector> TSubjets(numSubjets);
+    
+    //  Vectors for mass and pT raw data for jet and subjets.
+    //  To be used for low-level variable analyses.
+    unsigned int totalNumJets = numSubjets + 1;
+    if (numSubjets == 1) totalNumJets = 1;
+    std::vector<std::vector<double>> telescopingMasses(totalNumJets, std::vector<double>(subjetRadii.size()));
+    std::vector<std::vector<double>> telescopingPTs(totalNumJets, std::vector<double>(subjetRadii.size()));
+
+    //  Vectors for combinations of sums of masses and pTs.
+    unsigned int numCombinations = choose(numSubjets, numSubjets - 1);
+    std::vector<std::vector<double>> combinedTelescopingMasses(numCombinations, std::vector<double>(subjetRadii.size()));
+    std::vector<std::vector<double>> combinedTelescopingPTs(numCombinations, std::vector<double>(subjetRadii.size()));
+    
+    //  Telescope through the radii.
+    for (unsigned int i = 0; i < subjetRadii.size(); ++i) {
+        //  Loop over each subjet.
+        for (unsigned int j = 0; j < sortedConstituents.size(); ++j) {
+	        //  Each constiuent can be accessed through an iterator.
+            //  The first entry is the constituent's 4-momentum.
+            //  The second is its distance to the energy core of the subjet.
+            for (auto it = sortedConstituents[j].cbegin(); it != sortedConstituents[j].cend(); ++it) {
+		        //  Add constituent 4-momentum to subjet 4-momentum if within range.
+		        if (it->second <= subjetRadii[i]) {
+		            TSubjets[j] += it->first;
+		            
+                    //  Remove the constiuent so it's not looped over again.
+                    sortedConstituents[j].erase(it);
+		            --it;
+		        }
+		        else break;
+	        }
+	    }
+
+        //  Compute total jet momentum.
+        TLorentzVector totalJetMomentum = std::accumulate(TSubjets.begin(),
+                                                          TSubjets.end(),
+                                                          TLorentzVector(0.0, 0.0, 0.0, 0.0));
+        //  Set an arbitrary threshold of 0.01 so only
+        //  meaningful masses are reconstructed.
+        if (totalJetMomentum.M() > 0.01) {
+            for (unsigned int k = 0; k < totalNumJets; ++k) {
+                //  Store the total jet mass and pT.
+                if (k == 0) {
+                    telescopingMasses[k][i] = totalJetMomentum.M();
+                    telescopingPTs[k][i] = totalJetMomentum.Pt();
+                }
+                //  Store the subjet mass and pT.
+                else {
+                    telescopingMasses[k][i] = TSubjets[k - 1].M();
+                    telescopingPTs[k][i] = TSubjets[k - 1].Pt();
+                }
+            }
+            
+            //  Calculate combinations of masses and pTs.           
+            //  TODO Add functionality for different number of subjets
+            //  instead of just one less jet than the total.
+            for (unsigned int k = 0; k < numSubjets; ++k) {
+                TLorentzVector partialJetMomentum = totalJetMomentum - TSubjets[k];
+                combinedTelescopingMasses[k][i] = partialJetMomentum.M();
+                combinedTelescopingPTs[k][i] = partialJetMomentum.Pt();
+            }
+        }
+    }
+
+    //  Identify candidate subjet or combination of subjets and calculate variabilities.
+    if (!emptyTelescopingMasses(telescopingMasses[0], combinedTelescopingMasses)) {
+        //  Compute and store variabilities of mass and pT for total jet.
+        result.massVariability = getVariability(telescopingMasses[0]);
+        result.pTVariability = getVariability(telescopingPTs[0]);
+
+        //  Store and output raw data.
+        result.masses = telescopingMasses;
+        result.pTs = telescopingPTs;
+        
+        //  Find the target mass candidate and store and output data.
+        unsigned int targetMassCandidateIndex = getCandidateIndex(targetMass, combinedTelescopingMasses);
+        result.targetMass = combinedTelescopingMasses[targetMassCandidateIndex].back();
+        result.targetMassVariability = getVariability(combinedTelescopingMasses[targetMassCandidateIndex]);
+        result.targetPTVariability = getVariability(combinedTelescopingPTs[targetMassCandidateIndex]);
+    }
+
+    return result;
+}
+
+//  Puts all the functions above together.
+//  Public function to be used for telescoping
+//  n-subjets.
+tSub TelescopingJets::tNSubjet(unsigned int numSubjets, double minRadius, double maxRadius, unsigned int numRadii, double targetMass = 0.0) {
+    tSub result;
+    double beta = 1.0;
+    std::vector<TLorentzVector> pTauAxes = getTauAxes(numSubjets, beta);
+    std::vector<double> anglesBetweenTauAxes = getAnglesBetweenTauAxes(numSubjets, pTauAxes);
+    
+    //  Store subjet axes.
+    result.tauAxes = pTauAxes;
+
+    //  Collect the minimum angle if there is one.
+    if (!anglesBetweenTauAxes.empty()) result.minAngle = *(std::min_element(anglesBetweenTauAxes.cbegin(), anglesBetweenTauAxes.cend()));
+
+    //  Get constituents sorted by subjet and in increasing distance from subjet center.
+    std::vector<std::vector<std::pair<TLorentzVector, double>>> sortedConstituents = sortConstituents(numSubjets, pTauAxes);
+    std::vector<double> subjetRadii = getTelescopingParameterSet(minRadius, maxRadius, numRadii);
+    
+    //  Telescope through the jet radius.
+    //  Selects the necessary function to use based on whether
+    //  a decay particle is in mind, for optimization purposes.
+    if (targetMass == 0.0) result = telescopeSubjets(numSubjets, result, subjetRadii, sortedConstituents);
+    else result = telescopeSubjets(numSubjets, result, subjetRadii, constituents, targetMass);
+
+    if (result.massVariability == -1) {
+	std::cout << "WARNING zero entries for TNSubjet!   numSubjets: " << numSubjets <<
+	    "   minRadius: " << minRadius <<
+	    "   maxRadius: " << maxRadius <<
+	    "   numRadii: " << numRadii <<
+	    "   input mass: " << input.m() << std::endl;
+    }       
+
+    return result;
+}
+
+///=========================================
+/// Telescoping N-subjettiness
+///=========================================
+double TelescopingJets::tNsubjettiness(int numSubjets, double minBeta, double maxBeta, unsigned int numBetas) {
+    std::vector<double> betas = getTelescopingParameterSet(minBeta, maxBeta, numBetas);
+    std::vector<double> telescopingTaus(betas.size());
+
+    for (unsigned int i = 0; i < betas.size(); ++i) {
+        fastjet::contrib::UnnormalizedMeasure nSubMeasure(betas[i]);
+        fastjet::contrib::Nsubjettiness nSub(numSubjets, axesDefinition, nSubMeasure);
+        telescopingTaus[i] = nSub(input);
+    }
+
+    if (!telescopingTaus.empty()) return getVariability(telescopingTaus);
+    
+    std::cout <<"WARNING zero entries for T_Nsubjettiness! minBeta: " << minBeta << 
+        "   maxBeta: "  << maxBeta << 
+        "   numBetas: " << numBetas << std::endl;
+    return -1;
+}
+
+double TelescopingJets::tNsubjettinessRatio(int nNumerator, int nDemoninator, double minBeta, double maxBeta, unsigned int numBetas) {
+    std::vector<double> betas = getTelescopingParameterSet(minBeta, maxBeta, numBetas);
+    std::vector<double> telescopingTaus(betas.size());
+
+    for (unsigned int i = 0; i < betas.size(); ++i) {
+        fastjet::contrib::UnnormalizedMeasure nsubMeasure(betas[i]);
+        fastjet::contrib::Nsubjettiness nSubNumerator(nNumerator, axesDefinition, nsubMeasure);
+        fastjet::contrib::Nsubjettiness nSubDenominator(nDemoninator, axesDefinition, nsubMeasure);
+      
+        double numerator = nSubNumerator(input);
+        double denominator = nSubDenominator(input);
+      
+        if (denominator != 0) telescopingTaus[i] = (numerator / denominator);
+        else telescopingTaus[i] = -1.0;
+    }
+    
+    if (!telescopingTaus.empty() || std::accumulate(telescopingTaus.begin(), telescopingTaus.end(), 0.0) > 0) return getVariability(telescopingTaus);
+  
+    std::cout << "WARNING zero entries for T_NsubjettinessRatio! minBeta: " << minBeta <<
+        "   maxBeta: " << maxBeta <<
+        "   numBetas: " << numBetas <<  std::endl;
+    return -1;
+}
+
+
+///=========================================
+/// Telescoping Energy Correlators
+///=========================================
+double TelescopingJets::tEnergyCorrelator_C2 (double minBeta, double maxBeta, unsigned int numBetas) {
+    std::vector<double> betas = getTelescopingParameterSet(minBeta, maxBeta, numBetas);
+    std::vector<double> telescopingEcfs(betas.size());
+
+    for (unsigned int i = 0; i < betas.size(); ++i) {
+	fastjet::contrib::EnergyCorrelatorC2 ecf(betas[i]);
+	telescopingEcfs[i] = ecf(input);
+    }
+
+    if(!telescopingEcfs.empty()) return getVariability(telescopingEcfs);
+    
+    std::cout << "WARNING zero entries for T_EnergyCorrelator_C2! minBeta: "<< minBeta <<
+        "   maxBeta: " << maxBeta <<
+        "   numBetas: " << numBetas <<  std::endl;
+    return -1;   
+}
+
+double TelescopingJets::tEnergyCorrelator_D2(double minBeta, double maxBeta, unsigned int numBetas) {
+    std::vector<double> betas = getTelescopingParameterSet(minBeta, maxBeta, numBetas);
+    std::vector<double> telescopingEcfs(betas.size());
+
+    for (unsigned int i = 0; i < betas.size(); i++) {
+	fastjet::contrib::EnergyCorrelatorD2 ecf(betas[i]);
+	telescopingEcfs[i] = ecf(input);
+    }
+    
+    if(!telescopingEcfs.empty()) return getVariability(telescopingEcfs);
+    
+    std::cout <<  "WARNING zero entries for T_EnergyCorrelator_C2! minBeta: " << minBeta <<
+        "   maxBeta: " << maxBeta <<
+        "   numBetas: " << numBetas <<  std::endl;
+    return -1;   
+}
+
+double TelescopingJets::tEnergyCorrelator_C3(double minBeta, double maxBeta, unsigned int numBetas) {
+    std::vector<double> betas = getTelescopingParameterSet(minBeta, maxBeta, numBetas);
+    std::vector<double> telescopingEcfs(betas.size());
+
+    for (unsigned int i = 0; i < betas.size(); ++i) {
+	fastjet::contrib::EnergyCorrelatorDoubleRatio ecf(3, betas[i]);
+	telescopingEcfs[i] = ecf(input);
+    }
+    
+    if (telescopingEcfs.empty()) return getVariability(telescopingEcfs);
+    
+    std::cout <<"WARNING zero entries for T_EnergyCorrelator_C3! minBeta: " << minBeta <<
+        "   maxBeta: " << maxBeta <<
+        "   numBetas: " << numBetas <<  std::endl;
+    return -1;
 }

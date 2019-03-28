@@ -60,3 +60,5 @@ Ana_EventGeneration/NTupler_new.h
 Ana_EventGeneration/ntupleW.log
 
 Ana_EventGeneration/ntupleW.log
+*.swp
+*.exe
